@@ -1,0 +1,52 @@
+/* 
+1. Wrapper and Page Container
+2. Media Screen	
+	2.1 Screen Size 960px to 720px
+	2.2 Screen Size 720px to 480px
+	2.3 Screen Size 480px
+	
+/* 1. Wrapper and Page Container
+============================================================================================*/
+#wrapper{
+	width: 960px;
+	margin: 120px auto 30px;
+}
+
+.aside{width: 240px;}
+
+.l_side{padding-right: 20px;}
+
+.r_side{padding-left: 20px;}
+
+#warpper > * + *{margin-top: 15px;}
+
+
+/* 1 Screen Size 960px to 720px
+============================================================================================*/
+@media screen and (min-width: 720px) and (max-width: 960px){
+	#wrapper{width: 720px;}
+}
+ 
+/* 2 Screen Size 720px to 480px
+============================================================================================*/	
+@media screen and (min-width: 480px) and (max-width: 720px){
+	#wrapper{width: 480px;}
+}
+	
+/* 3 Screen Size 480px
+============================================================================================*/	
+@media screen and (max-width: 480px){
+	#wrapper{width: 320px;}
+	
+	.aside{width: 100%;}
+	
+	.l_side, .r_side{padding: 0;}
+	
+	#mainSection{display: block;}
+	
+	.content{
+		-webkit-box-flex: 0;
+		-moz-box-flex: 0;
+		box-flex: 0
+	}
+}

@@ -1,0 +1,366 @@
+/**********************************************************************************************
+
+Title: ACRS
+Date: August 2012
+
+***********************************************************************************************
+
+1. Reset
+1.1 Basic Form
+
+2. Global Stucture
+2.1 Templete Layout
+	2.1.1 1-Column Layout
+	2.1.2 2-Column Left Layout
+	2.1.3 2-Column Right Layout
+	2.1.4 3-Column Layout
+2.2 Wrapper and Page Container
+2.3 Top Section
+	2.3.1 Keywords
+	2.3.2 breadcrumb
+2.4 Bottom Section
+2.5 Main Navigation and Drop Down Menu Functionality
+
+3. Clear Float
+
+**********************************************************************************************
+
+1. Reset                                                                                    
+============================================================================================*/
+body{
+	font-size: 62.5%;
+	font-family: Helvetica;
+	height: 100%;
+	-webkit-text-size-adjust: none; /* fixed Chrome browse */
+	-webkit-font-size: 1.1em; /* fixed Chrome browse */
+}
+
+*{ 
+	margin: 0;
+	padding: 0;
+}
+
+table{
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+fieldset,img{ 
+	border: 0;
+}
+
+address,caption,cite,code,dfn,em,th,var,small{
+	font-style: normal; 
+	font-weight: normal;
+}
+
+ol,ul,li{
+	list-style: none;
+}
+
+caption,th{
+	text-align: left;
+}
+
+h1,h2,h3,h4,h5,h6{
+	font-weight: normal;
+}
+
+q:before,q:after{
+	content: '';
+}
+
+abbr,acronym{ 
+	border: 0;
+}
+
+a{
+	text-decoration: none;
+	cursor: pointer;
+}
+
+iframe{
+	border: none;
+}
+
+b,strong,.bold{
+	font-weight: 700;
+}
+
+p{
+	line-height: 1.3em;
+}
+
+ul > li, dl > dt, dl > dd{
+	float: left;
+}
+
+dl > dt + dd{
+	margin-left: 5px;
+}
+
+small{
+	font-size: 0.9em;
+}
+
+fieldset > dl{
+	width: 100%;
+	display: block;
+}
+
+/* 1.1  Basic Form
+----------------------------------------------------------*/
+label{
+	display: block;
+}
+
+select, input, textarea{
+    font-size: 1em;
+	border-radius: 0;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+}
+
+@-moz-document url-prefix(){
+	select, input, textarea{
+		font-family: "Helvetica";
+	}
+}
+
+/* Fix Mac CSS hank
+select:focus, input:focus{
+	background: #fff url(bg_white.gif) repeat 0 0;
+	outline: none;
+	box-shadow: none;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}*/
+
+select, input[type="text"], input[type="password"], textarea{
+	border: 1px solid #a5acb2;
+}
+
+input[type="text"], input[type="password"]{
+	padding: 0 3px;
+}
+
+textarea{
+	padding: 3px;
+}
+
+input[name="button"]{
+	border: 0;
+	cursor: pointer;
+}
+
+/* form */
+fieldset > dl + dl{
+	margin-top: 10px;
+}
+
+fieldset > dl > dt{
+	width: 140px;
+	font-weight: 700;
+}
+
+.require:before{
+	content: "*";
+	color: #db071d;
+	margin-right: 3px;
+	font-weight: 400;
+	font-family: "Verdana";
+	position: relative;
+	top: 2px;
+}
+
+fieldset .textInput{
+	width: 220px;
+}
+
+fieldset .textInput.short{
+	width: 135px;
+}
+
+fieldset .select{
+	width: 228px;
+}
+
+fieldset .select.month{
+	width: 145px;
+}
+
+fieldset .select.year{
+	width: 80px;
+}
+
+fieldset > dl.buttonBox{
+	border-top: 1px dashed #c5c5c5;
+	padding-top: 15px;
+	margin-top: 40px;
+}
+
+fieldset > dl.buttonBox > dd{
+	float: right;
+}
+
+fieldset > dl input{
+	vertical-align:middle;
+}
+
+fieldset > dl input[type="checkbox"], fieldset > dl input[type="radio"]{
+	margin-right: 5px;
+}
+
+fieldset > dl .error{
+	margin-top: 5px;
+	width: 216px;
+}
+
+
+/* 2. Global Structure
+============================================================================================*/
+#wrapper > div{
+	float: left;
+}
+
+#wrapper > .content + .aside{
+	float: right;
+}
+
+#topSection > div, .aside > div, .content > div, #btmSection > div, #topSection, #btmSection{
+	width: 100%;
+}
+
+.aside{
+	width: 165px;
+	min-height: 1px;
+}
+
+#mainSection{
+	display: -webkit-box;
+	display: -moz-box;
+	display: box;
+	box-orient: horizontal;
+	-moz-box-orient: horizontal;
+	-webkit-box-orient: horizontal;
+}
+
+.content{
+	width: 759px;
+	min-height: 500px;
+}
+
+/* 2.1 Templete Layout
+----------------------------------------------------------*/
+/* 2.1.1 1-Column Layout */
+.column_1 .aside{
+	display: none;
+}
+
+.column_1 .content{
+	width: 100%;
+}
+
+/* 
+	2.1.2 2-Column Left Layout
+*/
+.columnL_2 .content{
+	padding-left: 10px;
+	width: 749px;
+}
+
+.columnL_2 .content + .aside{
+	display: none;
+}
+
+/* 
+	2.1.3 2-Column Right Layout
+*/
+.columnR_2 .aside{
+	display: none;
+}
+
+.columnR_2 .content{
+	padding-right: 10px;
+	width: 749px;
+}
+
+.columnR_2 .content + .aside{
+	display: block;
+}
+
+/* 2.1.4 3-Column Layout */
+.column_3 .content {
+	width: 562px;
+	border-left: 1px solid #e4f0cd;
+	border-right: 1px solid #e4f0cd;
+	margin: 0 5px;
+}
+
+/* 2.2  Wrapper and Page Container
+----------------------------------------------------------*/
+#wrapper{
+	width: 924px;
+	margin: 0 auto;
+	padding: 0 16px;
+	font-size: 1.1em;
+}
+
+#topSection > div + div, .aside > div + div, .aside > div + a, .aside > a + div, .aside > a + a, #btmSection > div + div{
+	margin-top: 15px;
+}
+
+.content > div + div{
+	margin-top: 20px;
+}
+
+/* 2.3 Top Section
+----------------------------------------------------------*/
+#header{
+	position: relative;
+}
+
+.logo a{
+	display: inline-block;
+}
+
+/* 2.3.1 Keywords */
+.keywords{
+	display: none;
+}
+
+/* 2.4  Bottom Section
+----------------------------------------------------------*/
+#footer{
+	position: relative;
+}
+
+/* 2.5 Main Navigation and Drop Down Menu Functionality
+----------------------------------------------------------*/
+.J_dropdown > li > div{
+	position: absolute;
+	z-index: 50;
+	display: none;
+}
+
+.J_dropdown > li:hover > a + div{
+	display: block;
+} 
+
+/* 4. Clear Float                                                                                    
+============================================================================================*/
+#wrapper:after,
+#aside:after,
+#content:after,
+dl:after,
+.colorBox:after,
+.sizeBox:after,
+ul:after,
+.pop_connectAccount:after{
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}

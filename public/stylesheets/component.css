@@ -1,0 +1,511 @@
+/* 
+
+1. Global Site Components
+1.1 Carousel
+	1.1.1 Image Carousel
+	1.1.2 Product Carousel
+1.2 Image Slider
+1.3 Left Navigation
+1.4 Breadcrumb
+1.5 Promotion, Banner, Html Block
+1.6 Tab
+1.7 Zoom
+1.8 Share This
+1.9 ColorBox popup
+1.10 Item List
+1.11 Filter
+1.12 Refinements
+
+/* 1. Global Site Components
+============================================================================================*/
+/* 1.1 Carousel
+----------------------------------------------------------*/
+.promoCarousel, .productCarousel{
+	display: inline-block;
+	position: relative;
+	overflow: hidden;
+}
+
+.promoCarousel > h4, .productCarousel > h4{
+	margin-bottom: 10px;
+}
+
+.scrollList{
+	margin-left: 20px;
+	position: absolute;
+	display: inline-block;
+	overflow: hidden;
+}
+
+.slide-content{
+	position: absolute;
+}
+
+.scrollList li.promo{
+	width: 224px;
+	padding: 0 5px;
+}
+
+.scrollList li.promo img + img{
+	display: none;
+}
+
+.column_1 .scrollList li.promo, #topSection .scrollList li.promo, #btmSection .scrollList li.promo{
+	width: 211px;
+}
+
+.column_3 .scrollList li.promo{
+	width: 250px;
+}
+
+.scrollList li.item{
+	width: 213px;
+	padding: 0 10px;
+}
+
+.column_1 .scrollList li.item, #topSection .scrollList li.item, #btmSection .scrollList li.item{
+	width: 200px;
+}
+
+.column_3 .scrollList li.item{
+	width: 240px;
+}
+
+.slide-nav{
+	z-index:30;
+}
+
+.btn_prev, .btn_next{
+	width: 21px;
+	height: 21px !important;
+	position: absolute;
+}
+
+.btn_next{
+	right: 0px;
+}
+
+/* 1.1.1 Image Carousel*/
+.scrollList li.promo img{
+	height: 110px;
+}
+
+.promoCarousel .btn_prev, .promoCarousel .btn_next{
+	margin-top: 45px;
+}
+
+/* 1.1.2 Product Carousel*/
+.productCarousel .btn_prev, .productCarousel .btn_next{
+	margin-top: 50px;
+}
+
+.scrollList li.item > a{
+	position: absolute;
+	width: 100px;
+}
+
+.scrollList li.item .img{
+	width: 100px;
+	height: 97px;
+}
+
+.scrollList li.item > .info{
+	margin-left: 105px;
+}
+
+.scrollList li.item > .info > * + *{
+	margin-top: 6px;
+}
+
+.scrollList li.item > .info > .rating > span{
+	display: block;
+	margin-bottom: 6px;
+}
+
+.scrollList li.item > .info > .rating > a{
+	margin-left: 0;
+}
+
+/* 1.2 Image Slider
+----------------------------------------------------------*/
+.freedom_slider_img{
+	display: block;
+	width: 100%;
+}
+
+.freedom_slider{
+	width: 100%;
+	position: relative;
+}
+
+.freedom_slider_content{
+	float: left;
+}
+
+.freedom_slider_title{
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 32px;
+	line-height: 32px;
+	color: #fff;
+	background: #000;
+	padding: 3px 0;
+	text-indent: 10px;
+	-moz-opacity:.7;
+	-webkit-opacity:.7;
+	-o-opacity:.7;
+	opacity:.7;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(opacity=70)";
+}
+
+.freedom_slider_custom{
+	position: absolute;
+	width: 120px;
+	left: 20px;
+	top: 20px;
+	line-height: 20px;
+	background: #000;
+	color: #fff;
+	padding: 10px;
+}
+
+.slider_control{
+	position: absolute;
+	z-index: 10;
+	bottom: 10px;
+	right: 10px;
+}
+
+.slider_control li{
+	width: 18px;
+	height: 18px;
+	line-height: 18px;
+	text-align: center;
+	cursor: pointer;
+	background: #fefefe;
+	margin-left: 8px;
+}
+
+.slider_control li.current{
+	background: #98bb1f;
+	color: #fff;
+	font-weight: 700;
+}
+
+.prevBtn,
+.nextBtn{
+	position: absolute;
+	background: #ff0;
+	color: #fff;
+	top: 50%;
+	height: 21px;
+	width: 21px;
+	margin-top: -10px;
+	cursor: pointer;
+}
+
+.prevBtn{
+	left: -21px;
+}
+
+.nextBtn{
+	right: -21px;
+}
+
+.freedom_content{
+	overflow: hidden;
+}
+
+.freedom_info{
+	position: absolute;
+	left: -9999px;
+	display: none;
+}
+
+/* 1.4 Breadcrumb
+----------------------------------------------------------*/
+.breadcrumb li{
+	float: left;
+}
+
+/* Promotion, Banner, Html Block
+----------------------------------------------------------*/
+.promo a{
+	display: block;
+}
+
+.aside > .promo a + a{
+	margin-top: 10px;
+}
+
+.content > .promo a + a{
+	margin-top: 13px;
+}
+
+.promo img{
+	width: 100%;
+	display: block;
+}
+
+#footer > .banner, #footer > .htmlBlock{
+	margin-bottom: 10px;
+}
+
+/* 1.6 Tab
+----------------------------------------------------------*/
+.J_tabs{
+	position: relative;
+	height: 26px;
+	width: 100%;
+}
+
+.J_tabs > li{
+	height: 26px;
+	margin-right: 2px;
+}
+
+.J_tabs > li > a{
+	line-height: 26px;
+	display: block;
+}
+
+.tabContent > div{
+	display: none;
+}
+
+/* 1.7 Zoom
+----------------------------------------------------------*/
+.jqzoom{
+	position: relative;	
+}
+
+div.zoomdiv {
+	z-index: 999;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: #fff;
+	display: none;
+	text-align: center;
+	overflow: hidden;
+}
+
+div.jqZoomPup {
+	z-index: 999;
+	visibility: hidden;
+	position: absolute;
+	border: 1px solid #666;
+	top: 0;
+	left: 0;
+	background: #fff 50% 50%  no-repeat;
+	opacity: 0.5;
+	-moz-opacity: 0.5;
+	-khtml-opacity: 0.5;
+	filter: alpha(Opacity=50);
+	width: 50px;
+	height: 50px;
+	cursor: crosshair;
+}
+
+/* 1.8 Share This
+----------------------------------------------------------*/
+.shareThis > .iconBox{
+	float: left;
+}
+
+.shareThis > .iconBox + .iconBox{
+	margin-left: 10px;
+}
+
+/* 1.9 ColorBox popup
+----------------------------------------------------------*/
+
+
+/* 1.10 Item List
+----------------------------------------------------------*/
+.itemList > h4 > small, .sub-catgList > h4 > small{
+	margin-left: 5px;
+}
+
+.itemList > ul > li{
+	width: 178px;
+	height: 294px;
+}
+
+.itemList > ul > li > a{
+	height: 288px;
+}
+
+.itemList > ul > li,  .sub-catgList > ul > li{
+	margin-top: 10px;
+}
+
+.itemList > ul > li + li{
+	margin-left: 10px;
+}
+
+.itemList.type-1 > ul > li{
+	width: 100%;
+	height: 138px;
+}
+
+.itemList.type-1 > ul > li + li{
+	margin-left: 0;
+}
+
+.itemList.catgList > ul > li{
+	height: 200px;
+}
+
+.itemList.catgList > ul > li > a{
+	height: 194px;
+}
+
+.sub-catgList > ul > li{
+	width: 271px;
+}
+
+.sub-catgList > ul > li + li{
+	margin-left: 20px;
+}
+
+/* 1-Column Layout Item List */
+.column_1 .itemList > ul > li + li, .column_1 .itemList.catgList > ul > li + li{
+	margin-left: 8px;
+}
+
+.column_1 .itemList.type-1 > ul > li + li{
+	margin-left: 0;
+}
+
+.column_1 .sub-catgList > ul > li{
+	width: 294px;
+}
+
+/* 2-Column Layout Item List */
+.columnL_2 .sub-catgList > ul > li, .columnR_2 .sub-catgList > ul > li{
+	width: 234px;
+}
+
+/* 3-Column Layout Item List */
+.column_3 .itemList > ul > li + li{
+	margin-left: 14px;
+}
+
+/* 1.11 Filter
+----------------------------------------------------------*/
+.filter ul{
+	padding: 0 15px;
+}
+
+.filter .pagination{
+	float: right;
+}
+
+/* 1.12 Refinements
+----------------------------------------------------------*/
+.clearAll{
+	margin-top: 10px;
+}
+
+.clearAll a{
+	color: #1a6c00;
+	text-decoration: underline;
+}
+
+.refinements{
+	padding-top: 13px;
+	border-top: 1px dotted #ccc;
+}
+
+.refinements + .refinements{
+	margin-top: 13px;
+}
+
+.refinements + .promo{
+	margin-top: 50px;
+}
+
+.refinements > ul > li{
+	width: 100%;
+}
+
+.refinements > ul > li, .refinements > ul > li > ul > li, .refinements > ul > li > ul > li > ul > li{
+	margin-top: 6px;
+	float: none;
+}
+
+.refinements ul li.selected > a{
+	color: #7f9816;
+	text-decoration: underline;
+}
+
+.refinements > ul > li ul{
+	margin-left: 10px;
+}
+
+
+.refinements input[type="radio"], .refinements input[type="checkbox"]{
+	position: relative;
+	top: 2px;
+	margin-right: 5px;
+}
+
+.refinements .img_rating{
+	margin-right: 0;
+}
+
+.refinements .rating.selected > a{
+	color: #fd830d;
+	text-decoration: underline;
+}
+
+/* slider range*/
+.slider-output{
+	text-align: center;
+}
+
+.slider-output > input{
+	border: 0;
+	padding: 0;
+	height: auto;
+	text-align: center;
+}
+
+.refinements > .orig-range > li{
+	display: inline-block;
+	width: auto;
+	color: #cbcbcb;
+}
+
+.refinements > .orig-range > li + li{
+	float: right;
+}
+
+.slider-range{
+	height: 6px;
+	width: 149px;
+}
+
+.slider-range > div{
+	height: 6px;
+}
+
+.ui-slider{
+	position: relative;
+}
+
+.ui-slider .ui-slider-handle{
+	position: absolute;
+	z-index: 2;
+	top: -3px;
+	margin-left: -3px;
+	cursor: default;
+}
+
+.ui-slider .ui-slider-range{
+	position: absolute;
+	z-index: 1;
+	display: block;
+}
