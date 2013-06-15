@@ -1,0 +1,68 @@
+@(profileForm:Form[Profile])(implicit flash:Flash)
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@main("Sign up") {
+
+@println("flashvalue" + flash.get("success"))
+@flash.get("success").map { message =>
+<p class="success">
+    @message
+</p>
+<script type="text/javascript">
+
+</script>
+
+}
+@form(action = routes.ProfileController.create) {
+<fieldset>
+    @inputText(
+    profileForm("login"),
+    '_label -> "Username",
+    '_help -> "Please choose a valid username.",
+    '_error -> profileForm.globalError
+    )
+
+    @inputPassword(
+    profileForm("password.main"),
+    '_label -> "Password",
+    '_help -> "A password must be at least 6 characters. "
+    )
+
+    @inputPassword(
+    profileForm("password.confirm"),
+    '_label -> "Repeat password",
+    '_help -> "Please repeat your password again.",
+    '_error -> profileForm.error("password")
+    )
+
+    @inputText(
+    profileForm("name"),
+    '_label -> "Name",
+    '_help -> "Please choose a valid name."
+    )
+
+    @inputText(
+    profileForm("birthDay"),
+    '_label -> "Date of birth",
+    '_error -> profileForm("birthDay").error.map(_.withMessage("Please input with format YYYY-MM-DD"))
+    )
+
+    @select(
+    profileForm("gender"),
+    options = options(("M","Male"), ("F", "Female")),
+    '_default -> "--- Choose a gender ---",
+    '_label -> "Gender",
+    '_error -> profileForm("gender").error.map(_.withMessage("Please select your gender"))
+    )
+
+</fieldset>
+
+<div class="submit-action">
+    <input type="submit" class="btn primary" value="Sign Up">
+    <a href="@routes.Application.index" class="btn">Cancel</a>
+</div>
+
+}
+}

@@ -8,15 +8,15 @@
 /* 1. Wrapper and Page Container
 ============================================================================================*/
 #wrapper{
-	width: 960px;
-	margin: 120px auto 30px;
+	width: 1024px;
+	margin: 0 auto;
 }
 
-.aside{width: 240px;}
+.aside{width: 0px;}
 
-.l_side{padding-right: 20px;}
+.l_side{padding-right: 0px;}
 
-.r_side{padding-left: 20px;}
+.r_side{padding-left: 0px;}
 
 #warpper > * + *{margin-top: 15px;}
 

@@ -292,7 +292,7 @@ fieldset > dl .error{
 
 /* 2.1.4 3-Column Layout */
 .column_3 .content {
-	width: 562px;
+	width: 100%;
 	border-left: 1px solid #e4f0cd;
 	border-right: 1px solid #e4f0cd;
 	margin: 0 5px;
@@ -328,6 +328,233 @@ fieldset > dl .error{
 /* 2.3.1 Keywords */
 .keywords{
 	display: none;
+}
+
+/* Logo */
+#store_logo{
+  width: 175px;
+  height: 58px;
+  margin:17px 0 0 22px;
+}
+#store_logo a{
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-indent: -9999px;
+  overflow:hidden; /* Removes 'excess' focus area caused by text-indent*/
+  background:url(/assets/images/logo.jpg) no-repeat scroll left top;
+}
+
+/* Store Search */
+#store_search{
+  margin-left:0;
+  margin-top:10px;
+}
+.store_searchInput{
+  margin: 20px 0 0 20px;
+}
+#store_search #store_searchStoreSelect{
+  margin-left:20px;
+}
+#store_search span.store_smallButton input#store_searchSubmit:hover{
+  background:url(/crsdocroot/content/images/atghome/search_button.png) no-repeat scroll right bottom transparent;
+}
+
+
+#topSection .searchBox{
+	position: absolute;
+	right: 190px;
+	top: 0;
+	margin-top: 0;
+	width: 200px;
+}
+
+.searchForm > .textInput{
+	width: 200px;
+	padding-right: 30px;
+}
+
+.searchForm .btn_search{
+	color: #828282;
+	background: transparent;
+	border: 0;
+	padding: 0;
+	position: absolute;
+	right: 3px;
+	top: 4px;
+}
+
+/* 2. Keywords
+============================================================================================*/
+.keywords{
+	position: absolute;
+	z-index: 1700;
+	width: 200px;
+	border: 1px solid #d5d5d5;
+	background: #fff;
+	margin-top: 1px;
+	padding-bottom: 10px;
+	display: none;
+}
+
+.keywords > strong{
+	display: block;
+	line-height: 26px;
+	background: #ff4949;
+	color: #fff;
+	padding: 0 10px;
+}
+
+.keywords ul > li,
+.keywords ul > li > a{
+	width: 100%;
+	line-height: 26px;
+	padding: 0 10px;
+	color: #828282;
+	display: inline-block;
+}
+
+
+.keywords ul > li:hover{
+	background: #ff4949;
+	transition: all 0.3s ease-out;
+	-webkit-transition: all 0.3s ease-out;
+	-moz-transition: all 0.3s ease-out;
+	-ms-transition: all 0.3s ease-out;
+	cursor: pointer;
+}
+
+.keywords b{color: #323232;}
+
+.keywords ul > li:hover > a, .keywords ul > li:hover > a b{color: #fff;}
+
+/**--Account Navigation**/
+/* 2.3.2 Account Navigation */
+.acctNav{float: right;}
+
+.acctNav li{
+	float: none;
+	display: inline-block;
+}
+
+.acctNav li + li:before{
+	content: '|';
+	padding: 0 5px;
+}
+
+.acctNav .welcome, .acctNav a{font-size: 12px;}
+
+.acctNav a:hover{text-decoration: underline;}
+
+.acctNav .welcome{color: #828282;}
+
+.acctNav .customerName{
+	font-family: webFont;
+	font-weight: 700;
+	padding: 0 5px;
+	color: #ff4949;
+}
+
+.acctNav .welcome a{
+	text-decoration: underline;
+	color: #ff4949;
+}
+
+
+
+/**----MiniCart---**/
+.miniCart{
+	position: absolute;
+	z-index: 1600;
+	top: 20px;
+	right: 0;
+	width: 300px;
+	background: #fff;
+	border: 1px solid #acacac;
+	padding-bottom: 15px;
+	text-align: left;
+	opacity: 0;
+	visibility: hidden;
+	transition: all 0.3s ease-out;
+	-webkit-transition: all 0.3s ease-out;
+	-moz-transition: all 0.3s ease-out;
+	-ms-transition: all 0.3s ease-out;
+}
+
+.cartBox > ul > li:hover > a + .miniCart{
+	opacity: 1;
+	visibility: visible;
+}
+
+.miniCart > *{margin: 15px 15px 0;}
+
+.miniCart > .miniCartTitle{
+	border-top: 4px solid #acacac;
+	border-bottom: 1px solid #efefef;
+	margin: 1px 0 0;
+	padding: 10px 15px;
+	font-size: 14px;
+	font-family: webFont;
+	text-transform: uppercase;
+	background: url(/acs/static/acs/image/common/patterns/pattern3.png) repeat 0 0;
+}
+
+.miniCart > .miniCartList{
+	max-height: 200px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.miniCart .cartItem{padding: 10px 0;}
+
+.miniCart .cartItem + .cartItem{border-top: 1px solid #efefef;}
+
+.miniCart > .subTotal{
+	font-size: 14px;
+	text-align: right;
+	margin-top: 30px;
+}
+
+.miniCart > .subTotal > *{
+	float: none;
+	display: inline-block;
+}
+
+.miniCart > .subTotal > dt{color: #828282;}
+
+/* 2.2 Mini Cart Item
+----------------------------------------------------------*/
+.miniCartList .imgBox{margin-right: 10px;}
+
+.miniCartList .imgBox > a{
+	display: block;
+	width: 50px;
+	height: 50px;
+}
+
+.miniCartList .imgBox > a img{
+	width: 50px;
+	height: 50px;
+	display: block;
+}
+
+.miniCartList .infoBox{float: none;}
+
+.miniCartList .infoBox > p{display: inline-block;}
+
+.miniCartList .qty{
+	color: #828282;
+	margin-left: 5px;
+}
+
+/* 2.3 mini Cart Empty
+----------------------------------------------------------*/
+.miniCart .empty{
+	border-top: 5px solid #acacac;
+	margin: 1px 0 0;
+	padding: 30px 20px;
+	font-size: 12px;
+	text-align: center;
 }
 
 /* 2.4  Bottom Section
