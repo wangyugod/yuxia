@@ -32,7 +32,7 @@ object ProfileController extends Controller {
       ),
       "name" -> nonEmptyText,
       "gender" -> optional(text),
-      "birthday" -> optional(text.verifying(Constraints.pattern( """(19|20)\\d\\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])""".r, "Date Constraint", "Your input should be in format YYYY-MM-DD")))
+      "birthday" -> optional(text.verifying(Constraints.pattern( """(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])""".r, "Date Constraint", "Your input should be in format YYYY-MM-DD")))
     )
       ((id, login, passwords, name, gender, birthday) => Profile(id.getOrElse(""), login, passwords._1, name, gender, AppHelper.convertBirthdayFromText(birthday)))
       ((profile: Profile) => {

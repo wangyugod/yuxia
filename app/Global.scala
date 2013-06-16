@@ -31,14 +31,15 @@ object Global extends GlobalSettings {
       //Initialize Profile Tables
       Profiles.ddl.create
 
-      if (Query(Profiles).list().isEmpty){
+      /*if (Query(Profiles).list().isEmpty){
         println("Simon is emtpty yet")
         Profiles.insert(Profile(IdGenerator.generateProfileId(), "simonwang@gmail.com", "test", "simon", Some("M"), Some(new Date(1981 + 1900, 9, 20))))
-      }
+      }*/
     }
   }
 
   override def onStart(app: Application) {
     println("start loading")
+    //initializeTable()
   }
 }

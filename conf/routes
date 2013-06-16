@@ -4,6 +4,8 @@
 
 # Home page
 GET     /                           controllers.Application.index
+GET     /login                      controllers.ProfileController.login
+POST    /login                      controllers.ProfileController.authenticate
 GET     /signup                     controllers.ProfileController.signup
 POST    /signup                     controllers.ProfileController.create
 

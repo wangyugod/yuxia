@@ -44,9 +44,9 @@
     )
 
     @inputText(
-    profileForm("birthDay"),
+    profileForm("birthday"),
     '_label -> "Date of birth",
-    '_error -> profileForm("birthDay").error.map(_.withMessage("Please input with format YYYY-MM-DD"))
+    '_error -> profileForm("birthday").error.map(_.withMessage("Please input with format YYYY-MM-DD"))
     )
 
     @select(
