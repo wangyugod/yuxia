@@ -16,6 +16,7 @@ object IdGenerator {
   val TAG_PREFIX = "t"
 
   def generateProfileId() = {
+    println("generating ProfileID now")
     PROFILE_PREFIX + UUID.randomUUID()
   }
 

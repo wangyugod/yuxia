@@ -1,3 +1,6 @@
 06-17 00:26:54 jdbc[4]: exception
 org.h2.jdbc.JdbcSQLException: Table "user" already exists; SQL statement:
 create table "user" ("id" VARCHAR NOT NULL PRIMARY KEY,"login" VARCHAR NOT NULL,"password" VARCHAR NOT NULL,"name" VARCHAR NOT NULL,"gender" VARCHAR,"birthday" DATE) [42101-168]
+06-18 17:40:50 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Table "user" already exists; SQL statement:
+create table "user" ("id" VARCHAR NOT NULL PRIMARY KEY,"login" VARCHAR NOT NULL,"password" VARCHAR NOT NULL,"name" VARCHAR NOT NULL,"gender" VARCHAR,"birthday" DATE) [42101-168]
