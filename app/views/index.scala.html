@@ -1,6 +1,6 @@
-@(message: String)
+@(message: String) (implicit user:Option[Profile])
 
-@main("Welcome to YuXia") {
+@main("Welcome to YuXia")(user) {
     
     @play20.welcome(message)
     

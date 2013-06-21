@@ -46,6 +46,11 @@ object Profile{
       result.firstOption()
     }
   }
+
+  def findUserByLogin(login: String): Option[Profile] = DBHelper.database.withSession{
+    val result = for (p <- Profiles if(p.login === login)) yield p
+    result.firstOption()
+  }
 }
 
 /*object ProfileService {
@@ -56,10 +61,7 @@ object Profile{
     }
   }
 
-  def findUserByLogin(login: String) = ModelConfiguration.database.withSession{
-    val result = for (p <- Profiles if(p.login === login)) yield p
-    result.firstOption()
-  }
+
 
   def createUser(user:Profile) = ModelConfiguration.database.withTransaction{
     println("start creating users")

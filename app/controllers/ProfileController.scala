@@ -17,7 +17,20 @@ import helper._
  * Time: 11:24 PM
  * To change this template use File | Settings | File Templates.
  */
-object ProfileController extends Controller {
+
+trait Users {
+  val LOGIN_KEY = "login"
+
+  implicit def user(implicit session:Session): Option[Profile] = {
+    session.get(LOGIN_KEY) match {
+      case Some(login) => Profile.findUserByLogin(login)
+      case None => None
+    }
+  }
+}
+
+object ProfileController extends Controller with Users{
+
 
   val profileForm: Form[Profile] = Form(
     mapping(
@@ -60,7 +73,7 @@ object ProfileController extends Controller {
         formWithErrors => {
           BadRequest(html.login(formWithErrors))
         },
-        user => Ok("Hello World").withSession("login" -> user._1)
+        user => Ok("Hello World").withSession(LOGIN_KEY -> user._1)
       )
   }
 

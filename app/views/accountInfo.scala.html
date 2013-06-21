@@ -1,6 +1,16 @@
+@(user:Option[Profile])
 <div class="acctNav">
     <ul>
-        <li class="welcome">Welcome, <span class="customerName">Customer</span>( Not Me? <a href="@routes.ProfileController.login">Click Here</a> )</li>
+        <li class="welcome">Welcome, <span class="customerName">
+		    @user match {
+				case Some(user) => {
+				   @user.name
+				}
+				case None => {
+				   "Customer"
+				}
+			}
+        </span>( Not Me? <a href="@routes.ProfileController.login">Click Here</a> )</li>
         <li><a href="#">Sign Out</a></li>
         <li><a href="@routes.ProfileController.signup">Register</a></li>
         <li><a href="#">My Account</a></li>

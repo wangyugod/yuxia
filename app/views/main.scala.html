@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String)(user:Option[Profile])(content: Html)
 
 <!DOCTYPE html>
 
@@ -17,7 +17,7 @@
             <h1 id="store_logo" title="YuXia">
                 <a href="localhost:9000"></a>
             </h1>
-            @accountInfo()
+            @accountInfo(user)
             @searchBox()
             @miniCart()
 
