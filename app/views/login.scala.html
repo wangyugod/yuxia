@@ -1,6 +1,6 @@
 @(form:Form[(String,String)])(implicit flash:Flash)
 
-@main("Sign in") {
+@main("Sign in", None) {
 @helper.form(routes.ProfileController.authenticate)      {
 
 @form.globalError.map { error =>

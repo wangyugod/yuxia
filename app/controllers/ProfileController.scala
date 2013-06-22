@@ -22,6 +22,7 @@ trait Users {
   val LOGIN_KEY = "login"
 
   implicit def user(implicit session:Session): Option[Profile] = {
+    println("default user method")
     session.get(LOGIN_KEY) match {
       case Some(login) => Profile.findUserByLogin(login)
       case None => None

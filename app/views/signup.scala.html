@@ -3,7 +3,7 @@
 @import helper._
 @import helper.twitterBootstrap._
 
-@main("Sign up")(user) {
+@main("Sign up", user) {
 
 @println("flashvalue" + flash.get("success"))
 @flash.get("success").map { message =>
