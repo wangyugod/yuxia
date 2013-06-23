@@ -13,16 +13,18 @@ object AppHelper {
 
   def convertBirthdayFromText(date: Option[String]) = date match {
     case (Some(x)) => {
-      val DATE_FORMAT = "yyyy-mm-dd"
+      val DATE_FORMAT = "yyyy-MM-dd"
       val sdf = new java.text.SimpleDateFormat(DATE_FORMAT)
-      Some(new Date(sdf.parse(x).getTime))
+      val d = sdf.parse(x)
+      println("date is " + d)
+      Some(new Date(d.getTime))
     }
     case _ => None
   }
 
   def convertBirthdayToText(birthday: Option[Date]): Option[String] = birthday match {
     case Some(date) => {
-      val DATE_FORMAT = "yyyy-mm-dd"
+      val DATE_FORMAT = "yyyy-MM-dd"
       val sdf = new java.text.SimpleDateFormat(DATE_FORMAT);
       Some(sdf.format(date))
     }

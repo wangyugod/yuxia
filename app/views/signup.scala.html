@@ -1,9 +1,9 @@
-@(profileForm:Form[Profile])(implicit flash:Flash, user:Option[Profile])
+@(profileForm:Form[Profile])(implicit flash:Flash)
 
 @import helper._
 @import helper.twitterBootstrap._
 
-@main("Sign up", user) {
+@main("Sign up", None) {
 
 @println("flashvalue" + flash.get("success"))
 @flash.get("success").map { message =>

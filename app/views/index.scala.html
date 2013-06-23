@@ -1,7 +1,16 @@
-@(message: String)(implicit user:Option[Profile])
+@(message: String, userList:Seq[Profile])(implicit user:Option[Profile])
 
 @main("Welcome to YuXia", user) {
     
-    @play20.welcome(message)
+    <p>This is home page</p>
+     @for(user <- userList){
+        <br>
+         <p>@user.id</p>
+         <p>@user.login</p>
+         <p>@user.name</p>
+         <p>@user.birthDay</p>
+        <br>
+     }
     
 }
+

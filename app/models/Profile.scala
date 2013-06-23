@@ -40,6 +40,10 @@ object Profile{
     println("user id is :" + user.id + " " + s)
   }
 
+  def updateUser(user:Profile) = DBHelper.database.withTransaction{
+    Profiles.where(_.id === user.id).update(user)
+  }
+
   def authenticateUser(login:String, password:String) = {
     DBHelper.database.withSession{
       val result = for(p <- Profiles if(p.login === login && p.password === password)) yield p
@@ -50,6 +54,11 @@ object Profile{
   def findUserByLogin(login: String): Option[Profile] = DBHelper.database.withSession{
     val result = for (p <- Profiles if(p.login === login)) yield p
     result.firstOption()
+  }
+
+  def findAllUsers() = DBHelper.database.withSession{
+    val result = for(p <- Profiles) yield p
+    result.list()
   }
 }
 

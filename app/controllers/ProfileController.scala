@@ -21,7 +21,7 @@ import helper._
 trait Users {
   val LOGIN_KEY = "login"
 
-  implicit def user(implicit session:Session): Option[Profile] = {
+  implicit def user(implicit session: Session): Option[Profile] = {
     println("default user method")
     session.get(LOGIN_KEY) match {
       case Some(login) => Profile.findUserByLogin(login)
@@ -30,7 +30,7 @@ trait Users {
   }
 }
 
-object ProfileController extends Controller with Users{
+object ProfileController extends Controller with Users {
 
 
   val profileForm: Form[Profile] = Form(
@@ -51,6 +51,20 @@ object ProfileController extends Controller with Users{
       ((id, login, passwords, name, gender, birthday) => Profile(id.getOrElse(IdGenerator.generateProfileId), login, passwords._1, name, gender, AppHelper.convertBirthdayFromText(birthday)))
       ((profile: Profile) => {
         Some((Some(profile.id), profile.login, (profile.password, ""), profile.name, profile.gender, AppHelper.convertBirthdayToText(profile.birthDay)))
+      }) //verifying("User with the same loign already exists", profile => ProfileService.findUserByLogin(profile.login).isEmpty)
+  )
+
+  val profileUpdateForm: Form[Profile] = Form(
+    mapping(
+      "id" -> optional(text),
+      "login" -> email,
+      "name" -> nonEmptyText,
+      "gender" -> optional(text),
+      "birthday" -> optional(text.verifying(Constraints.pattern( """(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])""".r, "Date Constraint", "Your input should be in format YYYY-MM-DD")))
+    )
+      ((id, login, name, gender, birthday) => Profile(id.getOrElse(IdGenerator.generateProfileId), login, "", name, gender, AppHelper.convertBirthdayFromText(birthday)))
+      ((profile: Profile) => {
+        Some((Some(profile.id), profile.login, profile.name, profile.gender, AppHelper.convertBirthdayToText(profile.birthDay)))
       }) //verifying("User with the same loign already exists", profile => ProfileService.findUserByLogin(profile.login).isEmpty)
   )
 
@@ -89,11 +103,30 @@ object ProfileController extends Controller with Users{
         BadRequest(html.signup(formWithErrors))
       },
       profile => {
-	    Profile.createUser(profile)
-		Ok("Hello")
-	  }
+        Profile.createUser(profile)
+        Redirect(routes.Application.index()).withSession(LOGIN_KEY -> profile.login)
+      }
     )
+  }
 
+  def update = Action {
+    implicit request => profileUpdateForm.bindFromRequest.fold(
+      formWithErrors => {
+        BadRequest(html.basicInformation(formWithErrors))
+      },
+      profile => {
+        println("profile:" + profile.name)
+        println("profile:" + profile.birthDay)
+        val oldProfile = Profile.findUserByLogin(profile.login).get
+        Profile.updateUser(Profile(profile.id, profile.login, oldProfile.password, profile.name, profile.gender, profile.birthDay))
+        Redirect(routes.Application.index()).withSession(LOGIN_KEY -> profile.login)
+      }
+    )
+  }
+
+  def myAccount = Action {
+    implicit request =>
+      Ok(html.basicInformation(profileUpdateForm))
   }
 
 

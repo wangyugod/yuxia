@@ -1,9 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title></title>
-</head>
-<body>
+@(user: Option[Profile])(content:Html)
+@main("My Account", user){
+    <div id="accountMenu" class="left">
+        <li><a href="#">Basic Information</a></li>
+        <li><a href="#">Order History</a></li>
+    </div>
+    <div id="accountContent" class="right">
+        @content
+    </div>
 
-</body>
-</html>
+}

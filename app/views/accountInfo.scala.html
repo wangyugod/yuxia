@@ -5,14 +5,15 @@
 		    @user match {
 				case Some(user) => {
 				   @user.name
+                   </span>( Not Me? <a href="@routes.ProfileController.login">Click Here</a> )</li>
+                   <li><a href="#">Sign Out</a></li>
+                   <li><a href="@routes.ProfileController.myAccount">My Account</a></li>
 				}
 				case None => {
 				   "Customer"
+                   <li><a href="@routes.ProfileController.login">Sign in</a></li>
+                   <li><a href="@routes.ProfileController.signup">Register</a></li>
 				}
 			}
-        </span>( Not Me? <a href="@routes.ProfileController.login">Click Here</a> )</li>
-        <li><a href="#">Sign Out</a></li>
-        <li><a href="@routes.ProfileController.signup">Register</a></li>
-        <li><a href="#">My Account</a></li>
     </ul>
 </div>
