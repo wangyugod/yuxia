@@ -115,8 +115,6 @@ object ProfileController extends Controller with Users {
         BadRequest(html.basicInformation(formWithErrors))
       },
       profile => {
-        println("profile:" + profile.name)
-        println("profile:" + profile.birthDay)
         val oldProfile = Profile.findUserByLogin(profile.login).get
         Profile.updateUser(Profile(profile.id, profile.login, oldProfile.password, profile.name, profile.gender, profile.birthDay))
         Redirect(routes.Application.index()).withSession(LOGIN_KEY -> profile.login)
@@ -127,6 +125,11 @@ object ProfileController extends Controller with Users {
   def myAccount = Action {
     implicit request =>
       Ok(html.basicInformation(profileUpdateForm))
+  }
+
+  def signout = Action{
+    implicit request =>
+      Redirect(routes.Application.index()).withNewSession
   }
 
 
