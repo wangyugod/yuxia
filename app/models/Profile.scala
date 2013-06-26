@@ -51,7 +51,7 @@ object Profile{
     }
   }
 
-  def findUserByLogin(login: String): Option[Profile] = DBHelper.database.withSession{
+  def findUserByLogin(login: String) = DBHelper.database.withSession{
     val result = for (p <- Profiles if(p.login === login)) yield p
     result.firstOption()
   }
