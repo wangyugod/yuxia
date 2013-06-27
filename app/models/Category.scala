@@ -11,7 +11,7 @@ import java.sql.Date
  */
 case class Category(id:String, name:String, description:String, longDescription:String)
 
-case class Product(id:String, name:String, description:String, longDescription:String, startDate:Date, endDate:Date, merchantId:String, categoryId:String)
+case class Product(id:String, name:String, description:String, longDescription:String, startDate:Date, endDate:Date, merchantId:String, categoryId:String, template:String)
 
 case class Sku(id:String, name:String, description:String, longDescription:String, size:Int, productId:String)
 
