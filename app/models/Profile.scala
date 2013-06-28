@@ -4,7 +4,6 @@ import scala.slick.driver.H2Driver.simple._
 import java.sql.Date
 import play.api.db.DB
 import play.api.Play.current
-import Database.threadLocalSession
 import slick.session.Database
 import scala.Predef._
 import helper.DBHelper
@@ -36,7 +35,7 @@ object Profiles extends Table[Profile]("user"){
 object Profile{
   def createUser(user:Profile) = DBHelper.database.withTransaction{
     println("start creating users")
-    val s = Profiles.insert(user);
+    val s = Profiles.insert(user)
     println("user id is :" + user.id + " " + s)
   }
 
@@ -51,7 +50,7 @@ object Profile{
     }
   }
 
-  def findUserByLogin(login: String) = DBHelper.database.withSession{
+  def findUserByLogin(login: String):Option[Profile] = DBHelper.database.withSession{
     val result = for (p <- Profiles if(p.login === login)) yield p
     result.firstOption()
   }

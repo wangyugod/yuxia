@@ -1,9 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title></title>
-</head>
-<body>
+@(form:Form[(String,String)])(implicit flash:Flash)
 
-</body>
-</html>
+@main("Sign in", None) {
+@helper.form(routes.ProfileController.authenticate)      {
+
+@form.globalError.map { error =>
+<p class="error">
+    @error.message
+</p>
+}
+
+@flash.get("success").map { message =>
+<p class="success">
+    @message
+</p>
+}
+
+<p>
+    <input type="login" name="login" placeholder="Login" id="login" value="@form("login").value">
+</p>
+<p>
+    <input type="password" name="password" id="password" placeholder="Password">
+</p>
+<p>
+    <button type="submit" id="loginbutton">Login</button>
+    <a href="/signup">Sign up</a>
+</p>
+
+}
+}
