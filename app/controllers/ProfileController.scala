@@ -88,7 +88,7 @@ object ProfileController extends Controller with Users {
         formWithErrors => {
           BadRequest(html.login(formWithErrors))
         },
-        user => Ok("Hello World").withSession(LOGIN_KEY -> user._1)
+        user => Redirect(routes.Application.index()).withSession(LOGIN_KEY -> user._1)
       )
   }
 

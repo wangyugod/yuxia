@@ -7,3 +7,13 @@ notme.label=不是我
 signout.label=退出
 clickhere.label=点这里
 myaccount.label=我的帐户
+
+#merchandise
+merch.product.title=商品管理
+product.desc=商品描述
+product.longdesc=商品详情
+product.name=商品标题
+product.startDate=开始日期
+product.endDate=结束日期
+product.category=商品类别
+

@@ -1,0 +1,33 @@
+@(implicit merchant:Option[Merchant])
+
+@merchbase(Messages("merch.product.title"),merchant){
+ @form(action = routes.ProfileController.update) {
+    <input type="hidden" name="id"/>
+    <input type="hidden" name="merchantId"/>
+    <div>
+        <label for="name">@Messages("product.name")</label>
+        <input type="text" id="name"/>
+    </div>
+    <div>
+        <label for="description">@Messages("product.desc")</label>
+        <input type="text" id="description"/>
+    </div>
+    <div>
+        <label for="startDate">@Messages("product.startDate")</label>
+        <input type="text" id="startDate" />
+    </div>
+    <div>
+        <label for="endDate">@Messages("product.endDate")</label>
+        <input type="text" id="endDate" />
+    </div>
+    <div>
+        <label for="categories">@Messages("product.category")</label>
+        <input type="text" id="categories"/>
+        <input type="hidden" id="categoryIds"/>
+    </div>
+    <div class="submit-action">
+        <input type="submit" class="btn primary" value="Update">
+        <a href="@routes.Application.index" class="btn">Cancel</a>
+    </div>
+ }
+}
