@@ -2,7 +2,7 @@
 
 @import helper._
 
-@main(Messages("merch.signup") {
+@merchbase(Messages("merch.signup"), None) {
 
 @println("flashvalue" + flash.get("success"))
 @flash.get("success").map { message =>
@@ -12,7 +12,6 @@
 <script type="text/javascript">
 
 </script>
-
 }
 @form(action = routes.Merchandise.create) {
 <fieldset>
@@ -45,15 +44,7 @@
     @inputText(
     merchantForm("merchantNum"),
     '_label -> "Name",
-    '_help -> "Please choose a valid name."
-    )
-
-    @select(
-    merchantForm("gender"),
-    options = options(("M","Male"), ("F", "Female")),
-    '_default -> "--- Choose a gender ---",
-    '_label -> "Gender",
-    '_error -> merchantForm("gender").error.map(_.withMessage("Please select your gender"))
+    '_help -> "Please choose a valid merchant number."
     )
 
 </fieldset>

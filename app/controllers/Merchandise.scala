@@ -1,12 +1,13 @@
 package controllers
 
 import play.api.mvc._
-import views.html
-import play.api.data.Form
-import models._
+import play.api.data._
 import play.api.data.Forms._
-import helper.{AppHelper, IdGenerator}
-import play.api.data.validation.Constraints
+import validation.Constraints
+import views.html
+
+import models._
+import helper._
 
 /**
  * Created with IntelliJ IDEA.
@@ -73,6 +74,19 @@ object Merchandise extends Controller with Merchants {
       }) //verifying("User with the same loign already exists", profile => ProfileService.findUserByLogin(profile.login).isEmpty)
   )
 
+  def create = Action {
+    implicit request => {
+      merchantForm.bindFromRequest().fold(
+        formWithErrors => {
+          BadRequest(html.merchandise.merchreg(formWithErrors))
+        },
+        merchant => {
+          Ok("hello world")
+        }
+      )
+    }
+  }
+
   def authenticate = Action {
     implicit request => {
       val form = loginForm(request)
@@ -89,7 +103,7 @@ object Merchandise extends Controller with Merchants {
 
 
   def login = Action {
-    implicit request =>{
+    implicit request => {
       val form = loginForm(request)
       Ok(html.merchandise.merchlogin(form))
     }
