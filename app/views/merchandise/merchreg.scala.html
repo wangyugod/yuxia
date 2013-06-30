@@ -1,0 +1,67 @@
+@(merchantForm:Form[Merchant])(implicit flash:Flash)
+
+@import helper._
+
+@main(Messages("merch.signup") {
+
+@println("flashvalue" + flash.get("success"))
+@flash.get("success").map { message =>
+<p class="success">
+    @message
+</p>
+<script type="text/javascript">
+
+</script>
+
+}
+@form(action = routes.Merchandise.create) {
+<fieldset>
+    @inputText(
+    merchantForm("login"),
+    '_label -> "Email",
+    '_help -> "Please choose a valid email.",
+    '_error -> merchantForm.globalError
+    )
+
+    @inputPassword(
+    merchantForm("password.main"),
+    '_label -> "Password",
+    '_help -> "A password must be at least 6 characters. "
+    )
+
+    @inputPassword(
+    merchantForm("password.confirm"),
+    '_label -> "Repeat password",
+    '_help -> "Please repeat your password again.",
+    '_error -> merchantForm.error("password")
+    )
+
+    @inputText(
+    merchantForm("name"),
+    '_label -> "Name",
+    '_help -> "Please choose a valid name."
+    )
+
+    @inputText(
+    merchantForm("merchantNum"),
+    '_label -> "Name",
+    '_help -> "Please choose a valid name."
+    )
+
+    @select(
+    merchantForm("gender"),
+    options = options(("M","Male"), ("F", "Female")),
+    '_default -> "--- Choose a gender ---",
+    '_label -> "Gender",
+    '_error -> merchantForm("gender").error.map(_.withMessage("Please select your gender"))
+    )
+
+</fieldset>
+
+<div class="submit-action">
+    <input type="submit" class="btn primary" value="Sign Up">
+    <a href="@routes.Application.index" class="btn">Cancel</a>
+</div>
+
+}
+}

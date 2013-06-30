@@ -3,6 +3,7 @@ package helper
 import slick.session.Database
 import play.api.db.DB
 import play.api.Play.current
+
 /**
  * Created with IntelliJ IDEA.
  * User: simonwang

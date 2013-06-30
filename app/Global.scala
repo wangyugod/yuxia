@@ -29,7 +29,8 @@ object Global extends GlobalSettings {
     lazy val database = Database.forDataSource(DB.getDataSource())
     database.withSession {
       //Initialize Profile Tables
-      Profiles.ddl.create
+      //Profiles.ddl.create
+      Merchants.ddl.create
 
       /*if (Query(Profiles).list().isEmpty){
         println("Simon is emtpty yet")

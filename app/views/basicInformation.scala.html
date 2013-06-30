@@ -3,7 +3,7 @@
 @import helper._
 @myAccount(user){
 @form(action = routes.ProfileController.update) {
-        <input type="hidden" name="id" value="@user.get.id" />
+<input type="hidden" name="id" value="@user.get.id"/>
 <div>
     <label for="login">Email</label>
     <input type="text" name="login" id="login" value="@user.get.login" readonly/>
@@ -20,15 +20,15 @@
     <label for="gender">Gender</label>
     <select id="gender" name="gender" value="@user.get.gender">
         @user.get.gender match{
-           case Some("M") => {
-            <option value="M" selected>Male</option>
-            <option value="F">Female</option>
-            }
-           case _ =>{
-            <option value="M">Male</option>
-            <option value="F" selected>Female</option>
-            }
-          }
+        case Some("M") => {
+        <option value="M" selected>Male</option>
+        <option value="F">Female</option>
+        }
+        case _ =>{
+        <option value="M">Male</option>
+        <option value="F" selected>Female</option>
+        }
+        }
     </select>
 </div>
 <div class="submit-action">

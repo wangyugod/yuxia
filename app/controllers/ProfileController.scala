@@ -9,6 +9,7 @@ import views.html
 
 import models._
 import helper._
+import play.api.i18n.Messages
 
 /**
  * Created with IntelliJ IDEA.
@@ -51,7 +52,7 @@ object ProfileController extends Controller with Users {
       ((id, login, passwords, name, gender, birthday) => Profile(id.getOrElse(IdGenerator.generateProfileId), login, passwords._1, name, gender, AppHelper.convertBirthdayFromText(birthday)))
       ((profile: Profile) => {
         Some((Some(profile.id), profile.login, (profile.password, ""), profile.name, profile.gender, AppHelper.convertBirthdayToText(profile.birthDay)))
-      }) //verifying("User with the same loign already exists", profile => ProfileService.findUserByLogin(profile.login).isEmpty)
+      }) verifying("User with the same loign already exists", profile => Profile.findUserByLogin(profile.login).isEmpty)
   )
 
   val profileUpdateForm: Form[Profile] = Form(
@@ -72,7 +73,7 @@ object ProfileController extends Controller with Users {
     tuple(
       "login" -> nonEmptyText.verifying(email.constraints.head),
       "password" -> text
-    ) verifying("Invalid login or password", result => result match {
+    ) verifying(Messages("login.failed.msg"), result => result match {
       case (login, password) => Profile.authenticateUser(login, password).isDefined
     })
   )
@@ -127,7 +128,7 @@ object ProfileController extends Controller with Users {
       Ok(html.basicInformation(profileUpdateForm))
   }
 
-  def signout = Action{
+  def signout = Action {
     implicit request =>
       Redirect(routes.Application.index()).withNewSession
   }

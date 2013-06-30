@@ -8,7 +8,7 @@ object Application extends Controller with Users {
 
 
   def index = Action {
-    implicit request =>{
+    implicit request => {
       val users = Profile.findAllUsers()
       Ok(views.html.index(Messages("site.name"), users))
     }

@@ -5,6 +5,7 @@ import java.sql.Date
 import play.api.db.DB
 import play.api.Play.current
 import slick.session.Database
+import Database.threadLocalSession
 import scala.Predef._
 import helper.DBHelper
 
@@ -17,46 +18,52 @@ import helper.DBHelper
  * To change this template use File | Settings | File Templates.
  */
 
-case class Profile(id:String, login: String, password: String, name: String, gender: Option[String], birthDay: Option[Date])
+case class Profile(id: String, login: String, password: String, name: String, gender: Option[String], birthDay: Option[Date])
 
-object Profiles extends Table[Profile]("user"){
+object Profiles extends Table[Profile]("user") {
   def id = column[String]("id", O.PrimaryKey)
+
   def login = column[String]("login")
+
   def password = column[String]("password")
+
   def name = column[String]("name")
+
   def gender = column[Option[String]]("gender")
+
   def birthday = column[Option[Date]]("birthday")
-  def * = id ~ login ~ password ~ name ~ gender ~ birthday <> (
-      (id, login, password, name, gender, birthday) => Profile(id, login, password, name, gender, birthday),
-      (p:Profile) => Some(p.id, p.login, p.password, p.name, p.gender, p.birthDay)
+
+  def * = id ~ login ~ password ~ name ~ gender ~ birthday <>(
+    (id, login, password, name, gender, birthday) => Profile(id, login, password, name, gender, birthday),
+    (p: Profile) => Some(p.id, p.login, p.password, p.name, p.gender, p.birthDay)
     )
 }
 
-object Profile{
-  def createUser(user:Profile) = DBHelper.database.withTransaction{
+object Profile {
+  def createUser(user: Profile) = DBHelper.database.withTransaction {
     println("start creating users")
     val s = Profiles.insert(user)
     println("user id is :" + user.id + " " + s)
   }
 
-  def updateUser(user:Profile) = DBHelper.database.withTransaction{
+  def updateUser(user: Profile) = DBHelper.database.withTransaction {
     Profiles.where(_.id === user.id).update(user)
   }
 
-  def authenticateUser(login:String, password:String) = {
-    DBHelper.database.withSession{
-      val result = for(p <- Profiles if(p.login === login && p.password === password)) yield p
+  def authenticateUser(login: String, password: String) = {
+    DBHelper.database.withSession {
+      val result = for (p <- Profiles if (p.login === login && p.password === password)) yield p
       result.firstOption()
     }
   }
 
-  def findUserByLogin(login: String):Option[Profile] = DBHelper.database.withSession{
-    val result = for (p <- Profiles if(p.login === login)) yield p
+  def findUserByLogin(login: String): Option[Profile] = DBHelper.database.withSession {
+    val result = for (p <- Profiles if (p.login === login)) yield p
     result.firstOption()
   }
 
-  def findAllUsers() = DBHelper.database.withSession{
-    val result = for(p <- Profiles) yield p
+  def findAllUsers() = DBHelper.database.withSession {
+    val result = for (p <- Profiles) yield p
     result.list()
   }
 }

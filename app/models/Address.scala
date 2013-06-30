@@ -7,4 +7,4 @@ package models
  * Time: 5:31 PM
  * To change this template use File | Settings | File Templates.
  */
-case class Address(id:String, province:String, city:String, district:String, contactPhone:String, addressLine:String, contactPerson:String)
+case class Address(id: String, province: String, city: String, district: String, contactPhone: String, addressLine: String, contactPerson: String)

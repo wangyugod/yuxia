@@ -1,7 +1,7 @@
 @(form:Form[(String,String)])(implicit flash:Flash)
 
-@main("Sign in", None) {
-@helper.form(routes.ProfileController.authenticate)      {
+@merchbase(Messages("merch.login"), None) {
+@helper.form(routes.Merchandise.authenticate)      {
 
 @form.globalError.map { error =>
 <p class="error">
@@ -16,14 +16,14 @@
 }
 
 <p>
-    <input type="login" name="login" placeholder="Login" id="login" value="@form("login").value">
+    <input type="login" name="login" placeholder="Login" id="login" value="@form(" login").value">
 </p>
 <p>
     <input type="password" name="password" id="password" placeholder="Password">
 </p>
 <p>
-    <button type="submit" id="loginbutton">Login</button>
-    <a href="/signup">Sign up</a>
+    <button type="submit" id="loginbutton">@Messages("merch.login")</button>
+    <a href="/signup">@Messages("merch.signup")</a>
 </p>
 
 }
