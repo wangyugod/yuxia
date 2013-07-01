@@ -1,10 +1,10 @@
-@(implicit merchant:Option[Merchant])
+@(productForm:Form[(Product,String)])(implicit merchant:Option[Merchant])
 
 @import helper._
 @merchbase(Messages("merch.product.title"),merchant){
-@form(action = routes.Merchandise.addProduct) {
+@form(action = routes.Merchandise.create) {
 <input type="hidden" name="id"/>
-<input type="hidden" name="merchantId" value="@merchant.id"/>
+<input type="hidden" name="merchantId" value="@merchant.get.id"/>
 <div>
     <label for="name">@Messages("product.name")</label>
     <input type="text" id="name"/>

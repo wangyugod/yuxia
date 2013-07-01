@@ -24,7 +24,7 @@ trait Merchants {
   val MERCHANT_ID = "merch_id"
 
   implicit def merchant(implicit session: Session): Option[Merchant] = {
-    println("default user method")
+    println("current session is " + session)
     session.get(MERCHANT_LOGIN) match {
       case Some(login) => Some(Merchant(session.get(MERCHANT_ID).get, session.get(MERCHANT_LOGIN).get, "", session.get(MERCHANT_NUMBER).get, session.get(MERCHANT_NAME).get))
       case None => None
@@ -45,7 +45,8 @@ object Merchandise extends Controller with Merchants {
 
         //        request.session
         if (loginMerchant.isDefined) {
-          request.session +(MERCHANT_ID, loginMerchant.get.id) +(MERCHANT_NAME, loginMerchant.get.name) +(MERCHANT_NUMBER, loginMerchant.get.merchantNum) +(MERCHANT_LOGIN, loginMerchant.get.login)
+          request.session +(MERCHANT_ID -> loginMerchant.get.id) +(MERCHANT_NAME -> loginMerchant.get.name) +(MERCHANT_NUMBER ->  loginMerchant.get.merchantNum) + (MERCHANT_LOGIN -> loginMerchant.get.login)
+          println("current session111 is " + request.session)
           true
         } else {
           false
@@ -82,7 +83,8 @@ object Merchandise extends Controller with Merchants {
         },
         merchant => {
           Merchant.create(merchant)
-          Ok(html.merchandise.merchreg(merchantForm.fill(merchant)))
+          merchantForm.fill(merchant)
+          Redirect(routes.Merchandise.signup())
         }
       )
     }

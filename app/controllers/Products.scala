@@ -17,7 +17,7 @@ import helper._
  */
 object Products extends Controller with Merchants {
 
-  val productForm = Form(
+  val productForm:Form[(Product, String)]= Form(
     mapping(
       "id" -> optional(text),
       "merchantId" -> text,
@@ -27,19 +27,28 @@ object Products extends Controller with Merchants {
       "startDate" -> text,
       "endDate" -> text,
       "categories" -> text
-    )((id, merchantId, name, description, longDescription, startDate, endDate, categories) => (Product(id.getOrElse(IdGenerator.generateProfileId()), name, description, longDescription, AppHelper.convertBirthdayFromText(Some(startDate)).get, AppHelper.convertBirthdayFromText(Some(endDate)).get, merchantId, ""), categories))
-      ((x:(Product,String)) => Some(Some(x._1.id), x._1.merchantId, x._1.name, x._1.description, x._1.longDescription, AppHelper.convertBirthdayToText(Some(x._1.startDate)).get, AppHelper.convertBirthdayToText(Some(x._1.endDate)).get, x._2))
+    )((id, merchantId, name, description, longDescription, startDate, endDate, categories) => (Product(id.getOrElse(IdGenerator.generateProfileId()), name, description, longDescription, AppHelper.convertDateFromText(Some(startDate)).get, AppHelper.convertDateFromText(Some(endDate)).get, merchantId), categories))
+      ((x: (Product, String)) => Some(Some(x._1.id), x._1.merchantId, x._1.name, x._1.description, x._1.longDescription, AppHelper.convertDateToText(Some(x._1.startDate)).get, AppHelper.convertDateToText(Some(x._1.endDate)).get, x._2))
   )
 
   def newProduct = Action {
     implicit request => {
-      Ok(html.merchandise.product)
+      Ok(html.merchandise.product(productForm))
     }
   }
 
   def create = Action {
     implicit request => {
-      Ok("Create Successfully")
+      productForm.bindFromRequest().fold(
+        formWithErrors => BadRequest(html.merchandise.product(formWithErrors)),
+        form => {
+          val catIds = form._2.split(",")
+          Product.create(form._1, catIds)
+          productForm.fill(form)
+          Redirect(routes.Products.newProduct())
+        }
+      )
+
     }
   }
 

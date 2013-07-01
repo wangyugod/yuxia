@@ -11,7 +11,7 @@ import java.sql.Date
  */
 object AppHelper {
 
-  def convertBirthdayFromText(date: Option[String]) = date match {
+  def convertDateFromText(date: Option[String]) = date match {
     case (Some(x)) => {
       val DATE_FORMAT = "yyyy-MM-dd"
       val sdf = new java.text.SimpleDateFormat(DATE_FORMAT)
@@ -22,7 +22,7 @@ object AppHelper {
     case _ => None
   }
 
-  def convertBirthdayToText(birthday: Option[Date]): Option[String] = birthday match {
+  def convertDateToText(birthday: Option[Date]): Option[String] = birthday match {
     case Some(date) => {
       val DATE_FORMAT = "yyyy-MM-dd"
       val sdf = new java.text.SimpleDateFormat(DATE_FORMAT);

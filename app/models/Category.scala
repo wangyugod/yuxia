@@ -18,7 +18,7 @@ import scala.slick.driver.H2Driver.simple._
  */
 case class Category(id: String, name: String, description: String, longDescription: String)
 
-case class Product(id: String, name: String, description: String, longDescription: String, startDate: Date, endDate: Date, merchantId: String, template: String)
+case class Product(id: String, name: String, description: String, longDescription: String, startDate: Date, endDate: Date, merchantId: String)
 
 case class ProductCategory(productId: String, categoryId: String)
 
@@ -30,13 +30,40 @@ case class Media(id: String, name: String, description: String, url: String)
 
 
 object Products extends Table[Product]("product") {
-  def id = column[String]("id")
+  def id = column[String]("id", O.PrimaryKey)
+
   def name = column[String]("name")
+
   def description = column[String]("description")
+
   def longDescription = column[String]("long_desc")
+
   def startDate = column[Date]("start_date")
+
   def endDate = column[Date]("end_date")
+
   def merchantId = column[String]("merchant_id")
+
+  def * = id ~ name ~ description ~ longDescription ~ startDate ~ endDate ~ merchantId <>(
+    (id, name, description, longDescription, startDate, endDate, merchantId) => Product(id, name, description, longDescription, startDate, endDate, merchantId),
+    (p: Product) => Some(p.id, p.name, p.description, p.longDescription, p.startDate, p.endDate, p.merchantId)
+  )
+}
+
+object ProductCategories extends Table[ProductCategory]("product_category"){
+  def productId = column[String]("prod_id")
+  def categoryId = column[String]("category_id")
+  def * = productId ~ categoryId <> (ProductCategory, ProductCategory.unapply(_))
+  def pk = primaryKey("prod_cat_pk", (productId, categoryId))
+}
+
+object Product{
+  def create(p:Product, categoryIds:Seq[String]) = DBHelper.database.withTransaction{
+    Products.insert(p)
+    for(catId <- categoryIds){
+      ProductCategories.insert(ProductCategory(p.id, catId))
+    }
+  }
 
 
 }

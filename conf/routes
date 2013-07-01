@@ -14,7 +14,9 @@ GET     /signout                    controllers.ProfileController.signout
 GET     /merch/login                controllers.Merchandise.login
 POST    /merch/login                controllers.Merchandise.authenticate
 GET     /merch/signup               controllers.Merchandise.signup
-POST     /merch/signup               controllers.Merchandise.create
+POST    /merch/signup               controllers.Merchandise.create
+GET     /merch/prod/newprod         controllers.Products.newProduct
+POST    /merch/prod/create          controllers.Products.create
 
 
 # Map static resources from the /public folder to the /assets URL path

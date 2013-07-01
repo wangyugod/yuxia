@@ -48,9 +48,9 @@ object ProfileController extends Controller with Users {
       "gender" -> optional(text),
       "birthday" -> optional(text.verifying(Constraints.pattern( """(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])""".r, "Date Constraint", "Your input should be in format YYYY-MM-DD")))
     )
-      ((id, login, passwords, name, gender, birthday) => Profile(id.getOrElse(IdGenerator.generateProfileId), login, passwords._1, name, gender, AppHelper.convertBirthdayFromText(birthday)))
+      ((id, login, passwords, name, gender, birthday) => Profile(id.getOrElse(IdGenerator.generateProfileId), login, passwords._1, name, gender, AppHelper.convertDateFromText(birthday)))
       ((profile: Profile) => {
-        Some((Some(profile.id), profile.login, (profile.password, ""), profile.name, profile.gender, AppHelper.convertBirthdayToText(profile.birthDay)))
+        Some((Some(profile.id), profile.login, (profile.password, ""), profile.name, profile.gender, AppHelper.convertDateToText(profile.birthDay)))
       }) verifying("User with the same loign already exists", profile => Profile.findUserByLogin(profile.login).isEmpty)
   )
 
@@ -62,9 +62,9 @@ object ProfileController extends Controller with Users {
       "gender" -> optional(text),
       "birthday" -> optional(text.verifying(Constraints.pattern( """(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])""".r, "Date Constraint", "Your input should be in format YYYY-MM-DD")))
     )
-      ((id, login, name, gender, birthday) => Profile(id.getOrElse(IdGenerator.generateProfileId), login, "", name, gender, AppHelper.convertBirthdayFromText(birthday)))
+      ((id, login, name, gender, birthday) => Profile(id.getOrElse(IdGenerator.generateProfileId), login, "", name, gender, AppHelper.convertDateFromText(birthday)))
       ((profile: Profile) => {
-        Some((Some(profile.id), profile.login, profile.name, profile.gender, AppHelper.convertBirthdayToText(profile.birthDay)))
+        Some((Some(profile.id), profile.login, profile.name, profile.gender, AppHelper.convertDateToText(profile.birthDay)))
       }) //verifying("User with the same loign already exists", profile => ProfileService.findUserByLogin(profile.login).isEmpty)
   )
 
