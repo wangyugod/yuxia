@@ -37,5 +37,11 @@ object Products extends Controller with Merchants {
     }
   }
 
+  def create = Action {
+    implicit request => {
+      Ok("Create Successfully")
+    }
+  }
+
 
 }
