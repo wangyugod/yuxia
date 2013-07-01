@@ -71,7 +71,7 @@ object Merchandise extends Controller with Merchants {
       ((id, login, passwords, name, merchantNum) => Merchant(id.getOrElse(IdGenerator.generateProfileId), login, passwords._1, name, merchantNum.getOrElse("")))
       ((merchant: Merchant) => {
         Some(Some(merchant.id), merchant.login, (merchant.password, ""), merchant.name, Some(merchant.merchantNum))
-      }) //verifying("User with the same loign already exists", profile => ProfileService.findUserByLogin(profile.login).isEmpty)
+      }) verifying("User with the same loign already exists", profile => Merchant.findByLogin(profile.login).isEmpty)
   )
 
   def create = Action {
@@ -81,7 +81,8 @@ object Merchandise extends Controller with Merchants {
           BadRequest(html.merchandise.merchreg(formWithErrors))
         },
         merchant => {
-          Ok("hello world")
+          Merchant.create(merchant)
+          Ok(html.merchandise.merchreg(merchantForm.fill(merchant)))
         }
       )
     }
@@ -106,6 +107,12 @@ object Merchandise extends Controller with Merchants {
     implicit request => {
       val form = loginForm(request)
       Ok(html.merchandise.merchlogin(form))
+    }
+  }
+
+  def signup = Action {
+    implicit request => {
+      Ok(html.merchandise.merchreg(merchantForm))
     }
   }
 

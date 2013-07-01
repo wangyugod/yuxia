@@ -41,9 +41,7 @@ object Profiles extends Table[Profile]("user") {
 
 object Profile {
   def createUser(user: Profile) = DBHelper.database.withTransaction {
-    println("start creating users")
-    val s = Profiles.insert(user)
-    println("user id is :" + user.id + " " + s)
+    Profiles.insert(user)
   }
 
   def updateUser(user: Profile) = DBHelper.database.withTransaction {

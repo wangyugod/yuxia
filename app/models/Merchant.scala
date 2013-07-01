@@ -43,6 +43,18 @@ object Merchant {
       result.firstOption()
     }
   }
+
+  def create(merchant:Merchant) = {
+    DBHelper.database.withTransaction{
+      Merchants.insert(merchant)
+    }
+  }
+
+  def findByLogin(login:String): Option[Merchant] = {
+    DBHelper.database.withSession{
+      Query(Merchants).where(_.login === login).firstOption
+    }
+  }
 }
 
 

@@ -13,6 +13,8 @@ POST    /myaccount                  controllers.ProfileController.update
 GET     /signout                    controllers.ProfileController.signout
 GET     /merch/login                controllers.Merchandise.login
 POST    /merch/login                controllers.Merchandise.authenticate
+GET     /merch/signup               controllers.Merchandise.signup
+POST     /merch/signup               controllers.Merchandise.create
 
 
 # Map static resources from the /public folder to the /assets URL path

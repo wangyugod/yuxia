@@ -2,9 +2,9 @@
 
 @import helper._
 @merchbase(Messages("merch.product.title"),merchant){
-@form(action = routes.ProfileController.update) {
+@form(action = routes.Merchandise.addProduct) {
 <input type="hidden" name="id"/>
-<input type="hidden" name="merchantId"/>
+<input type="hidden" name="merchantId" value="@merchant.id"/>
 <div>
     <label for="name">@Messages("product.name")</label>
     <input type="text" id="name"/>
@@ -12,6 +12,10 @@
 <div>
     <label for="description">@Messages("product.desc")</label>
     <input type="text" id="description"/>
+</div>
+<div>
+    <label for="longDescription">@Messages("product.longdesc")</label>
+    <input type="text" id="longDescription"/>
 </div>
 <div>
     <label for="startDate">@Messages("product.startDate")</label>
