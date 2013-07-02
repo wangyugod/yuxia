@@ -3,15 +3,9 @@
 @merchbase(Messages("merch.login"), None) {
 @helper.form(routes.Merchandise.authenticate)      {
 
-@form.globalError.map { error =>
+@form.errors.map { error =>
 <p class="error">
     @error.message
-</p>
-}
-
-@flash.get("success").map { message =>
-<p class="success">
-    @message
 </p>
 }
 
