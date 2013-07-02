@@ -57,6 +57,21 @@ object ProductCategories extends Table[ProductCategory]("product_category"){
   def pk = primaryKey("prod_cat_pk", (productId, categoryId))
 }
 
+object Categories extends Table[Category]("category"){
+  def id = column[String]("id", O.PrimaryKey)
+
+  def name = column[String]("name")
+
+  def description = column[String]("description")
+
+  def longDescription = column[String]("long_desc")
+
+  def * = id ~ name ~ description ~ longDescription <>(
+    (id, name, description, longDescription) => Category(id, name, description, longDescription),
+    (cat: Category) => Some(cat.id, cat.name, cat.description, cat.longDescription)
+  )
+}
+
 object Product{
   def create(p:Product, categoryIds:Seq[String]) = DBHelper.database.withTransaction{
     Products.insert(p)
