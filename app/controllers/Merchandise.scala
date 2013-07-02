@@ -35,24 +35,11 @@ trait Merchants {
 object Merchandise extends Controller with Merchants {
 
 
-  def loginForm(request: Request[_]): Form[(String, String)] = Form(
+  val loginForm: Form[(String, String)] = Form(
     tuple(
       "login" -> nonEmptyText.verifying(email.constraints.head),
-      "password" -> text
-    ) verifying("Invalid login or password", result => result match {
-      case (login, password) => {
-        val loginMerchant = Merchant.authenticateUser(login, password)
-
-        //        request.session
-        if (loginMerchant.isDefined) {
-          request.session +(MERCHANT_ID -> loginMerchant.get.id) +(MERCHANT_NAME -> loginMerchant.get.name) +(MERCHANT_NUMBER ->  loginMerchant.get.merchantNum) + (MERCHANT_LOGIN -> loginMerchant.get.login)
-          println("current session111 is " + request.session)
-          true
-        } else {
-          false
-        }
-      }
-    })
+      "password" -> nonEmptyText
+    )
   )
 
   val merchantForm: Form[Merchant] = Form(
@@ -92,13 +79,17 @@ object Merchandise extends Controller with Merchants {
 
   def authenticate = Action {
     implicit request => {
-      val form = loginForm(request)
-      form.bindFromRequest().fold(
+      loginForm.bindFromRequest().fold(
         formWithErrors => {
-          BadRequest(html.login(formWithErrors))
+          BadRequest(html.merchandise.merchlogin(formWithErrors))
         },
         merchant => {
-          Redirect(routes.Application.index()).withSession(MERCHANT_LOGIN -> merchant._1)
+          val loginMerchant = Merchant.authenticateUser(merchant._1, merchant._2)
+          if(loginMerchant.isDefined){
+            Redirect(routes.Application.index()).withSession(MERCHANT_LOGIN -> merchant._1, MERCHANT_ID -> loginMerchant.get.id, MERCHANT_NAME -> loginMerchant.get.name, MERCHANT_NUMBER ->  loginMerchant.get.merchantNum)
+          } else {
+            BadRequest(html.merchandise.merchlogin(loginForm))
+          }
         }
       )
     }
@@ -107,8 +98,7 @@ object Merchandise extends Controller with Merchants {
 
   def login = Action {
     implicit request => {
-      val form = loginForm(request)
-      Ok(html.merchandise.merchlogin(form))
+      Ok(html.merchandise.merchlogin(loginForm))
     }
   }
 
