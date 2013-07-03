@@ -47,17 +47,20 @@ object Products extends Table[Product]("product") {
   def * = id ~ name ~ description ~ longDescription ~ startDate ~ endDate ~ merchantId <>(
     (id, name, description, longDescription, startDate, endDate, merchantId) => Product(id, name, description, longDescription, startDate, endDate, merchantId),
     (p: Product) => Some(p.id, p.name, p.description, p.longDescription, p.startDate, p.endDate, p.merchantId)
-  )
+    )
 }
 
-object ProductCategories extends Table[ProductCategory]("product_category"){
+object ProductCategories extends Table[ProductCategory]("product_category") {
   def productId = column[String]("prod_id")
+
   def categoryId = column[String]("category_id")
-  def * = productId ~ categoryId <> (ProductCategory, ProductCategory.unapply(_))
+
+  def * = productId ~ categoryId <>(ProductCategory, ProductCategory.unapply(_))
+
   def pk = primaryKey("prod_cat_pk", (productId, categoryId))
 }
 
-object Categories extends Table[Category]("category"){
+object Categories extends Table[Category]("category") {
   def id = column[String]("id", O.PrimaryKey)
 
   def name = column[String]("name")
@@ -69,15 +72,20 @@ object Categories extends Table[Category]("category"){
   def * = id ~ name ~ description ~ longDescription <>(
     (id, name, description, longDescription) => Category(id, name, description, longDescription),
     (cat: Category) => Some(cat.id, cat.name, cat.description, cat.longDescription)
-  )
+    )
 }
 
-object Product{
-  def create(p:Product, categoryIds:Seq[String]) = DBHelper.database.withTransaction{
+object Product {
+  def create(p: Product, categoryIds: Seq[String]) = DBHelper.database.withTransaction {
     Products.insert(p)
-    for(catId <- categoryIds){
+    for (catId <- categoryIds) {
       ProductCategories.insert(ProductCategory(p.id, catId))
     }
+  }
+
+
+  def findByMerchantId(merchantId: String) = DBHelper.database.withSession {
+    Query(Products).where(_.merchantId === merchantId).list()
   }
 
 

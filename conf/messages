@@ -20,4 +20,6 @@ product.name=商品标题
 product.startDate=开始日期
 product.endDate=结束日期
 product.category=商品类别
+product.add=添加
+merch.newproduct=新增商品
 

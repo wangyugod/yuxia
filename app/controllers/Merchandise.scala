@@ -86,9 +86,8 @@ object Merchandise extends Controller with Merchants {
         merchant => {
           val loginMerchant = Merchant.authenticateUser(merchant._1, merchant._2)
           if(loginMerchant.isDefined){
-            Redirect(routes.Application.index()).withSession(MERCHANT_LOGIN -> merchant._1, MERCHANT_ID -> loginMerchant.get.id, MERCHANT_NAME -> loginMerchant.get.name, MERCHANT_NUMBER ->  loginMerchant.get.merchantNum)
+            Redirect(routes.Products.list()).withSession(MERCHANT_LOGIN -> merchant._1, MERCHANT_ID -> loginMerchant.get.id, MERCHANT_NAME -> loginMerchant.get.name, MERCHANT_NUMBER ->  loginMerchant.get.merchantNum)
           } else {
-
             BadRequest(html.merchandise.merchlogin(loginForm.withError("error", "invalid login or password")))
           }
         }

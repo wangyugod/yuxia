@@ -1,0 +1,10 @@
+@(products: Seq[Product])(implicit merchant:Option[Merchant])
+
+@import helper._
+@merchbase(Messages("merch.product.title"),merchant){
+    @form(action = routes.Products.create) {
+        @for(product <- products) {
+            <li>@product.id, @product.name, @product.description </li>
+        }
+    }
+}
