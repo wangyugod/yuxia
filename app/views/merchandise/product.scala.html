@@ -2,10 +2,63 @@
 
 @import helper._
 @merchbase(Messages("merch.product.title"),merchant){
-@form(action = routes.Merchandise.create) {
+
+@productForm.errors.map { error =>
+<p class="error">
+    @error.message
+</p>
+}
+
+@form(action = routes.Products.create) {
+<fieldset>
+    @inputText(
+    profileForm("login"),
+    '_label -> "Username",
+    '_help -> "Please choose a valid username.",
+    '_error -> profileForm.globalError
+    )
+
+    @inputText(
+    profileForm("login"),
+    '_label -> "Username",
+    '_help -> "Please choose a valid username.",
+    '_error -> profileForm.globalError
+    )
+
+    @inputText(
+    profileForm("login"),
+    '_label -> "Username",
+    '_help -> "Please choose a valid username.",
+    '_error -> profileForm.globalError
+    )
+
+    @inputText(
+    profileForm("login"),
+    '_label -> "Username",
+    '_help -> "Please choose a valid username.",
+    '_error -> profileForm.globalError
+    )
+
+    @inputText(
+    profileForm("login"),
+    '_label -> "Username",
+    '_help -> "Please choose a valid username.",
+    '_error -> profileForm.globalError
+    )
+
+    @inputText(
+    profileForm("login"),
+    '_label -> "Username",
+    '_help -> "Please choose a valid username.",
+    '_error -> profileForm.globalError
+    )
+
+
+</fieldset>
 <input type="hidden" name="id"/>
 <input type="hidden" name="merchantId" value="@merchant.get.id"/>
 <div>
+    @input
     <label for="name">@Messages("product.name")</label>
     <input type="text" id="name"/>
 </div>
@@ -31,7 +84,7 @@
     <input type="hidden" id="categoryIds"/>
 </div>
 <div class="submit-action">
-    <input type="submit" class="btn primary" value="Update">
+    <input type="submit" class="btn primary" value="@Messages("product.add")">
     <a href="@routes.Application.index" class="btn">Cancel</a>
 </div>
 }

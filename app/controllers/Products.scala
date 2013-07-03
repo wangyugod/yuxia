@@ -48,7 +48,13 @@ object Products extends Controller with Merchants {
           Redirect(routes.Products.newProduct())
         }
       )
+    }
+  }
 
+  def list = Action {
+    implicit request => {
+      val merchantId = request.session.get(MERCHANT_ID).get
+      Ok(html.merchandise.productlist(Product.findByMerchantId(merchantId)))
     }
   }
 

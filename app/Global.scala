@@ -30,7 +30,10 @@ object Global extends GlobalSettings {
     database.withSession {
       //Initialize Profile Tables
       //Profiles.ddl.create
-      Merchants.ddl.create
+      //Merchants.ddl.create
+      Products.ddl.create
+      ProductCategories.ddl.create
+      Categories.ddl.create
 
       /*if (Query(Profiles).list().isEmpty){
         println("Simon is emtpty yet")
@@ -41,6 +44,6 @@ object Global extends GlobalSettings {
 
   override def onStart(app: Application) {
     println("start loading")
-    //initializeTable()
+//    initializeTable()
   }
 }
