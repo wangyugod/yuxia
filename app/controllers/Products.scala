@@ -40,7 +40,10 @@ object Products extends Controller with Merchants {
   def create = Action {
     implicit request => {
       productForm.bindFromRequest().fold(
-        formWithErrors => BadRequest(html.merchandise.product(formWithErrors)),
+        formWithErrors =>{
+          println("form is " + formWithErrors)
+          BadRequest(html.merchandise.product(formWithErrors))
+        },
         form => {
           val catIds = form._2.split(",")
           Product.create(form._1, catIds)

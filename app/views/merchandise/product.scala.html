@@ -11,78 +11,51 @@
 
 @form(action = routes.Products.create) {
 <fieldset>
+    @defining(productForm("merchantId")) { uidField =>
+    <input type="hidden" name="@uidField.name" id="@uidField.id" value="@uidField.value">
+    }
+    @defining(productForm("id")) { uidField =>
+    <input type="hidden" name="@uidField.name" id="@uidField.id" value="@uidField.value">
+    }
+
     @inputText(
-    profileForm("login"),
-    '_label -> "Username",
-    '_help -> "Please choose a valid username.",
-    '_error -> profileForm.globalError
+    productForm("name"),
+    '_label -> Messages("product.name"),
+    '_error -> productForm.globalError
     )
 
     @inputText(
-    profileForm("login"),
-    '_label -> "Username",
-    '_help -> "Please choose a valid username.",
-    '_error -> profileForm.globalError
+    productForm("description"),
+    '_label -> Messages("product.desc"),
+    '_error -> productForm.globalError
     )
 
     @inputText(
-    profileForm("login"),
-    '_label -> "Username",
-    '_help -> "Please choose a valid username.",
-    '_error -> profileForm.globalError
+    productForm("longDescription"),
+    '_label -> Messages("product.longdesc"),
+    '_error -> productForm.globalError
     )
 
     @inputText(
-    profileForm("login"),
-    '_label -> "Username",
-    '_help -> "Please choose a valid username.",
-    '_error -> profileForm.globalError
+    productForm("login"),
+    '_label -> Messages("product.startDate"),
+    '_error -> productForm.globalError
     )
 
     @inputText(
-    profileForm("login"),
-    '_label -> "Username",
-    '_help -> "Please choose a valid username.",
-    '_error -> profileForm.globalError
+    productForm("startDate"),
+    '_label -> Messages("product.endDate"),
+    '_error -> productForm.globalError
     )
 
     @inputText(
-    profileForm("login"),
-    '_label -> "Username",
-    '_help -> "Please choose a valid username.",
-    '_error -> profileForm.globalError
+    productForm("categories"),
+    '_label -> Messages("product.category"),
+    '_error -> productForm.globalError
     )
 
 
 </fieldset>
-<input type="hidden" name="id"/>
-<input type="hidden" name="merchantId" value="@merchant.get.id"/>
-<div>
-    @input
-    <label for="name">@Messages("product.name")</label>
-    <input type="text" id="name"/>
-</div>
-<div>
-    <label for="description">@Messages("product.desc")</label>
-    <input type="text" id="description"/>
-</div>
-<div>
-    <label for="longDescription">@Messages("product.longdesc")</label>
-    <input type="text" id="longDescription"/>
-</div>
-<div>
-    <label for="startDate">@Messages("product.startDate")</label>
-    <input type="text" id="startDate"/>
-</div>
-<div>
-    <label for="endDate">@Messages("product.endDate")</label>
-    <input type="text" id="endDate"/>
-</div>
-<div>
-    <label for="categories">@Messages("product.category")</label>
-    <input type="text" id="categories"/>
-    <input type="hidden" id="categoryIds"/>
-</div>
 <div class="submit-action">
     <input type="submit" class="btn primary" value="@Messages("product.add")">
     <a href="@routes.Application.index" class="btn">Cancel</a>
