@@ -1,4 +1,4 @@
-@(productForm:Form[(Product,String)])(implicit merchant:Option[Merchant])
+@(productForm:Form[Product])(implicit merchant:Option[Merchant])
 
 @import helper._
 @merchbase(Messages("merch.product.title"),merchant){

@@ -18,7 +18,9 @@ import scala.slick.driver.H2Driver.simple._
  */
 case class Category(id: String, name: String, description: String, longDescription: String)
 
-case class Product(id: String, name: String, description: String, longDescription: String, startDate: Date, endDate: Date, merchantId: String)
+case class Product(id: String, name: String, description: String, longDescription: String, startDate: Date, endDate: Date, merchantId: String){
+  var categories = ""
+}
 
 case class ProductCategory(productId: String, categoryId: String)
 

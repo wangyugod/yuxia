@@ -17,7 +17,7 @@ import helper._
  */
 object Products extends Controller with Merchants {
 
-  val productForm:Form[(Product, String)]= Form(
+  val productForm:Form[Product]= Form(
     mapping(
       "id" -> optional(text),
       "merchantId" -> text,
@@ -27,8 +27,12 @@ object Products extends Controller with Merchants {
       "startDate" -> text,
       "endDate" -> text,
       "categories" -> text
-    )((id, merchantId, name, description, longDescription, startDate, endDate, categories) => (Product(id.getOrElse(IdGenerator.generateProfileId()), name, description, longDescription, AppHelper.convertDateFromText(Some(startDate)).get, AppHelper.convertDateFromText(Some(endDate)).get, merchantId), categories))
-      ((x: (Product, String)) => Some(Some(x._1.id), x._1.merchantId, x._1.name, x._1.description, x._1.longDescription, AppHelper.convertDateToText(Some(x._1.startDate)).get, AppHelper.convertDateToText(Some(x._1.endDate)).get, x._2))
+    )((id, merchantId, name, description, longDescription, startDate, endDate, categories) => {
+      val prod =  Product(id.getOrElse(IdGenerator.generateProfileId()), name, description, longDescription, AppHelper.convertDateFromText(Some(startDate)).get, AppHelper.convertDateFromText(Some(endDate)).get, merchantId)
+      prod.categories = categories
+      prod
+    })
+      ((x: Product) => Some(Some(x.id), x.merchantId, x.name, x.description, x.longDescription, AppHelper.convertDateToText(Some(x.startDate)).get, AppHelper.convertDateToText(Some(x.endDate)).get, x.categories))
   )
 
   def newProduct = Action {
@@ -45,8 +49,8 @@ object Products extends Controller with Merchants {
           BadRequest(html.merchandise.product(formWithErrors))
         },
         form => {
-          val catIds = form._2.split(",")
-          Product.create(form._1, catIds)
+          val catIds = form.categories.split(",")
+          Product.create(form, catIds)
           productForm.fill(form)
           Redirect(routes.Products.newProduct())
         }
