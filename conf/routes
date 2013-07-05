@@ -20,6 +20,8 @@ GET     /merch/prod/newprod         controllers.Products.newProduct
 POST    /merch/prod/create          controllers.Products.create
 GET     /merch/prod/list            controllers.Products.list
 GET     /merch/prod/:id             controllers.Products.get(id)
+POST    /merch/prod                 controllers.Products.update
+DELETE  /merch/prod/:id             controllers.Products.delete(id)
 
 
 # Map static resources from the /public folder to the /assets URL path

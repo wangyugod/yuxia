@@ -9,6 +9,20 @@
 </p>
 }
 
+<SCRIPT LANGUAGE="JavaScript">
+    function delete() = {
+        if(confirm('@Messages("product.delete.confirm")')){
+            $.ajax{
+                url:@routes.Products.delete(merchant.get.id),
+                type:"DELETE,
+                success: function(result){
+                    alert(result)
+                }
+            }
+        }
+    }
+</SCRIPT>
+
 @form(action = routes.Products.update) {
 <fieldset>
     @defining(productForm("merchantId")) { uidField =>
@@ -58,7 +72,7 @@
 </fieldset>
 <div class="submit-action">
     <input type="submit" class="btn primary" value="@Messages("product.update")">
-    <a href="@routes.Application.index" class="btn">Cancel</a>
+    <input type="button" class="btn primary" value="@Messages("product.delete")" onclick="delete()">
 </div>
 }
 }

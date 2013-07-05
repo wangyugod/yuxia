@@ -17,7 +17,7 @@ import helper._
  */
 object Products extends Controller with Merchants {
 
-  val productForm:Form[(Product, String)]= Form(
+  val productForm: Form[(Product, String)] = Form(
     mapping(
       "id" -> optional(text),
       "merchantId" -> text,
@@ -58,13 +58,16 @@ object Products extends Controller with Merchants {
     }
   }
 
-  def get(id:String) = Action {
+  def get(id: String) = Action {
     implicit request => {
       val product = Product.findById(id)
       product match {
         case Some(p) => {
           val categories = p.categories
-          Ok("")
+          var s = ("" /: categories)(_ + "," + _)
+          s = s.substring(1)
+          println("categories id is " + s)
+          Ok(html.merchandise.product(productForm.fill((p, s))))
         }
         case None => {
           BadRequest(html.pageNotFound())
@@ -73,5 +76,16 @@ object Products extends Controller with Merchants {
     }
   }
 
+  def update = Action {
+    implicit request => {
+      Ok("updated")
+    }
+  }
+
+  def delete(id:String) = Action{
+    implicit request => {
+      Ok("delete successfully")
+    }
+  }
 
 }
