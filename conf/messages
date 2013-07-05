@@ -21,5 +21,8 @@ product.startDate=开始日期
 product.endDate=结束日期
 product.category=商品类别
 product.add=添加
+product.update=修改
 merch.newproduct=新增商品
+merch.myproducts=我的商品
+merch.baseinfo=基础信息
 

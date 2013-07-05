@@ -4,6 +4,7 @@
 
 # Home page
 GET     /                           controllers.Application.index
+GET     /404                        controllers.Application.pageNotFound
 GET     /login                      controllers.ProfileController.login
 POST    /login                      controllers.ProfileController.authenticate
 GET     /signup                     controllers.ProfileController.signup
@@ -18,6 +19,7 @@ POST    /merch/signup               controllers.Merchandise.create
 GET     /merch/prod/newprod         controllers.Products.newProduct
 POST    /merch/prod/create          controllers.Products.create
 GET     /merch/prod/list            controllers.Products.list
+GET     /merch/prod/:id             controllers.Products.get(id)
 
 
 # Map static resources from the /public folder to the /assets URL path

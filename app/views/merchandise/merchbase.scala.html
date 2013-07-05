@@ -13,22 +13,39 @@
 </head>
 <body class="column_3">
 <div id="wrapper">
-    <section id="topSection">
-        <h1 id="store_logo" title="YuXia">
-            <a href="@routes.Application.index"></a>
-        </h1>
-        <a href="@routes.Merchandise.login">@Messages("signout.label")</a>
-    </section>
-    <section id="mainSection">
-        <div id="merchMenu" class="left">
-            <li><a href="#">Basic Information</a></li>
-            <li><a href="@routes.Products.list">@Messages("merch.myproducts")</a></li>
-            <li><a href="@routes.Products.newProduct">@Messages("merch.newproduct")</a></li>
-        </div>
-        <div id="merchContent" class="right">
-            @content
-        </div>
-    </section>
+    @user match {
+        case Some(merchant) => {
+            <section id="topSection">
+                <h1 id="store_logo" title="YuXia">
+                    <a href="@routes.Application.index"></a>
+                </h1>
+                <a href="@routes.Merchandise.login">@Messages("signout.label")</a>
+            </section>
+            <section id="mainSection">
+                <div id="merchMenu" class="left">
+                    <li><a href="#">@Messages("merch.baseinfo")</a></li>
+                    <li><a href="@routes.Products.list">@Messages("merch.myproducts")</a></li>
+                    <li><a href="@routes.Products.newProduct">@Messages("merch.newproduct")</a></li>
+                </div>
+                <div id="merchContent" class="right">
+                    @content
+                </div>
+            </section>
+        }
+        case None =>{
+            <section id="topSection">
+                <h1 id="store_logo" title="YuXia">
+                    <a href="@routes.Application.index"></a>
+                </h1>
+            </section>
+            <section id="mainSection">
+                <div id="merchContent" class="right">
+                    @content
+                </div>
+            </section>
+        }
+    }
+
     <section id="btmSection">
         <p>Footer</p>
     </section>

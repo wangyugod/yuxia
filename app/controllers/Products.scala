@@ -17,7 +17,7 @@ import helper._
  */
 object Products extends Controller with Merchants {
 
-  val productForm:Form[Product]= Form(
+  val productForm:Form[(Product, String)]= Form(
     mapping(
       "id" -> optional(text),
       "merchantId" -> text,
@@ -27,33 +27,23 @@ object Products extends Controller with Merchants {
       "startDate" -> text,
       "endDate" -> text,
       "categories" -> text
-    )((id, merchantId, name, description, longDescription, startDate, endDate, categories) => {
-      println("I'm assembling")
-      val prod =  Product(id.getOrElse(IdGenerator.generateProfileId()), name, description, longDescription, AppHelper.convertDateFromText(Some(startDate)).get, AppHelper.convertDateFromText(Some(endDate)).get, merchantId)
-      prod.categories = categories
-      prod
-    })
-      ((x: Product) => Some(Some(x.id), x.merchantId, x.name, x.description, x.longDescription, AppHelper.convertDateToText(Some(x.startDate)).get, AppHelper.convertDateToText(Some(x.endDate)).get, x.categories))
+    )((id, merchantId, name, description, longDescription, startDate, endDate, categories) => (Product(id.getOrElse(IdGenerator.generateProfileId()), name, description, longDescription, AppHelper.convertDateFromText(Some(startDate)).get, AppHelper.convertDateFromText(Some(endDate)).get, merchantId), categories))
+      ((x: (Product, String)) => Some(Some(x._1.id), x._1.merchantId, x._1.name, x._1.description, x._1.longDescription, AppHelper.convertDateToText(Some(x._1.startDate)).get, AppHelper.convertDateToText(Some(x._1.endDate)).get, x._2))
   )
 
   def newProduct = Action {
     implicit request => {
-      Ok(html.merchandise.product(productForm))
+      Ok(html.merchandise.newproduct(productForm))
     }
   }
 
   def create = Action {
     implicit request => {
       productForm.bindFromRequest().fold(
-        formWithErrors =>{
-          println("form is " + formWithErrors)
-          println("errors is " + formWithErrors.errorsAsJson + " " + formWithErrors.globalErrors)
-          BadRequest(html.merchandise.product(formWithErrors))
-        },
+        formWithErrors => BadRequest(html.merchandise.newproduct(formWithErrors)),
         form => {
-          println("form is " + form)
-          val catIds = form.categories.split(",")
-          Product.create(form, catIds)
+          val catIds = form._2.split(",")
+          Product.create(form._1, catIds)
           productForm.fill(form)
           Redirect(routes.Products.newProduct())
         }
@@ -65,6 +55,21 @@ object Products extends Controller with Merchants {
     implicit request => {
       val merchantId = request.session.get(MERCHANT_ID).get
       Ok(html.merchandise.productlist(Product.findByMerchantId(merchantId)))
+    }
+  }
+
+  def get(id:String) = Action {
+    implicit request => {
+      val product = Product.findById(id)
+      product match {
+        case Some(p) => {
+          val categories = p.categories
+          Ok("")
+        }
+        case None => {
+          BadRequest(html.pageNotFound())
+        }
+      }
     }
   }
 

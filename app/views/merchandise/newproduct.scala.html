@@ -9,13 +9,13 @@
 </p>
 }
 
-@form(action = routes.Products.update) {
+@form(action = routes.Products.create) {
 <fieldset>
     @defining(productForm("merchantId")) { uidField =>
     <input type="hidden" name="@uidField.name" id="@uidField.id" value="@merchant.get.id">
     }
     @defining(productForm("id")) { uidField =>
-    <input type="hidden" name="@uidField.name" id="@uidField.id" value="@productForm("id")">
+    <input type="hidden" name="@uidField.name" id="@uidField.id" value="">
     }
 
     @inputText(
@@ -57,7 +57,7 @@
 
 </fieldset>
 <div class="submit-action">
-    <input type="submit" class="btn primary" value="@Messages("product.update")">
+    <input type="submit" class="btn primary" value="@Messages("product.add")">
     <a href="@routes.Application.index" class="btn">Cancel</a>
 </div>
 }

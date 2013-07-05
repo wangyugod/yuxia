@@ -19,7 +19,11 @@ import scala.slick.driver.H2Driver.simple._
 case class Category(id: String, name: String, description: String, longDescription: String)
 
 case class Product(id: String, name: String, description: String, longDescription: String, startDate: Date, endDate: Date, merchantId: String){
-  var categories = ""
+  def categories:Seq[String] = DBHelper.database.withSession{
+    val categories = for(pc <- ProductCategories if (pc.productId === id))
+      yield pc.categoryId
+    categories.list()
+  }
 }
 
 case class ProductCategory(productId: String, categoryId: String)
@@ -88,6 +92,10 @@ object Product {
 
   def findByMerchantId(merchantId: String) = DBHelper.database.withSession {
     Query(Products).where(_.merchantId === merchantId).list()
+  }
+
+  def findById(id:String) = DBHelper.database.withSession{
+    Query(Products).where(_.id === id).firstOption
   }
 
 
