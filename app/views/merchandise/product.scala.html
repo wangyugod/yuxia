@@ -12,10 +12,10 @@
 @form(action = routes.Products.create) {
 <fieldset>
     @defining(productForm("merchantId")) { uidField =>
-    <input type="hidden" name="@uidField.name" id="@uidField.id" value="@uidField.value">
+    <input type="hidden" name="@uidField.name" id="@uidField.id" value="@merchant.get.id">
     }
     @defining(productForm("id")) { uidField =>
-    <input type="hidden" name="@uidField.name" id="@uidField.id" value="@uidField.value">
+    <input type="hidden" name="@uidField.name" id="@uidField.id" value="@productForm("id")">
     }
 
     @inputText(
@@ -37,13 +37,13 @@
     )
 
     @inputText(
-    productForm("login"),
+    productForm("startDate"),
     '_label -> Messages("product.startDate"),
     '_error -> productForm.globalError
     )
 
     @inputText(
-    productForm("startDate"),
+    productForm("endDate"),
     '_label -> Messages("product.endDate"),
     '_error -> productForm.globalError
     )

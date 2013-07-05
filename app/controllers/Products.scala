@@ -28,6 +28,7 @@ object Products extends Controller with Merchants {
       "endDate" -> text,
       "categories" -> text
     )((id, merchantId, name, description, longDescription, startDate, endDate, categories) => {
+      println("I'm assembling")
       val prod =  Product(id.getOrElse(IdGenerator.generateProfileId()), name, description, longDescription, AppHelper.convertDateFromText(Some(startDate)).get, AppHelper.convertDateFromText(Some(endDate)).get, merchantId)
       prod.categories = categories
       prod
@@ -46,9 +47,11 @@ object Products extends Controller with Merchants {
       productForm.bindFromRequest().fold(
         formWithErrors =>{
           println("form is " + formWithErrors)
+          println("errors is " + formWithErrors.errorsAsJson + " " + formWithErrors.globalErrors)
           BadRequest(html.merchandise.product(formWithErrors))
         },
         form => {
+          println("form is " + form)
           val catIds = form.categories.split(",")
           Product.create(form, catIds)
           productForm.fill(form)
