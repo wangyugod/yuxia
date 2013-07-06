@@ -98,5 +98,9 @@ object Product {
     Query(Products).where(_.id === id).firstOption
   }
 
+  def delete(id:String) = DBHelper.database.withTransaction{
+    Products.where(_.id === id).delete
+  }
+
 
 }

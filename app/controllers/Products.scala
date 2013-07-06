@@ -84,7 +84,10 @@ object Products extends Controller with Merchants {
 
   def delete(id:String) = Action{
     implicit request => {
-      Ok("delete successfully")
+      println("prepare to delete " + id)
+      val result = Product.delete(id)
+      println("result is " + result)
+      Redirect(routes.Products.list())
     }
   }
 

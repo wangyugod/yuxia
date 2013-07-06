@@ -3,22 +3,14 @@
 @import helper._
 @merchbase(Messages("merch.product.title"),merchant){
 <SCRIPT LANGUAGE="JavaScript">
-    /*$(document).ready(function(){
-    $("#deleteBtn").click(function(){
-    alert("about to delete");
-    $.ajax({url:"@routes.Products.delete(merchant.get.id)", type:"DELETE", success:function(result){
-    alert(result);
-    }});
-    });
-    });*/
  function del(){
-    alert("about to delete");
     if(confirm('@Messages("product.delete.confirm")')){
         $.ajax({
-            url:"@routes.Products.delete(merchant.get.id)",
+            async:false,
+            url:"@routes.Products.delete(productForm.get._1.id)",
             type:"DELETE",
             success: function(result){
-                alert(result);
+                document.location.href = "@routes.Products.list()";
             }
             }
         );
