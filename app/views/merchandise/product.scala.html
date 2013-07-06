@@ -2,26 +2,34 @@
 
 @import helper._
 @merchbase(Messages("merch.product.title"),merchant){
-
+<SCRIPT LANGUAGE="JavaScript">
+    /*$(document).ready(function(){
+    $("#deleteBtn").click(function(){
+    alert("about to delete");
+    $.ajax({url:"@routes.Products.delete(merchant.get.id)", type:"DELETE", success:function(result){
+    alert(result);
+    }});
+    });
+    });*/
+ function del(){
+    alert("about to delete");
+    if(confirm('@Messages("product.delete.confirm")')){
+        $.ajax({
+            url:"@routes.Products.delete(merchant.get.id)",
+            type:"DELETE",
+            success: function(result){
+                alert(result);
+            }
+            }
+        );
+    }
+ }
+</SCRIPT>
 @productForm.errors.map { error =>
 <p class="error">
     @error.message
 </p>
 }
-
-<SCRIPT LANGUAGE="JavaScript">
-    function delete() = {
-        if(confirm('@Messages("product.delete.confirm")')){
-            $.ajax{
-                url:@routes.Products.delete(merchant.get.id),
-                type:"DELETE,
-                success: function(result){
-                    alert(result)
-                }
-            }
-        }
-    }
-</SCRIPT>
 
 @form(action = routes.Products.update) {
 <fieldset>
@@ -72,7 +80,7 @@
 </fieldset>
 <div class="submit-action">
     <input type="submit" class="btn primary" value="@Messages("product.update")">
-    <input type="button" class="btn primary" value="@Messages("product.delete")" onclick="delete()">
+    <input type="button" id="deleteBtn" class="btn primary" value="@Messages("product.delete")" onclick="del()">
 </div>
 }
 }
