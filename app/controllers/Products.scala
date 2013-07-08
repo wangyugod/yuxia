@@ -27,7 +27,7 @@ object Products extends Controller with Merchants {
       "startDate" -> text,
       "endDate" -> text,
       "categories" -> text
-    )((id, merchantId, name, description, longDescription, startDate, endDate, categories) => (Product(id.getOrElse(IdGenerator.generateProfileId()), name, description, longDescription, AppHelper.convertDateFromText(Some(startDate)).get, AppHelper.convertDateFromText(Some(endDate)).get, merchantId), categories))
+    )((id, merchantId, name, description, longDescription, startDate, endDate, categories) => (Product(id.getOrElse(IdGenerator.generateProductId()), name, description, longDescription, AppHelper.convertDateFromText(Some(startDate)).get, AppHelper.convertDateFromText(Some(endDate)).get, merchantId, ""), categories))
       ((x: (Product, String)) => Some(Some(x._1.id), x._1.merchantId, x._1.name, x._1.description, x._1.longDescription, AppHelper.convertDateToText(Some(x._1.startDate)).get, AppHelper.convertDateToText(Some(x._1.endDate)).get, x._2))
   )
 
@@ -66,7 +66,6 @@ object Products extends Controller with Merchants {
           val categories = p.categories
           var s = ("" /: categories)(_ + "," + _)
           s = s.substring(1)
-          println("categories id is " + s)
           Ok(html.merchandise.product(productForm.fill((p, s))))
         }
         case None => {
@@ -84,9 +83,7 @@ object Products extends Controller with Merchants {
 
   def delete(id:String) = Action{
     implicit request => {
-      println("prepare to delete " + id)
       val result = Product.delete(id)
-      println("result is " + result)
       Redirect(routes.Products.list())
     }
   }

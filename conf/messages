@@ -27,4 +27,5 @@ product.delete.confirm=您确定要删除该商品吗？
 merch.newproduct=新增商品
 merch.myproducts=我的商品
 merch.baseinfo=基础信息
+product.image=商品图片
 
