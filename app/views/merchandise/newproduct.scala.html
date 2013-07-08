@@ -9,7 +9,7 @@
 </p>
 }
 
-@form(action = routes.Products.create) {
+@form(action = routes.Products.create, 'enctype -> "multipart/form-data") {
 <fieldset>
     @defining(productForm("merchantId")) { uidField =>
     <input type="hidden" name="@uidField.name" id="@uidField.id" value="@merchant.get.id">
@@ -51,6 +51,12 @@
     @inputText(
     productForm("categories"),
     '_label -> Messages("product.category"),
+    '_error -> productForm.globalError
+    )
+
+    @inputFile(
+    productForm("image"),
+    '_label -> Messages("product.image"),
     '_error -> productForm.globalError
     )
 

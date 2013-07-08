@@ -7,6 +7,7 @@ import validation.Constraints
 import views.html
 import models._
 import helper._
+import java.io.File
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,7 +28,8 @@ object Products extends Controller with Merchants {
       "startDate" -> text,
       "endDate" -> text,
       "categories" -> text
-    )((id, merchantId, name, description, longDescription, startDate, endDate, categories) => (Product(id.getOrElse(IdGenerator.generateProductId()), name, description, longDescription, AppHelper.convertDateFromText(Some(startDate)).get, AppHelper.convertDateFromText(Some(endDate)).get, merchantId, ""), categories))
+    ){ val productId = IdGenerator.generateProductId()
+      ((id, merchantId, name, description, longDescription, startDate, endDate, categories) => (Product(id.getOrElse(productId), name, description, longDescription, AppHelper.convertDateFromText(Some(startDate)).get, AppHelper.convertDateFromText(Some(endDate)).get, merchantId, productId + ".jpg"), categories))}
       ((x: (Product, String)) => Some(Some(x._1.id), x._1.merchantId, x._1.name, x._1.description, x._1.longDescription, AppHelper.convertDateToText(Some(x._1.startDate)).get, AppHelper.convertDateToText(Some(x._1.endDate)).get, x._2))
   )
 
@@ -37,11 +39,14 @@ object Products extends Controller with Merchants {
     }
   }
 
-  def create = Action {
+  def create = Action(parse.multipartFormData) {
     implicit request => {
       productForm.bindFromRequest().fold(
         formWithErrors => BadRequest(html.merchandise.newproduct(formWithErrors)),
         form => {
+          request.body.file("image").map{
+            file => file.ref.moveTo(new File("/tmp/"+form._1.id + ".jpg"))
+          }
           val catIds = form._2.split(",")
           Product.create(form._1, catIds)
           productForm.fill(form)

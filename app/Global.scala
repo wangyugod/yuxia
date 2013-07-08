@@ -31,6 +31,7 @@ object Global extends GlobalSettings {
       //Initialize Profile Tables
       //Profiles.ddl.create
       //Merchants.ddl.create
+      Products.ddl.drop
       Products.ddl.create
       ProductCategories.ddl.create
       Categories.ddl.create

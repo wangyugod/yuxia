@@ -50,9 +50,11 @@ object Products extends Table[Product]("product") {
 
   def merchantId = column[String]("merchant_id")
 
-  def * = id ~ name ~ description ~ longDescription ~ startDate ~ endDate ~ merchantId <>(
-    (id, name, description, longDescription, startDate, endDate, merchantId) => Product(id, name, description, longDescription, startDate, endDate, merchantId),
-    (p: Product) => Some(p.id, p.name, p.description, p.longDescription, p.startDate, p.endDate, p.merchantId)
+  def imageUrl = column[String]("image_url")
+
+  def * = id ~ name ~ description ~ longDescription ~ startDate ~ endDate ~ merchantId ~ imageUrl <>(
+    (id, name, description, longDescription, startDate, endDate, merchantId, imageUrl) => Product(id, name, description, longDescription, startDate, endDate, merchantId, imageUrl),
+    (p: Product) => Some(p.id, p.name, p.description, p.longDescription, p.startDate, p.endDate, p.merchantId, p.imageUrl)
     )
 }
 
