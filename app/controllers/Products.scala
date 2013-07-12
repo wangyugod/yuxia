@@ -45,7 +45,7 @@ object Products extends Controller with Merchants {
         formWithErrors => BadRequest(html.merchandise.newproduct(formWithErrors)),
         form => {
           request.body.file("image").map{
-            file => file.ref.moveTo(new File("/tmp/"+form._1.id + ".jpg"))
+            file => file.ref.moveTo(new File(AppHelper.productImageDir+form._1.id + ".jpg"))
           }
           val catIds = form._2.split(",")
           Product.create(form._1, catIds)
@@ -80,11 +80,25 @@ object Products extends Controller with Merchants {
     }
   }
 
-  def update = Action {
-    implicit request => {
-      Ok("updated")
+  def update = Action(parse.multipartFormData) {
+    implicit request =>
+      productForm.bindFromRequest().fold(
+        formWithErrors => BadRequest(html.merchandise.product(formWithErrors)),
+        form => {
+          request.body.file("image").map{
+            file => {
+              val dir: String = AppHelper.productImageDir
+              println("image file path " + dir + form._1.id)
+              file.ref.moveTo(new File(dir+form._1.id + ".jpg"))
+            }
+          }
+          val catIds = form._2.split(",")
+          Product.update(form._1, catIds)
+          productForm.fill(form)
+          Redirect(routes.Products.get(form._1.id))
+        }
+      )
     }
-  }
 
   def delete(id:String) = Action{
     implicit request => {

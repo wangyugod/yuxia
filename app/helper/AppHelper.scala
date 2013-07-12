@@ -1,6 +1,8 @@
 package helper
 
 import java.sql.Date
+import play.api.Play
+import play.api.Play._
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,5 +31,9 @@ object AppHelper {
       Some(sdf.format(date))
     }
     case None => None
+  }
+
+  def productImageDir = {
+    Play.application.path.getPath + "\\" + Play.current.configuration.getString("prod.image.dir").get
   }
 }

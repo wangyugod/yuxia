@@ -18,10 +18,10 @@ import scala.slick.driver.H2Driver.simple._
  */
 case class Category(id: String, name: String, description: String, longDescription: String)
 
-case class Product(id: String, name: String, description: String, longDescription: String, startDate: Date, endDate: Date, merchantId: String, imageUrl:String){
-  def categories:Seq[String] = DBHelper.database.withSession{
-    val categories = for(pc <- ProductCategories if (pc.productId === id))
-      yield pc.categoryId
+case class Product(id: String, name: String, description: String, longDescription: String, startDate: Date, endDate: Date, merchantId: String, imageUrl: String) {
+  def categories: Seq[String] = DBHelper.database.withSession {
+    val categories = for (pc <- ProductCategories if (pc.productId === id))
+    yield pc.categoryId
     categories.list()
   }
 }
@@ -91,16 +91,30 @@ object Product {
     }
   }
 
+  def update(p: Product, categoryIds: Seq[String]) = DBHelper.database.withTransaction {
+    val existingCatId = for (pc <- ProductCategories if (pc.productId === p.id)) yield pc.categoryId
+    val list: List[String] = existingCatId.list()
+    println("existing " + list + " new " + categoryIds)
+    if (list != categoryIds) {
+      println("update categories")
+      Query(ProductCategories).where(_.productId === p.id).delete
+      for (catId <- categoryIds) {
+        ProductCategories.insert(ProductCategory(p.id, catId))
+      }
+    }
+    Products.where(_.id === p.id).update(p)
+  }
+
 
   def findByMerchantId(merchantId: String) = DBHelper.database.withSession {
     Query(Products).where(_.merchantId === merchantId).list()
   }
 
-  def findById(id:String) = DBHelper.database.withSession{
+  def findById(id: String) = DBHelper.database.withSession {
     Query(Products).where(_.id === id).firstOption
   }
 
-  def delete(id:String) = DBHelper.database.withTransaction{
+  def delete(id: String) = DBHelper.database.withTransaction {
     Products.where(_.id === id).delete
   }
 

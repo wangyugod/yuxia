@@ -29,7 +29,7 @@
     <input type="hidden" name="@uidField.name" id="@uidField.id" value="@merchant.get.id">
     }
     @defining(productForm("id")) { uidField =>
-    <input type="hidden" name="@uidField.name" id="@uidField.id" value="@productForm("id")">
+    <input type="hidden" name="@uidField.name" id="@uidField.id" value="@productForm.get._1.id">
     }
 
     @inputText(
@@ -68,7 +68,14 @@
     '_error -> productForm.globalError
     )
 
+    @inputFile(
+    productForm("image"),
+    '_label -> Messages("product.image"),
+    '_error -> productForm.globalError
+    )
 
+
+    <image src="@routes.Assets.at("images/product/" + productForm.get._1.imageUrl)" />
 
 
 </fieldset>
