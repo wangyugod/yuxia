@@ -40,6 +40,14 @@ object Global extends GlobalSettings {
         println("Simon is emtpty yet")
         Profiles.insert(Profile(IdGenerator.generateProfileId(), "simonwang@gmail.com", "test", "simon", Some("M"), Some(new Date(1981 + 1900, 9, 20))))
       }*/
+
+      if(Query(Categories).list().isEmpty){
+        Categories.insert(Category("cat1", "工作餐", "工作餐，简单快捷", ""))
+        Categories.insert(Category("cat11", "套餐", "工作餐，简单快捷", ""))
+        Categories.insert(Category("cat12", "工作餐", "工作餐，简单快捷", ""))
+        Categories.insert(Category("cat13", "工作餐", "工作餐，简单快捷", ""))
+
+      }
     }
   }
 

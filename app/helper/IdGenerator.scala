@@ -15,6 +15,7 @@ object IdGenerator {
   val ACCT_PREFIX = "a"
   val TAG_PREFIX = "t"
   val PRODUCT_PREFIX = "pd"
+  val CATEGORY_PREFIX = "cat"
 
   def generateProfileId() = {
     println("generating ProfileID now")
@@ -31,6 +32,10 @@ object IdGenerator {
 
   def generateProductId() = {
     PRODUCT_PREFIX + UUID.randomUUID()
+  }
+
+  def generateCategoryId() = {
+    CATEGORY_PREFIX + UUID.randomUUID()
   }
 
 }
