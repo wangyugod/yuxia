@@ -43,9 +43,9 @@ object Global extends GlobalSettings {
 
       if(Query(Categories).list().isEmpty){
         Categories.insert(Category("cat1", "工作餐", "工作餐，简单快捷", ""))
-        Categories.insert(Category("cat11", "套餐", "工作餐，简单快捷", ""))
-        Categories.insert(Category("cat12", "工作餐", "工作餐，简单快捷", ""))
-        Categories.insert(Category("cat13", "工作餐", "工作餐，简单快捷", ""))
+        Categories.insert(Category("cat11", "套餐", "套餐，包含饮料", ""))
+        Categories.insert(Category("cat12", "炒饭", "我是蛋炒饭", ""))
+        Categories.insert(Category("cat13", "面食", "这里有各种各样的面食", ""))
 
       }
     }

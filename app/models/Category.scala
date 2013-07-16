@@ -16,7 +16,21 @@ import scala.slick.driver.H2Driver.simple._
  * Time: 4:47 PM
  * To change this template use File | Settings | File Templates.
  */
-case class Category(id: String, name: String, description: String, longDescription: String)
+case class Category(id: String, name: String, description: String, longDescription: String){
+  def childCategories: Seq[Category] = DBHelper.database.withSession{
+    val childCatQuery = for(cc <- CategoryCategories if cc.parentCatId === id)
+      yield Query(Categories).where(_.id === cc.childCatId).firstOption.get
+    childCatQuery.list()
+  }
+
+  def parentCategory = DBHelper.database.withSession {
+    val parentCategoryQuery = for(cc <- CategoryCategories if cc.childCatId === id)
+      yield Query(Categories).where(_.id === cc.parentCatId).firstOption.get
+    parentCategoryQuery.firstOption
+  }
+
+  def isRoot = parentCategory.isEmpty
+}
 
 case class Product(id: String, name: String, description: String, longDescription: String, startDate: Date, endDate: Date, merchantId: String, imageUrl: String) {
   def categories: Seq[String] = DBHelper.database.withSession {
@@ -27,6 +41,8 @@ case class Product(id: String, name: String, description: String, longDescriptio
 }
 
 case class ProductCategory(productId: String, categoryId: String)
+
+case class CategoryCategory(parentCatId: String, childCatId: String)
 
 case class Sku(id: String, name: String, description: String, longDescription: String, size: Int, productId: String)
 
@@ -83,6 +99,16 @@ object Categories extends Table[Category]("category") {
     )
 }
 
+object CategoryCategories extends Table[CategoryCategory]("category_category") {
+  def parentCatId = column[String]("parent_cat_id")
+
+  def childCatId = column[String]("child_cat_id")
+
+  def * = parentCatId ~ childCatId <>(CategoryCategory, CategoryCategory.unapply(_))
+
+  def pk = primaryKey("prod_cat_pk", (parentCatId, parentCatId))
+}
+
 object Product {
   def create(p: Product, categoryIds: Seq[String]) = DBHelper.database.withTransaction {
     Products.insert(p)
@@ -117,6 +143,18 @@ object Product {
   def delete(id: String) = DBHelper.database.withTransaction {
     Products.where(_.id === id).delete
   }
+}
 
+object Category{
+  def create(category:Category, parentCatId: Option[String]) = DBHelper.database.withTransaction{
+    Categories.insert(category)
+    if(parentCatId.isDefined){
+      CategoryCategories.insert(CategoryCategory(parentCatId.get, category.id))
+    }
+  }
+
+  def allCategories() = DBHelper.database.withSession{
+
+  }
 
 }
