@@ -16,17 +16,18 @@ import scala.slick.driver.H2Driver.simple._
  * Time: 4:47 PM
  * To change this template use File | Settings | File Templates.
  */
-case class Category(id: String, name: String, description: String, longDescription: String){
-  def childCategories: Seq[Category] = DBHelper.database.withSession{
-    val childCatQuery = for(cc <- CategoryCategories if cc.parentCatId === id)
-      yield Query(Categories).where(_.id === cc.childCatId).firstOption.get
-    childCatQuery.list()
+case class Category(id: String, name: String, description: String, longDescription: String) {
+  def childCategories: Seq[Category] = DBHelper.database.withSession {
+    val childCatQuery = for (cc <- CategoryCategories if cc.parentCatId === id) yield cc.childCatId
+    Query(Categories).where(_.id inSetBind childCatQuery.list()).list()
   }
 
   def parentCategory = DBHelper.database.withSession {
-    val parentCategoryQuery = for(cc <- CategoryCategories if cc.childCatId === id)
-      yield Query(Categories).where(_.id === cc.parentCatId).firstOption.get
-    parentCategoryQuery.firstOption
+    val parentCategoryQuery = for (cc <- CategoryCategories if cc.childCatId === id) yield cc.parentCatId
+    parentCategoryQuery.firstOption match {
+      case Some(catId) => Query(Categories).where(_.id === catId).firstOption
+      case None => None
+    }
   }
 
   def isRoot = parentCategory.isEmpty
@@ -145,16 +146,16 @@ object Product {
   }
 }
 
-object Category{
-  def create(category:Category, parentCatId: Option[String]) = DBHelper.database.withTransaction{
+object Category {
+  def create(category: Category, parentCatId: Option[String]) = DBHelper.database.withTransaction {
     Categories.insert(category)
-    if(parentCatId.isDefined){
+    if (parentCatId.isDefined) {
       CategoryCategories.insert(CategoryCategory(parentCatId.get, category.id))
     }
   }
 
-  def allCategories() = DBHelper.database.withSession{
-
+  def allCategories(): Seq[Category] = DBHelper.database.withSession {
+    Query(Categories).list()
   }
 
 }

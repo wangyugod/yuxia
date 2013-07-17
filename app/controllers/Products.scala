@@ -107,4 +107,12 @@ object Products extends Controller with Merchants {
     }
   }
 
+  def categoryTree = Action {
+    implicit request => {
+      val categories = Category.allCategories()
+
+      Ok("")
+    }
+  }
+
 }
