@@ -111,7 +111,10 @@ object Products extends Controller with Merchants {
   def categoryTree = Action {
     implicit request => {
       val rootCategories = Category.rootCategories()
-      rootCategories.
+      rootCategories.map(
+        cat =>
+        List("name" -> cat.name, "id" -> cat.id, cat.childCategories.map())
+      )
 
 
       Ok("")
