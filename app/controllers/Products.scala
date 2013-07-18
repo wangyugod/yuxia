@@ -8,6 +8,7 @@ import views.html
 import models._
 import helper._
 import java.io.File
+import play.api.libs.json.JsObject
 
 /**
  * Created with IntelliJ IDEA.
@@ -109,7 +110,9 @@ object Products extends Controller with Merchants {
 
   def categoryTree = Action {
     implicit request => {
-      val categories = Category.allCategories()
+      val rootCategories = Category.rootCategories()
+      rootCategories.
+
 
       Ok("")
     }

@@ -158,4 +158,7 @@ object Category {
     Query(Categories).list()
   }
 
+  def rootCategories(): Seq[Category] = DBHelper.database.withSession {
+    allCategories().filter(_.isRoot)
+  }
 }
