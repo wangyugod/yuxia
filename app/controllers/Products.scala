@@ -8,7 +8,7 @@ import views.html
 import models._
 import helper._
 import java.io.File
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsString, JsArray, JsObject}
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,8 +29,10 @@ object Products extends Controller with Merchants {
       "startDate" -> text,
       "endDate" -> text,
       "categories" -> text
-    ){ val productId = IdGenerator.generateProductId()
-      ((id, merchantId, name, description, longDescription, startDate, endDate, categories) => (Product(id.getOrElse(productId), name, description, longDescription, AppHelper.convertDateFromText(Some(startDate)).get, AppHelper.convertDateFromText(Some(endDate)).get, merchantId, productId + ".jpg"), categories))}
+    ) {
+      val productId = IdGenerator.generateProductId()
+      ((id, merchantId, name, description, longDescription, startDate, endDate, categories) => (Product(id.getOrElse(productId), name, description, longDescription, AppHelper.convertDateFromText(Some(startDate)).get, AppHelper.convertDateFromText(Some(endDate)).get, merchantId, productId + ".jpg"), categories))
+    }
       ((x: (Product, String)) => Some(Some(x._1.id), x._1.merchantId, x._1.name, x._1.description, x._1.longDescription, AppHelper.convertDateToText(Some(x._1.startDate)).get, AppHelper.convertDateToText(Some(x._1.endDate)).get, x._2))
   )
 
@@ -45,8 +47,8 @@ object Products extends Controller with Merchants {
       productForm.bindFromRequest().fold(
         formWithErrors => BadRequest(html.merchandise.newproduct(formWithErrors)),
         form => {
-          request.body.file("image").map{
-            file => file.ref.moveTo(new File(AppHelper.productImageDir+form._1.id + ".jpg"))
+          request.body.file("image").map {
+            file => file.ref.moveTo(new File(AppHelper.productImageDir + form._1.id + ".jpg"))
           }
           val catIds = form._2.split(",")
           Product.create(form._1, catIds)
@@ -86,11 +88,11 @@ object Products extends Controller with Merchants {
       productForm.bindFromRequest().fold(
         formWithErrors => BadRequest(html.merchandise.product(formWithErrors)),
         form => {
-          request.body.file("image").map{
+          request.body.file("image").map {
             file => {
               val dir: String = AppHelper.productImageDir
               println("image file path " + dir + form._1.id)
-              file.ref.moveTo(new File(dir+form._1.id + ".jpg"))
+              file.ref.moveTo(new File(dir + form._1.id + ".jpg"))
             }
           }
           val catIds = form._2.split(",")
@@ -99,9 +101,9 @@ object Products extends Controller with Merchants {
           Redirect(routes.Products.get(form._1.id))
         }
       )
-    }
+  }
 
-  def delete(id:String) = Action{
+  def delete(id: String) = Action {
     implicit request => {
       val result = Product.delete(id)
       Redirect(routes.Products.list())
@@ -113,7 +115,7 @@ object Products extends Controller with Merchants {
       val rootCategories = Category.rootCategories()
       rootCategories.map(
         cat =>
-        List("name" -> cat.name, "id" -> cat.id, cat.childCategories.map())
+          List("name" -> JsString(cat.name), "id" -> JsString(cat.id), "children" -> JsArray(cat.childCategories.map(c => JsObject(List("name" -> JsString(c.name), "id" -> JsString(c.id))))))
       )
 
 
