@@ -10,34 +10,47 @@
 }
 
 <script type="text/javascript">
-    $("#tree2").dynatree({
-    checkbox: true,
-    selectMode: 2,
-    children: treeData,
-    onSelect: function(select, node) {
-    // Display list of selected nodes
-    var selNodes = node.tree.getSelectedNodes();
-    // convert to title/key array
-    var selKeys = $.map(selNodes, function(node){
-    return "[" + node.data.key + "]: '" + node.data.title + "'";
+    $(function(){
+
+    // --- Initialize sample trees
+    $("#tree").dynatree({
+    title: "Lazy loading sample",
+    checkbox:true,
+    selectMode:2,
+    fx: { height: "toggle", duration: 200 },
+    autoFocus: false, // Set focus to first child, when expanding or lazy-loading.
+    // In real life we would call a URL on the server like this:
+    // initAjax: {
+    // url: "/getTopLevelNodesAsJson",
+    // data: { mode: "funnyMode" }
+    // },
+    // .. but here we use a local file instead:
+    initAjax: {
+        url: "@routes.Products.initCategoryTree",
+        data: { mode: "funnyMode" }
+    },
+
+    onActivate: function(node) {
+    $("#echoActive").text("" + node + " (" + node.getKeyPath()+ ")");
+    },
+
+    onLazyRead: function(node){
+    // In real life we would call something like this:
+    // node.appendAjax({
+    // url: "/getChildrenAsJson",
+    // data: {key: node.data.key,
+    // mode: "funnyMode"
+    // }
+    // });
+    // .. but here we use a local file instead:
+    node.appendAjax({
+    url: "/merch/prod/childCat/" + node.data.key,
+    data: {key: node.data.key, mode: "funnyMode"}
+    // We don't want the next line in production code:
+    //debugLazyDelay: 750
     });
-    $("#echoSelection2").text(selKeys.join(", "));
-    },
-    onClick: function(node, event) {
-    // We should not toggle, if target was "checkbox", because this
-    // would result in double-toggle (i.e. no toggle)
-    if( node.getEventTargetType(event) == "title" )
-    node.toggleSelect();
-    },
-    onKeydown: function(node, event) {
-    if( event.which == 32 ) {
-    node.toggleSelect();
-    return false;
     }
-    },
-    // The following options are only required, if we have more than one tree on one page:
-    cookieId: "dynatree-Cb2",
-    idPrefix: "dynatree-Cb2-"
+    });
     });
 </script>
 
@@ -92,10 +105,14 @@
     '_error -> productForm.globalError
     )
 
+    <div id="tree">
+        <!-- When using initAjax, it may be nice to put a throbber here, that spins until the initial content is loaded: -->
+    </div>
+
 
 </fieldset>
 <div class="submit-action">
-    <input type="submit" class="btn primary" value="@Messages("product.add")">
+    <input type="submit" class="btn primary" value="@Messages(" product.add")">
     <a href="@routes.Application.index" class="btn">Cancel</a>
 </div>
 }

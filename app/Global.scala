@@ -34,8 +34,8 @@ object Global extends GlobalSettings {
       //Products.ddl.drop
       //Products.ddl.create
       //ProductCategories.ddl.create
-      Categories.ddl.create
-      CategoryCategories.ddl.create
+//      Categories.ddl.create
+//      CategoryCategories.ddl.create
 
       /*if (Query(Profiles).list().isEmpty){
         println("Simon is emtpty yet")
@@ -43,13 +43,14 @@ object Global extends GlobalSettings {
       }*/
 
       if(Query(Categories).list().isEmpty){
-        Categories.insert(Category("cat1", "工作餐", "工作餐，简单快捷", ""))
+        println("insert categories")
+        /*Categories.insert(Category("cat1", "工作餐", "工作餐，简单快捷", ""))
         Categories.insert(Category("cat11", "套餐", "套餐，包含饮料", ""))
         Categories.insert(Category("cat12", "炒饭", "我是蛋炒饭", ""))
         Categories.insert(Category("cat13", "面食", "这里有各种各样的面食", ""))
         Categories.insert(Category("cat2", "私房菜", "个人绝密私房菜", ""))
         Categories.insert(Category("cat21", "小吃", "金牌小吃", ""))
-        Categories.insert(Category("cat22", "营养套餐", "营养套餐，个人单炒", ""))
+        Categories.insert(Category("cat22", "营养套餐", "营养套餐，个人单炒", ""))*/
         CategoryCategories.insert(CategoryCategory("cat1", "cat11"))
         CategoryCategories.insert(CategoryCategory("cat1", "cat12"))
         CategoryCategories.insert(CategoryCategory("cat1", "cat13"))

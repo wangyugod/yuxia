@@ -110,17 +110,33 @@ object Products extends Controller with Merchants {
     }
   }
 
-  def categoryTree = Action {
+  def initCategoryTree = Action {
     implicit request => {
       val rootCategories = Category.rootCategories()
-      rootCategories.map(
-        cat =>
-          List("name" -> JsString(cat.name), "id" -> JsString(cat.id), "children" -> JsArray(cat.childCategories.map(c => JsObject(List("name" -> JsString(c.name), "id" -> JsString(c.id))))))
-      )
-
-
-      Ok("")
+      Ok(JsArray(catToJson(rootCategories)))
     }
+  }
+
+  def childCategory(id:String) = Action {
+    implicit request => {
+      val childCategory = Category.childCategories(id);
+      Ok(JsArray(catToJson(childCategory)))
+    }
+  }
+
+  def rootCatJson(cat:Category) = {
+    if(cat.isRoot){
+      "isFolder" -> JsString("true")
+    } else {
+      "isFolder" -> JsString("false")
+    }
+  }
+
+  def catToJson(categories: Seq[Category]) = {
+      categories.map(
+        cat =>
+          JsObject(List("title" -> JsString(cat.name), "key" -> JsString(cat.id), "isLazy" -> JsString("true"), rootCatJson(cat)))
+      )
   }
 
 }
