@@ -25,6 +25,18 @@
     // data: { mode: "funnyMode" }
     // },
     // .. but here we use a local file instead:
+
+    onSelect: function(select, node) {
+    // Display list of selected nodes
+    var selNodes = node.tree.getSelectedNodes();
+    // convert to title/key array
+    var selKeys = $.map(selNodes, function(node){
+    return "[" + node.data.key + "]: '" + node.data.title + "'";
+    });
+    $("#categories").val(selKeys.join(","));
+    alert($("#categories").val());
+    },
+
     initAjax: {
         url: "@routes.Products.initCategoryTree",
         data: { mode: "funnyMode" }
