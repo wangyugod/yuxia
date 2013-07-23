@@ -105,7 +105,7 @@ object Products extends Controller with Merchants {
 
   def delete(id: String) = Action {
     implicit request => {
-      val result = Product.delete(id)
+      Product.delete(id)
       Redirect(routes.Products.list())
     }
   }
@@ -113,14 +113,24 @@ object Products extends Controller with Merchants {
   def initCategoryTree = Action {
     implicit request => {
       val rootCategories = Category.rootCategories()
-      Ok(JsArray(catToJson(rootCategories)))
+//      Ok(JsArray(catToJson(rootCategories)))
+      Ok("")
     }
+  }
+
+  def categoryTree(rootCategories: Seq[Category]) = {
+//      rootCategories.map(
+//         cat =>
+//           catToJson()
+//      )
+
   }
 
   def childCategory(id:String) = Action {
     implicit request => {
       val childCategory = Category.childCategories(id);
-      Ok(JsArray(catToJson(childCategory)))
+//      Ok(JsArray(catToJson(childCategory)))
+      Ok("")
     }
   }
 
@@ -132,11 +142,20 @@ object Products extends Controller with Merchants {
     }
   }
 
-  def catToJson(categories: Seq[Category]) = {
+  def catToJson(categories: Seq[Category]):JsArray = {
+      val s = JsArray()
       categories.map(
-        cat =>
-          JsObject(List("title" -> JsString(cat.name), "key" -> JsString(cat.id), "isLazy" -> JsString("true"), rootCatJson(cat)))
+        cat => {
+          cat.childCategories match {
+            case x::y => {
+                      s.append((JsObject(List("title" -> JsString(cat.name), "key" -> JsString(cat.id), "isLazy" -> JsString("true"), rootCatJson(cat)))))
+                      s ++ catToJson(y)
+            }
+            case Nil => s.append(JsObject(List("title" -> JsString(cat.name), "key" -> JsString(cat.id), "isLazy" -> JsString("true"), rootCatJson(cat))))
+          }
+        }
       )
+    s
   }
 
 }

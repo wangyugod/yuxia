@@ -27,11 +27,11 @@
     // .. but here we use a local file instead:
 
     onSelect: function(select, node) {
-    // Display list of selected nodes
-    var selNodes = node.tree.getSelectedNodes();
-    // convert to title/key array
-    var selKeys = $.map(selNodes, function(node){
-    return "[" + node.data.key + "]: '" + node.data.title + "'";
+        // Display list of selected nodes
+        var selNodes = node.tree.getSelectedNodes();
+        // convert to title/key array
+        var selKeys = $.map(selNodes, function(node){
+        return node.data.key;
     });
     $("#categories").val(selKeys.join(","));
     alert($("#categories").val());
@@ -75,6 +75,10 @@
     <input type="hidden" name="@uidField.name" id="@uidField.id" value="">
     }
 
+    @defining(productForm("categories")) { uidField =>
+    <input type="hidden" name="@uidField.name" id="@uidField.id" value="">
+    }
+
     @inputText(
     productForm("name"),
     '_label -> Messages("product.name"),
@@ -105,12 +109,6 @@
     '_error -> productForm.globalError
     )
 
-    @inputText(
-    productForm("categories"),
-    '_label -> Messages("product.category"),
-    '_error -> productForm.globalError
-    )
-
     @inputFile(
     productForm("image"),
     '_label -> Messages("product.image"),
@@ -124,7 +122,7 @@
 
 </fieldset>
 <div class="submit-action">
-    <input type="submit" class="btn primary" value="@Messages(" product.add")">
+    <input type="submit" class="btn primary" value="@Messages("product.add")">
     <a href="@routes.Application.index" class="btn">Cancel</a>
 </div>
 }
