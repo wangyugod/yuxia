@@ -143,16 +143,19 @@ object Products extends Controller with Merchants {
   }
 
   def catToJson(categories: Seq[Category]):JsArray = {
-      val result = JsArray()
+      var result = JsArray()
       categories.foreach(
         cat => {
+          var catJsArray = JsArray()
           cat.childCategories match {
             case x::y => {
-              result.append((JsObject(List("title" -> JsString(cat.name), "key" -> JsString(cat.id), "isLazy" -> JsString("true"), rootCatJson(cat)))))
-              result ++ catToJson(y)
+              catJsArray = catJsArray.append((JsObject(List("title" -> JsString(x.name), "key" -> JsString(x.id), "isLazy" -> JsString("false"), rootCatJson(x)))))
+              catJsArray = catJsArray ++ catToJson(y)
             }
-            case Nil => result.append(JsObject(List("title" -> JsString(cat.name), "key" -> JsString(cat.id), "isLazy" -> JsString("true"), rootCatJson(cat))))
+            case Nil => {
+            }
           }
+          result = result.append(JsObject(List("title" -> JsString(cat.name), "key" -> JsString(cat.id), "isLazy" -> JsString("false"), rootCatJson(cat), "children" -> catJsArray)))
         }
       )
     println("result is " + result.toString())
