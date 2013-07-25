@@ -113,24 +113,14 @@ object Products extends Controller with Merchants {
   def initCategoryTree = Action {
     implicit request => {
       val rootCategories = Category.rootCategories()
-      Ok(catToJson(rootCategories))
-//      Ok("")
+      Ok(JsArray(catToJson(rootCategories)))
     }
-  }
-
-  def categoryTree(rootCategories: Seq[Category]) = {
-//      rootCategories.map(
-//         cat =>
-//           catToJson()
-//      )
-
   }
 
   def childCategory(id:String) = Action {
     implicit request => {
       val childCategory = Category.childCategories(id);
-//      Ok(JsArray(catToJson(childCategory)))
-      Ok("")
+      Ok(JsArray(catToJson(childCategory)))
     }
   }
 
@@ -142,24 +132,12 @@ object Products extends Controller with Merchants {
     }
   }
 
-  def catToJson(categories: Seq[Category]):JsArray = {
-      var result = JsArray()
-      categories.foreach(
-        cat => {
-          var catJsArray = JsArray()
-          cat.childCategories match {
-            case x::y => {
-              catJsArray = catJsArray.append((JsObject(List("title" -> JsString(x.name), "key" -> JsString(x.id), "isLazy" -> JsString("false"), rootCatJson(x)))))
-              catJsArray = catJsArray ++ catToJson(y)
-            }
-            case Nil => {
-            }
-          }
-          result = result.append(JsObject(List("title" -> JsString(cat.name), "key" -> JsString(cat.id), "isLazy" -> JsString("false"), rootCatJson(cat), "children" -> catJsArray)))
-        }
-      )
-    println("result is " + result.toString())
-    result
+  def catToJson(categories: Seq[Category]) = {
+    categories.map(
+      cat =>
+        JsObject(List("title" -> JsString(cat.name), "key" -> JsString(cat.id), "isLazy" -> JsString("true"), rootCatJson(cat)))
+    )
   }
+
 
 }
