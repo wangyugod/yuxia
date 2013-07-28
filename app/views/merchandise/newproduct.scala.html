@@ -10,8 +10,13 @@
 }
 
 <script type="text/javascript">
-    $(function(){
+    function showCategoryTree() {
+        $("#tree").dialog(
+            {height: 500,modal:true}
+        );
+    }
 
+    $(function(){
     // --- Initialize sample trees
     $("#tree").dynatree({
     title: "Lazy loading sample",
@@ -31,10 +36,13 @@
         var selNodes = node.tree.getSelectedNodes();
         // convert to title/key array
         var selKeys = $.map(selNodes, function(node){
-        return node.data.key;
-    });
-    $("#categories").val(selKeys.join(","));
-    alert($("#categories").val());
+            return node.data.key;
+        });
+        var selTitle = $.map(selNodes, function(node){
+            return node.data.title;
+        });
+        $("#categories").val(selKeys.join(","));
+        $("#category").val(selTitle.join(";"));
     },
 
     initAjax: {
@@ -64,61 +72,14 @@
     }
     });
     });
+
+
+
 </script>
 
 @form(action = routes.Products.create, 'enctype -> "multipart/form-data") {
 <fieldset>
-    @defining(productForm("merchantId")) { uidField =>
-    <input type="hidden" name="@uidField.name" id="@uidField.id" value="@merchant.get.id">
-    }
-    @defining(productForm("id")) { uidField =>
-    <input type="hidden" name="@uidField.name" id="@uidField.id" value="">
-    }
-
-    @defining(productForm("categories")) { uidField =>
-    <input type="hidden" name="@uidField.name" id="@uidField.id" value="">
-    }
-
-    @inputText(
-    productForm("name"),
-    '_label -> Messages("product.name"),
-    '_error -> productForm.globalError
-    )
-
-    @inputText(
-    productForm("description"),
-    '_label -> Messages("product.desc"),
-    '_error -> productForm.globalError
-    )
-
-    @inputText(
-    productForm("longDescription"),
-    '_label -> Messages("product.longdesc"),
-    '_error -> productForm.globalError
-    )
-
-    @inputText(
-    productForm("startDate"),
-    '_label -> Messages("product.startDate"),
-    '_error -> productForm.globalError
-    )
-
-    @inputText(
-    productForm("endDate"),
-    '_label -> Messages("product.endDate"),
-    '_error -> productForm.globalError
-    )
-
-    @inputFile(
-    productForm("image"),
-    '_label -> Messages("product.image"),
-    '_error -> productForm.globalError
-    )
-
-    <div id="tree">
-        <!-- When using initAjax, it may be nice to put a throbber here, that spins until the initial content is loaded: -->
-    </div>
-
+    @productfields(productForm, merchant)
 
 </fieldset>
 <div class="submit-action">

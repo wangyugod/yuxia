@@ -31,6 +31,7 @@ object Products extends Controller with Merchants {
       "categories" -> text
     ) {
       val productId = IdGenerator.generateProductId()
+      println("generated productId is " + productId)
       ((id, merchantId, name, description, longDescription, startDate, endDate, categories) => (Product(id.getOrElse(productId), name, description, longDescription, AppHelper.convertDateFromText(Some(startDate)).get, AppHelper.convertDateFromText(Some(endDate)).get, merchantId, productId + ".jpg"), categories))
     }
       ((x: (Product, String)) => Some(Some(x._1.id), x._1.merchantId, x._1.name, x._1.description, x._1.longDescription, AppHelper.convertDateToText(Some(x._1.startDate)).get, AppHelper.convertDateToText(Some(x._1.endDate)).get, x._2))
@@ -47,6 +48,8 @@ object Products extends Controller with Merchants {
       productForm.bindFromRequest().fold(
         formWithErrors => BadRequest(html.merchandise.newproduct(formWithErrors)),
         form => {
+          println("id is " + form._1.id)
+          println("form is " + form)
           request.body.file("image").map {
             file => file.ref.moveTo(new File(AppHelper.productImageDir + form._1.id + ".jpg"))
           }

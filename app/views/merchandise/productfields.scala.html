@@ -1,0 +1,70 @@
+@(productForm:Form[(Product, String)], merchant:Option[Merchant])
+
+@import helper._
+
+@defining(productForm("merchantId")) { uidField =>
+<input type="hidden" name="@uidField.name" id="@uidField.id" value="@merchant.get.id">
+}
+@defining(productForm("id")) { uidField =>
+        @productForm.value match {
+            case Some((product,catIds)) => {
+                <input type="hidden" name="@uidField.name" id="@uidField.id" value="@product.id">
+            }
+            case None => {
+                <input type="hidden" name="@uidField.name" id="@uidField.id" value="">
+            }
+
+        }
+}
+
+@defining(productForm("categories")) { uidField =>
+<input type="hidden" name="@uidField.name" id="@uidField.id" value="">
+}
+
+@inputText(
+productForm("name"),
+'_label -> Messages("product.name"),
+'_error -> productForm.globalError
+)
+
+@inputText(
+productForm("description"),
+'_label -> Messages("product.desc"),
+'_error -> productForm.globalError
+)
+
+@inputText(
+productForm("longDescription"),
+'_label -> Messages("product.longdesc"),
+'_error -> productForm.globalError
+)
+
+@inputText(
+productForm("startDate"),
+'_label -> Messages("product.startDate"),
+'_error -> productForm.globalError
+)
+
+@inputText(
+productForm("endDate"),
+'_label -> Messages("product.endDate"),
+'_error -> productForm.globalError
+)
+
+<dl class=" " id="catIds_field">
+    <dt><label for="category">@Messages("product.category")</label></dt>
+    <dd>
+        <input type="text" id="category" name="category" readonly>
+        <input type="button" id="selCategory" onclick="showCategoryTree()" value="@Messages("product.category.selbtn")"/>
+    </dd>
+</dl>
+
+@inputFile(
+productForm("image"),
+'_label -> Messages("product.image"),
+'_error -> productForm.globalError
+)
+
+<div id="tree" style="display:none" title="@Messages("product.category.select")">
+<!-- When using initAjax, it may be nice to put a throbber here, that spins until the initial content is loaded: -->
+</div>
