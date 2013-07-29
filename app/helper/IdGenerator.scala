@@ -31,6 +31,7 @@ object IdGenerator {
   }
 
   def generateProductId() = {
+    println("generating ProfileID now")
     PRODUCT_PREFIX + UUID.randomUUID()
   }
 

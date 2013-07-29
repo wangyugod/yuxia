@@ -24,7 +24,6 @@ trait Merchants {
   val MERCHANT_ID = "merch_id"
 
   implicit def merchant(implicit session: Session): Option[Merchant] = {
-    println("current session is " + session)
     session.get(MERCHANT_LOGIN) match {
       case Some(login) => Some(Merchant(session.get(MERCHANT_ID).get, session.get(MERCHANT_LOGIN).get, "", session.get(MERCHANT_NUMBER).get, session.get(MERCHANT_NAME).get))
       case None => None

@@ -2,24 +2,101 @@
 
 @import helper._
 
+<script type="text/javascript">
+    function showCategoryTree() {
+    $("#tree").dialog(
+    {height: 500,modal:true}
+    );
+    }
+
+    $(function(){
+    // --- Initialize sample trees
+    $("#tree").dynatree({
+    title: "Lazy loading sample",
+    checkbox:true,
+    selectMode:2,
+    fx: { height: "toggle", duration: 200 },
+    autoFocus: false, // Set focus to first child, when expanding or lazy-loading.
+    // In real life we would call a URL on the server like this:
+    // initAjax: {
+    // url: "/getTopLevelNodesAsJson",
+    // data: { mode: "funnyMode" }
+    // },
+    // .. but here we use a local file instead:
+
+    onSelect: function(select, node) {
+    // Display list of selected nodes
+    var selNodes = node.tree.getSelectedNodes();
+    // convert to title/key array
+    var selKeys = $.map(selNodes, function(node){
+        return node.data.key;
+    });
+    var selTitle = $.map(selNodes, function(node){
+        return node.data.title;
+    });
+    $("#categories").val(selKeys.join(","));
+    $("#selectedCat").val(selTitle.join(";"));
+    },
+
+    initAjax: {
+    url: "@routes.Products.initCategoryTree",
+    data: { mode: "funnyMode" }
+    },
+
+    onActivate: function(node) {
+    $("#echoActive").text("" + node + " (" + node.getKeyPath()+ ")");
+    },
+
+    onLazyRead: function(node){
+    // In real life we would call something like this:
+    // node.appendAjax({
+    // url: "/getChildrenAsJson",
+    // data: {key: node.data.key,
+    // mode: "funnyMode"
+    // }
+    // });
+    // .. but here we use a local file instead:
+    node.appendAjax({
+    url: "/merch/prod/childCat/" + node.data.key,
+    data: {key: node.data.key, mode: "funnyMode"}
+    // We don't want the next line in production code:
+    //debugLazyDelay: 750
+    });
+    }
+    });
+    });
+
+
+
+</script>
+
 @defining(productForm("merchantId")) { uidField =>
 <input type="hidden" name="@uidField.name" id="@uidField.id" value="@merchant.get.id">
 }
-@defining(productForm("id")) { uidField =>
-        @productForm.value match {
-            case Some((product,catIds)) => {
+
+@productForm.value match {
+    case Some((product,catIds)) => {
+        @defining(productForm("id")) {uidField =>
                 <input type="hidden" name="@uidField.name" id="@uidField.id" value="@product.id">
-            }
-            case None => {
-                <input type="hidden" name="@uidField.name" id="@uidField.id" value="">
-            }
 
         }
+        @defining(productForm("categories")) {uidField =>
+                <input type="hidden" name="@uidField.name" id="@uidField.id" value="@product.categories">
+
+        }
+    }
+    case None => {
+        @defining(productForm("id")) { uidField =>
+            <input type="hidden" name="@uidField.name" id="@uidField.id" value="">
+        }
+        @defining(productForm("categories")) { uidField =>
+            <input type="hidden" name="@uidField.name" id="@uidField.id" value="">
+        }
+    }
+
 }
 
-@defining(productForm("categories")) { uidField =>
-<input type="hidden" name="@uidField.name" id="@uidField.id" value="">
-}
+
 
 @inputText(
 productForm("name"),
@@ -51,13 +128,12 @@ productForm("endDate"),
 '_error -> productForm.globalError
 )
 
-<dl class=" " id="catIds_field">
-    <dt><label for="category">@Messages("product.category")</label></dt>
-    <dd>
-        <input type="text" id="category" name="category" readonly>
-        <input type="button" id="selCategory" onclick="showCategoryTree()" value="@Messages("product.category.selbtn")"/>
-    </dd>
-</dl>
+@inputText(
+productForm("selectedCat"),
+'_label -> Messages("product.category"),
+'_error -> productForm.globalError
+)
+<input type="button" id="selCategory" onclick="showCategoryTree()" value="@Messages("product.category.selbtn")"/>
 
 @inputFile(
 productForm("image"),

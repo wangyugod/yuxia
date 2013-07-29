@@ -25,7 +25,6 @@ case class Category(id: String, name: String, description: String, longDescripti
   def parentCategory = DBHelper.database.withSession {
     val parentCategoryQuery = for (cc <- CategoryCategories if cc.childCatId === id) yield cc.parentCatId
     val parentCatOpt: Option[String] = parentCategoryQuery.firstOption
-    println("parentCatId is " + parentCatOpt + " id is " + id)
     parentCatOpt match {
       case Some(catId) => Query(Categories).where(_.id === catId).firstOption
       case None => None
@@ -164,14 +163,18 @@ object Category {
     allCategories().filter(_.isRoot)
   }
 
-  def childCategories(catId:String): Seq[Category] = DBHelper.database.withSession {
+  def childCategories(catId: String): Seq[Category] = DBHelper.database.withSession {
     findById(catId) match {
       case Some(category) => category.childCategories
       case None => Nil
     }
   }
 
-  def findById(id:String): Option[Category] = DBHelper.database.withSession {
+  def findByIds(ids: Seq[String]): Seq[Category] = DBHelper.database.withSession {
+    Query(Categories).where(_.id inSetBind ids).list()
+  }
+
+  def findById(id: String): Option[Category] = DBHelper.database.withSession {
     Query(Categories).where(_.id === id).firstOption
   }
 }
