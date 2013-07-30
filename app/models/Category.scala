@@ -34,7 +34,7 @@ case class Category(id: String, name: String, description: String, longDescripti
   def isRoot = parentCategory.isEmpty
 }
 
-case class Product(id: String, name: String, description: String, longDescription: String, startDate: Date, endDate: Date, merchantId: String, imageUrl: String) {
+case class Product(id: String, name: String, description: String, longDescription: String, startDate: Option[Date], endDate: Option[Date], merchantId: String, imageUrl: String) {
   def categories: Seq[String] = DBHelper.database.withSession {
     val categories = for (pc <- ProductCategories if (pc.productId === id))
     yield pc.categoryId
@@ -62,9 +62,9 @@ object Products extends Table[Product]("product") {
 
   def longDescription = column[String]("long_desc")
 
-  def startDate = column[Date]("start_date")
+  def startDate = column[Option[Date]]("start_date")
 
-  def endDate = column[Date]("end_date")
+  def endDate = column[Option[Date]]("end_date")
 
   def merchantId = column[String]("merchant_id")
 

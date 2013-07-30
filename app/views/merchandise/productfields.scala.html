@@ -71,30 +71,15 @@
 </script>
 
 @defining(productForm("merchantId")) { uidField =>
-<input type="hidden" name="@uidField.name" id="@uidField.id" value="@merchant.get.id">
+    <input type="hidden" name="@uidField.name" id="@uidField.id" value="@merchant.get.id">
+}
+@defining(productForm("id")) {uidField =>
+    <input type="hidden" name="@uidField.name" id="@uidField.id" value="@productForm.data.get("id")">
+}
+@defining(productForm("categories")) {uidField =>
+    <input type="hidden" name="@uidField.name" id="@uidField.id" value="@productForm.data.get("categories")">
 }
 
-@productForm.value match {
-    case Some((product,catIds)) => {
-        @defining(productForm("id")) {uidField =>
-                <input type="hidden" name="@uidField.name" id="@uidField.id" value="@product.id">
-
-        }
-        @defining(productForm("categories")) {uidField =>
-                <input type="hidden" name="@uidField.name" id="@uidField.id" value="@product.categories">
-
-        }
-    }
-    case None => {
-        @defining(productForm("id")) { uidField =>
-            <input type="hidden" name="@uidField.name" id="@uidField.id" value="">
-        }
-        @defining(productForm("categories")) { uidField =>
-            <input type="hidden" name="@uidField.name" id="@uidField.id" value="">
-        }
-    }
-
-}
 
 
 
@@ -128,12 +113,15 @@ productForm("endDate"),
 '_error -> productForm.globalError
 )
 
-@inputText(
-productForm("selectedCat"),
-'_label -> Messages("product.category"),
-'_error -> productForm.globalError
-)
-<input type="button" id="selCategory" onclick="showCategoryTree()" value="@Messages("product.category.selbtn")"/>
+<dl class=" " id="catIds_field">
+    <dt><label for="selectedCat">@Messages("product.category")</label></dt>
+    <dd>
+        @defining(productForm("selectedCat")) { uidField =>
+            <input type="text" name="@uidField.name" id="@uidField.id" value="@productForm.data.get("selectedCat")" readonly>
+        }
+        <input type="button" id="selCategory" onclick="showCategoryTree()" value="@Messages("product.category.selbtn")"/>
+    </dd>
+</dl>
 
 @inputFile(
 productForm("image"),

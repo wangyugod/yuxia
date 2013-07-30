@@ -26,15 +26,15 @@ object Products extends Controller with Merchants {
       "name" -> nonEmptyText,
       "description" -> nonEmptyText,
       "longDescription" -> nonEmptyText,
-      "startDate" -> text,
-      "endDate" -> text,
+      "startDate" -> optional(text),
+      "endDate" -> optional(text),
       "categories" -> text,
-      "selectedCat" -> optional(text)
+      "selectedCat" -> nonEmptyText
     )
     {
       case (id, merchantId, name, description, longDescription, startDate, endDate, categories, selectedCat) =>{
         val productId = IdGenerator.generateProductId()
-        (Product(id.getOrElse(productId), name, description, longDescription, AppHelper.convertDateFromText(Some(startDate)).get, AppHelper.convertDateFromText(Some(endDate)).get, merchantId, productId + ".jpg"), categories)
+        (Product(id.getOrElse(productId), name, description, longDescription, AppHelper.convertDateFromText(startDate).get, AppHelper.convertDateFromText(endDate).get, merchantId, id.getOrElse(productId) + ".jpg"), categories)
         }
       }
     {
@@ -45,8 +45,10 @@ object Products extends Controller with Merchants {
         for(cat <- categories){
           s = s + "," + cat.name
         }
-        s = s.substring(1)
-        Some(Some(x._1.id), x._1.merchantId, x._1.name, x._1.description, x._1.longDescription, AppHelper.convertDateToText(Some(x._1.startDate)).get, AppHelper.convertDateToText(Some(x._1.endDate)).get, x._2, Some(s))
+        if(s != ""){
+          s = s.substring(1)
+        }
+        Some(Some(x._1.id), x._1.merchantId, x._1.name, x._1.description, x._1.longDescription, AppHelper.convertDateToText(x._1.startDate).get, AppHelper.convertDateToText(x._1.endDate).get, x._2, Some(s))
       }
     }
 
