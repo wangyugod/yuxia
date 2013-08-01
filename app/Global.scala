@@ -31,8 +31,8 @@ object Global extends GlobalSettings {
       //Initialize Profile Tables
       //Profiles.ddl.create
       //Merchants.ddl.create
-      //Products.ddl.drop
-      //Products.ddl.create
+      Products.ddl.drop
+      Products.ddl.create
       //ProductCategories.ddl.create
 //      Categories.ddl.create
 //      CategoryCategories.ddl.create
@@ -42,7 +42,7 @@ object Global extends GlobalSettings {
         Profiles.insert(Profile(IdGenerator.generateProfileId(), "simonwang@gmail.com", "test", "simon", Some("M"), Some(new Date(1981 + 1900, 9, 20))))
       }*/
 
-//      if(Query(Categories).list().isEmpty){
+      if(Query(Categories).list().isEmpty){
         println("insert categories")
         /*Categories.insert(Category("cat1", "工作餐", "工作餐，简单快捷", ""))
         Categories.insert(Category("cat11", "套餐", "套餐，包含饮料", ""))
@@ -62,7 +62,7 @@ object Global extends GlobalSettings {
         CategoryCategories.insert(CategoryCategory("cat11", "cat111"))
         CategoryCategories.insert(CategoryCategory("cat11", "cat112"))
         CategoryCategories.insert(CategoryCategory("cat11", "cat113"))
-//      }
+      }
     }
   }
 

@@ -34,7 +34,7 @@ object Products extends Controller with Merchants {
     {
       case (id, merchantId, name, description, longDescription, startDate, endDate, categories, selectedCat) =>{
         val productId = IdGenerator.generateProductId()
-        (Product(id.getOrElse(productId), name, description, longDescription, AppHelper.convertDateFromText(startDate).get, AppHelper.convertDateFromText(endDate).get, merchantId, id.getOrElse(productId) + ".jpg"), categories)
+        (Product(id.getOrElse(productId), name, description, longDescription, AppHelper.convertDateFromText(startDate), AppHelper.convertDateFromText(endDate), merchantId, id.getOrElse(productId) + ".jpg"), categories)
         }
       }
     {
@@ -48,7 +48,7 @@ object Products extends Controller with Merchants {
         if(s != ""){
           s = s.substring(1)
         }
-        Some(Some(x._1.id), x._1.merchantId, x._1.name, x._1.description, x._1.longDescription, AppHelper.convertDateToText(x._1.startDate).get, AppHelper.convertDateToText(x._1.endDate).get, x._2, Some(s))
+      Some(Some(x._1.id), x._1.merchantId, x._1.name, x._1.description, x._1.longDescription, AppHelper.convertDateToText(x._1.startDate), AppHelper.convertDateToText(x._1.endDate), x._2, s)
       }
     }
 
