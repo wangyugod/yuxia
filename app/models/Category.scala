@@ -46,7 +46,7 @@ case class ProductCategory(productId: String, categoryId: String)
 
 case class CategoryCategory(parentCatId: String, childCatId: String)
 
-case class Sku(id: String, name: String, description: String, longDescription: String, size: Int, productId: String)
+case class Sku(id: String, name: String, description: String, skuType: String, productId: String, listPrice: Double, salePrice: Double)
 
 case class ProductSku(skuId: String, productId: String)
 
@@ -98,6 +98,23 @@ object Categories extends Table[Category]("category") {
   def * = id ~ name ~ description ~ longDescription <>(
     (id, name, description, longDescription) => Category(id, name, description, longDescription),
     (cat: Category) => Some(cat.id, cat.name, cat.description, cat.longDescription)
+    )
+}
+
+object Skus extends Table[Sku]("sku") {
+  def id = column[String]("id", O.PrimaryKey)
+  def name = column[String]("name")
+  def description = column[String]("description")
+  def parentProduct = column[String]("parent_product")
+  def skuType = column[String]("sku_type")
+  def listPrice = column[Double]("list_price")
+  def salePrice = column[Double]("sale_price")
+
+
+
+  def * = id ~ name ~ description ~ skuType ~ parentProduct ~ listPrice ~ salePrice <>(
+    (id, name, description, skuType, parentProduct, listPrice, salePrice) => Sku(id, name, description, skuType, parentProduct, listPrice, salePrice),
+    (sku: Sku) => Some(sku.id, sku.name, sku.description, sku.skuType, sku.productId, sku.listPrice, sku.salePrice)
     )
 }
 

@@ -26,6 +26,7 @@ product.delete=删除
 product.delete.confirm=您确定要删除该商品吗？
 product.category.select=请选择商品类别
 product.category.selbtn=选择类别
+product.price.mgt=商品价格管理
 merch.newproduct=新增商品
 merch.myproducts=我的商品
 merch.baseinfo=基础信息

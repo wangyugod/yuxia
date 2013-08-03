@@ -5,7 +5,7 @@
 <script type="text/javascript">
     function showCategoryTree() {
     $("#tree").dialog(
-    {height: 500,modal:true}
+    {height: 300,modal:true}
     );
     }
 
@@ -128,6 +128,10 @@ productForm("image"),
 '_label -> Messages("product.image"),
 '_error -> productForm.globalError
 )
+
+<div id="priceInfo" title="@Messages("product.price.mgt")" >
+
+</div>
 
 <div id="tree" style="display:none" title="@Messages("product.category.select")">
 <!-- When using initAjax, it may be nice to put a throbber here, that spins until the initial content is loaded: -->
