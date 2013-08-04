@@ -8,6 +8,7 @@ import play.api.Play.current
 import slick.session.Database
 import Database.threadLocalSession
 import scala.slick.driver.H2Driver.simple._
+import org.joda.time.LocalDate
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,10 +36,17 @@ case class Category(id: String, name: String, description: String, longDescripti
 }
 
 case class Product(id: String, name: String, description: String, longDescription: String, startDate: Option[Date], endDate: Option[Date], merchantId: String, imageUrl: String) {
-  def categories: Seq[String] = DBHelper.database.withSession {
+  def categories: Seq[Category] = DBHelper.database.withSession {
     val categories = for (pc <- ProductCategories if (pc.productId === id))
     yield pc.categoryId
-    categories.list()
+    categories.list() match {
+      case Nil => Nil
+      case list => Query(Categories).where(_.id inSetBind (list)).list()
+    }
+  }
+
+  def childSkus: Seq[Sku] = DBHelper.database.withSession {
+    Query(Skus).where(_.parentProduct === id).list()
   }
 }
 
@@ -46,7 +54,7 @@ case class ProductCategory(productId: String, categoryId: String)
 
 case class CategoryCategory(parentCatId: String, childCatId: String)
 
-case class Sku(id: String, name: String, description: String, skuType: String, productId: String, listPrice: Double, salePrice: Double)
+case class Sku(id: String, name: String, description: Option[String], skuType: String, productId: String, listPrice: BigDecimal, salePrice: Option[BigDecimal], saleStartDate: Option[Date], saleEndDate: Option[Date])
 
 case class ProductSku(skuId: String, productId: String)
 
@@ -103,18 +111,26 @@ object Categories extends Table[Category]("category") {
 
 object Skus extends Table[Sku]("sku") {
   def id = column[String]("id", O.PrimaryKey)
+
   def name = column[String]("name")
-  def description = column[String]("description")
+
+  def description = column[Option[String]]("description")
+
   def parentProduct = column[String]("parent_product")
+
   def skuType = column[String]("sku_type")
-  def listPrice = column[Double]("list_price")
-  def salePrice = column[Double]("sale_price")
 
+  def listPrice = column[BigDecimal]("list_price")
 
+  def salePrice = column[Option[BigDecimal]]("sale_price")
 
-  def * = id ~ name ~ description ~ skuType ~ parentProduct ~ listPrice ~ salePrice <>(
-    (id, name, description, skuType, parentProduct, listPrice, salePrice) => Sku(id, name, description, skuType, parentProduct, listPrice, salePrice),
-    (sku: Sku) => Some(sku.id, sku.name, sku.description, sku.skuType, sku.productId, sku.listPrice, sku.salePrice)
+  def saleStartDate = column[Option[Date]]("sale_start_date")
+
+  def saleEndDate = column[Option[Date]]("sale_end_date")
+
+  def * = id ~ name ~ description ~ skuType ~ parentProduct ~ listPrice ~ salePrice ~ saleStartDate ~ saleEndDate <>(
+    (id, name, description, skuType, parentProduct, listPrice, salePrice, saleStartDate, saleEndDate) => Sku(id, name, description, skuType, parentProduct, listPrice, salePrice, saleStartDate, saleEndDate),
+    (sku: Sku) => Some(sku.id, sku.name, sku.description, sku.skuType, sku.productId, sku.listPrice, sku.salePrice, sku.saleStartDate, sku.saleEndDate)
     )
 }
 
@@ -129,11 +145,12 @@ object CategoryCategories extends Table[CategoryCategory]("category_category") {
 }
 
 object Product {
-  def create(p: Product, categoryIds: Seq[String]) = DBHelper.database.withTransaction {
+  def create(p: Product, categoryIds: Seq[String], childSkus: Seq[Sku]) = DBHelper.database.withTransaction {
     Products.insert(p)
     for (catId <- categoryIds) {
       ProductCategories.insert(ProductCategory(p.id, catId))
     }
+    childSkus.foreach(Skus.insert(_))
   }
 
   def update(p: Product, categoryIds: Seq[String]) = DBHelper.database.withTransaction {

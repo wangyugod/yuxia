@@ -1,6 +1,7 @@
-@(productForm:Form[(Product, String)])(implicit merchant:Option[Merchant])
+@(productForm:Form[ProductVo])(implicit merchant:Option[Merchant])
 
 @import helper._
+@import vo._
 @merchbase(Messages("merch.product.title"),merchant){
 <SCRIPT LANGUAGE="JavaScript">
  function del(){

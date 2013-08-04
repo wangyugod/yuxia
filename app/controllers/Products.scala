@@ -9,6 +9,7 @@ import models._
 import helper._
 import java.io.File
 import play.api.libs.json.{JsString, JsArray, JsObject}
+import vo._
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,7 +20,7 @@ import play.api.libs.json.{JsString, JsArray, JsObject}
  */
 object Products extends Controller with Merchants {
 
-  val productForm: Form[(Product, String)] = Form(
+  val productForm: Form[ProductVo] = Form(
     mapping(
       "id" -> optional(text),
       "merchantId" -> text,
@@ -29,9 +30,20 @@ object Products extends Controller with Merchants {
       "startDate" -> optional(text),
       "endDate" -> optional(text),
       "categories" -> text,
-      "selectedCat" -> nonEmptyText
-    )
-    {
+      "selectedCat" -> nonEmptyText,
+      "childSkus" -> seq( mapping(
+        "skuId" -> optional(text),
+        "name" -> text,
+        "description" -> optional(text),
+        "skuType" -> nonEmptyText,
+        "listPrice" -> bigDecimal,
+        "salePrice" -> optional(bigDecimal),
+        "saleStartDate" -> optional(text),
+        "saleEndDate" -> optional(text)
+        )(SkuVo.apply)(SkuVo.unapply)
+      )
+    )(ProductVo.apply)(ProductVo.unapply _)
+    /*{
       case (id, merchantId, name, description, longDescription, startDate, endDate, categories, selectedCat) =>{
         val productId = IdGenerator.generateProductId()
         (Product(id.getOrElse(productId), name, description, longDescription, AppHelper.convertDateFromText(startDate), AppHelper.convertDateFromText(endDate), merchantId, id.getOrElse(productId) + ".jpg"), categories)
@@ -50,7 +62,7 @@ object Products extends Controller with Merchants {
         }
       Some(Some(x._1.id), x._1.merchantId, x._1.name, x._1.description, x._1.longDescription, AppHelper.convertDateToText(x._1.startDate), AppHelper.convertDateToText(x._1.endDate), x._2, s)
       }
-    }
+    }*/
 
   )
 
@@ -65,13 +77,11 @@ object Products extends Controller with Merchants {
       productForm.bindFromRequest().fold(
         formWithErrors => BadRequest(html.merchandise.newproduct(formWithErrors)),
         form => {
-          println("id is " + form._1.id)
-          println("form is " + form)
           request.body.file("image").map {
-            file => file.ref.moveTo(new File(AppHelper.productImageDir + form._1.id + ".jpg"))
+            file => file.ref.moveTo(new File(AppHelper.productImageDir + form.id + ".jpg"))
           }
-          val catIds = form._2.split(",")
-          Product.create(form._1, catIds)
+          val catIds = form.categories.split(",")
+          Product.create(form.product, catIds, form.childSkus)
           productForm.fill(form)
           Redirect(routes.Products.newProduct())
         }
@@ -91,9 +101,7 @@ object Products extends Controller with Merchants {
       val product = Product.findById(id)
       product match {
         case Some(p) => {
-          val categories = p.categories
-          var s = ("" /: categories)(_ + "," + _)
-          s = s.substring(1)
+
           Ok(html.merchandise.product(productForm.fill((p, s))))
         }
         case None => {

@@ -1,7 +1,7 @@
-@(productForm:Form[(Product, String)], merchant:Option[Merchant])
+@(productForm:Form[ProductVo], merchant:Option[Merchant])
 
 @import helper._
-
+@import vo._
 <script type="text/javascript">
     function showCategoryTree() {
     $("#tree").dialog(
