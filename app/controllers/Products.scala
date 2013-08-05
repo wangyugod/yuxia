@@ -77,8 +77,10 @@ object Products extends Controller with Merchants {
       productForm.bindFromRequest().fold(
         formWithErrors => BadRequest(html.merchandise.newproduct(formWithErrors)),
         form => {
+          println("form product id is " + form.productId)
+          println("form product id2 is " + form.productId)
           request.body.file("image").map {
-            file => file.ref.moveTo(new File(AppHelper.productImageDir + form.id + ".jpg"))
+            file => file.ref.moveTo(new File(AppHelper.productImageDir + form.productId + ".jpg"))
           }
           val catIds = form.categories.split(",")
           Product.create(form.product, catIds, form.childSkus)
@@ -101,8 +103,7 @@ object Products extends Controller with Merchants {
       val product = Product.findById(id)
       product match {
         case Some(p) => {
-
-          Ok(html.merchandise.product(productForm.fill((p, s))))
+          Ok(html.merchandise.product(productForm.fill(ProductVo(p))))
         }
         case None => {
           BadRequest(html.pageNotFound())
@@ -119,14 +120,13 @@ object Products extends Controller with Merchants {
           request.body.file("image").map {
             file => {
               val dir: String = AppHelper.productImageDir
-              println("image file path " + dir + form._1.id)
-              file.ref.moveTo(new File(dir + form._1.id + ".jpg"))
+              println("image file path " + dir + form.productId)
+              file.ref.moveTo(new File(dir + form.productId + ".jpg"))
             }
           }
-          val catIds = form._2.split(",")
-          Product.update(form._1, catIds)
+          Product.update(form.product, form.categories.split(","), form.childSkus)
           productForm.fill(form)
-          Redirect(routes.Products.get(form._1.id))
+          Redirect(routes.Products.get(form.productId))
         }
       )
   }

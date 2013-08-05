@@ -31,9 +31,10 @@ object Global extends GlobalSettings {
       //Initialize Profile Tables
       //Profiles.ddl.create
       //Merchants.ddl.create
-      Products.ddl.drop
-      Products.ddl.create
-//      Skus.ddl.create
+//      Products.ddl.drop
+//      Products.ddl.create
+      Skus.ddl.drop
+      Skus.ddl.create
       //ProductCategories.ddl.create
 //      Categories.ddl.create
 //      CategoryCategories.ddl.create
@@ -70,6 +71,6 @@ object Global extends GlobalSettings {
   override def onStart(app: Application) {
     println("start loading")
 
-    initializeTable()
+//    initializeTable()
   }
 }

@@ -13,6 +13,7 @@ import helper._
  */
 case class ProductVo(id: Option[String], merchantId: String, name: String, description: String, longDescription: String, startDate: Option[String], endDate: Option[String], categories: String, selectedCat: String, skus: Seq[SkuVo]) {
   val productId = id.getOrElse(IdGenerator.generateProductId())
+  var imageUrl = ""
 
   def product = {
     Product(productId, name, description, longDescription, AppHelper.convertDateFromText(startDate), AppHelper.convertDateFromText(endDate), merchantId, productId + ".jpg")
@@ -30,7 +31,7 @@ case class SkuVo(id: Option[String], name: String, description: Option[String], 
 }
 
 object ProductVo {
-  def apply(product: Product) = {
+  def apply(product: Product):ProductVo = {
     val childSkus:Seq[SkuVo] = product.childSkus.map(SkuVo(_))
     val categories = product.categories
     var catIds = ""
@@ -43,7 +44,9 @@ object ProductVo {
       catIds = catIds.substring(1)
       catNames = catNames.substring(1)
     }
-    ProductVo(Some(product.id), product.merchantId, product.name, product.description, product.longDescription, AppHelper.convertDateToText(product.startDate), AppHelper.convertDateToText(product.endDate), catIds, catNames,childSkus)
+    val vo = ProductVo(Some(product.id), product.merchantId, product.name, product.description, product.longDescription, AppHelper.convertDateToText(product.startDate), AppHelper.convertDateToText(product.endDate), catIds, catNames,childSkus)
+    vo.imageUrl = product.imageUrl
+    vo
   }
 }
 

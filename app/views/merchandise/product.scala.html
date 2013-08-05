@@ -1,14 +1,13 @@
-@(productForm:Form[ProductVo])(implicit merchant:Option[Merchant])
+@(productForm:Form[vo.ProductVo])(implicit merchant:Option[Merchant])
 
 @import helper._
-@import vo._
 @merchbase(Messages("merch.product.title"),merchant){
 <SCRIPT LANGUAGE="JavaScript">
  function del(){
     if(confirm('@Messages("product.delete.confirm")')){
         $.ajax({
             async:false,
-            url:"@routes.Products.delete(productForm.get._1.id)",
+            url:"@routes.Products.delete(productForm.data.get("id").get)",
             type:"DELETE",
             success: function(result){
                 document.location.href = "@routes.Products.list()";
@@ -27,7 +26,7 @@
 @form(action = routes.Products.update, 'enctype -> "multipart/form-data") {
 <fieldset>
     @productfields(productForm, merchant)
-    <image src="@routes.Assets.at("images/product/" + productForm.get._1.imageUrl)" width="127" height="56"/>
+    <image src="@routes.Assets.at("images/product/" + productForm.get.imageUrl)" width="127" height="56"/>
 
 
 </fieldset>

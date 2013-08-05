@@ -3,6 +3,6 @@
 @import helper._
 @merchbase(Messages("merch.product.title"),merchant){
         @for(product <- products) {
-            <li><a href="@routes.Products.get(product.id)" >@product.id </a>, @product.name, @product.description </li>
+            <li><a href="@routes.Products.get(product.id)" >@product.id </a>, @product.name, @product.description, @product.imageUrl </li>
         }
 }

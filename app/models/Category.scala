@@ -153,18 +153,31 @@ object Product {
     childSkus.foreach(Skus.insert(_))
   }
 
-  def update(p: Product, categoryIds: Seq[String]) = DBHelper.database.withTransaction {
+  def update(p: Product, categoryIds: Seq[String], childSkus: Seq[Sku]) = DBHelper.database.withTransaction {
     val existingCatId = for (pc <- ProductCategories if (pc.productId === p.id)) yield pc.categoryId
     val list: List[String] = existingCatId.list()
-    println("existing " + list + " new " + categoryIds)
+    //check existing categories equals new
     if (list != categoryIds) {
-      println("update categories")
+      println("updating categories for product")
       Query(ProductCategories).where(_.productId === p.id).delete
       for (catId <- categoryIds) {
         ProductCategories.insert(ProductCategory(p.id, catId))
       }
     }
-    Products.where(_.id === p.id).update(p)
+    val existingProd = findById(p.id).get
+    //check if poperties changes, if not change don't update
+    if (p != existingProd) {
+      println("update product")
+      Products.where(_.id === p.id).update(p)
+    }
+
+    if(childSkus != existingProd.childSkus){
+      println("updating skus for product")
+      Query(Skus).where(_.parentProduct === p.id).delete
+      for(sku <- childSkus){
+        Skus.insert(sku)
+      }
+    }
   }
 
 
