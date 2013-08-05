@@ -24,12 +24,8 @@
 }
 
 @form(action = routes.Products.update, 'enctype -> "multipart/form-data") {
-<fieldset>
     @productfields(productForm, merchant)
     <image src="@routes.Assets.at("images/product/" + productForm.get.imageUrl)" width="127" height="56"/>
-
-
-</fieldset>
 <div class="submit-action">
     <input type="submit" class="btn primary" value="@Messages("product.update")">
     <input type="button" id="deleteBtn" class="btn primary" value="@Messages("product.delete")" onclick="del()">

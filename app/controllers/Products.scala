@@ -33,8 +33,8 @@ object Products extends Controller with Merchants {
       "selectedCat" -> nonEmptyText,
       "childSkus" -> seq( mapping(
         "skuId" -> optional(text),
-        "name" -> text,
-        "description" -> optional(text),
+        "skuName" -> text,
+        "skuDesc" -> optional(text),
         "skuType" -> nonEmptyText,
         "listPrice" -> bigDecimal,
         "salePrice" -> optional(bigDecimal),

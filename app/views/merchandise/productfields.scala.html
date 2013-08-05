@@ -68,7 +68,7 @@
 
 
 </script>
-
+<fieldset>
 @defining(productForm("merchantId")) { uidField =>
     <input type="hidden" name="@uidField.name" id="@uidField.id" value="@merchant.get.id">
 }
@@ -127,9 +127,41 @@ productForm("image"),
 '_label -> Messages("product.image"),
 '_error -> productForm.globalError
 )
+</fieldset>
 
-<div id="priceInfo" title="@Messages("product.price.mgt")" >
+<div id="priceInfo" title="@Messages("product.price.mgt")"  style="display:none">
+<fieldset>
+    @inputText(
+    productForm("skuName"),
+    '_label -> Messages("sku.name.label"),
+    '_error -> productForm.globalError
+    )
 
+    @inputText(
+    productForm("skuDesc"),
+    '_label -> Messages("sku.desc.label"),
+    '_error -> productForm.globalError
+    )
+
+    @inputText(
+    productForm("skuType"),
+    '_label -> Messages("sku.type.label"),
+    '_error -> productForm.globalError
+    )
+
+    @inputText(
+    productForm("listPrice"),
+    '_label -> Messages("sku.listprice.label"),
+    '_error -> productForm.globalError
+    )
+
+    @inputText(
+    productForm("salePrice"),
+    '_label -> Messages("sku.saleprice.label"),
+    '_error -> productForm.globalError
+    )
+
+</fieldset>
 </div>
 
 <div id="tree" style="display:none" title="@Messages("product.category.select")">

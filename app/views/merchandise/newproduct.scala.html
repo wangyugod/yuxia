@@ -10,10 +10,7 @@
 }
 
 @form(action = routes.Products.create, 'enctype -> "multipart/form-data") {
-<fieldset>
     @productfields(productForm, merchant)
-
-</fieldset>
 <div class="submit-action">
     <input type="submit" class="btn primary" value="@Messages("product.add")">
     <a href="@routes.Application.index" class="btn">Cancel</a>
