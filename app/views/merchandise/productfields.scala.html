@@ -2,39 +2,39 @@
 
 @import helper._
 
-@skuGroup(field: Field) = {
-<fieldset>
+@skuGroup(field: Field, className: String = "sku_mgt") = {
+  <div class="@className" >
     @inputText(
-    productForm("skuName"),
+      field("skuName"),
     '_label -> Messages("sku.name.label"),
     '_error -> productForm.globalError
     )
 
     @inputText(
-    productForm("skuDesc"),
+      field("skuDesc"),
     '_label -> Messages("sku.desc.label"),
     '_error -> productForm.globalError
     )
 
     @inputText(
-    productForm("skuType"),
+      field("skuType"),
     '_label -> Messages("sku.type.label"),
     '_error -> productForm.globalError
     )
 
     @inputText(
-    productForm("listPrice"),
+      field("listPrice"),
     '_label -> Messages("sku.listprice.label"),
     '_error -> productForm.globalError
     )
 
     @inputText(
-    productForm("salePrice"),
+      field("salePrice"),
     '_label -> Messages("sku.saleprice.label"),
     '_error -> productForm.globalError
     )
 
-</fieldset>
+  </div>
 }
 
 <script type="text/javascript">
@@ -101,7 +101,19 @@
     });
     });
 
+   function showSkuMgtForm(){
+        $("#skuInfo").dialog(
+        {height: 300,modal:true}
+        );
+        $('#skuInfo').show();
+        var length = $('.sku_mgt').length;
+        if($('#childSkus_' + (length-1) + '__skuType').val() != ""){
+            var template = $('.sku_template');
+            template.before('<div class="sku_mgt">' + template.html() + '</div>');
+            renumber();
+        }
 
+   }
 
 </script>
 <fieldset>
@@ -148,6 +160,9 @@ productForm("endDate"),
 '_error -> productForm.globalError
 )
 
+
+<input type="button" onclick="showSkuMgtForm()" value="@Messages("product.sku.mgt.label")" />
+
 <dl class=" " id="catIds_field">
     <dt><label for="selectedCat">@Messages("product.category")</label></dt>
     <dd>
@@ -165,7 +180,8 @@ productForm("image"),
 )
 </fieldset>
 
-<div id="skuInfo" title="@Messages("product.price.mgt")"  >
+<fieldset>
+<div id="skuInfo" title="@Messages("product.price.mgt")" style="display:none" >
 @repeat(productForm("childSkus")) { skuField =>
     @skuGroup(skuField)
 }
@@ -174,10 +190,21 @@ productForm("image"),
 * Keep an hidden block that will be used as template for Javascript copy code
 **@
 @skuGroup(
-    productForm("childSkus[x]")
+    productForm("childSkus[x]"),
+    className = "sku_template"
 )
 </div>
-
+</fieldset>
 <div id="tree" style="display:none" title="@Messages("product.category.select")">
 <!-- When using initAjax, it may be nice to put a throbber here, that spins until the initial content is loaded: -->
 </div>
+
+<script type="text/javascript">
+    var renumber = function() {
+    $('.sku_mgt').each(function(i) {
+    $('input', this).each(function() {
+    $(this).attr('name', $(this).attr('name').replace(/childSkus\[.+?\]/g, 'informations[' + i + ']'))
+    })
+    })
+    }
+</script>
