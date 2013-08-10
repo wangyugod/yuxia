@@ -54,7 +54,7 @@ case class ProductCategory(productId: String, categoryId: String)
 
 case class CategoryCategory(parentCatId: String, childCatId: String)
 
-case class Sku(id: String, name: String, description: Option[String], skuType: String, productId: String, listPrice: BigDecimal, salePrice: Option[BigDecimal], saleStartDate: Option[Date], saleEndDate: Option[Date])
+case class Sku(id: String, name: String, description: Option[String], skuType: Option[String], productId: String, listPrice: BigDecimal, salePrice: Option[BigDecimal], saleStartDate: Option[Date], saleEndDate: Option[Date])
 
 case class ProductSku(skuId: String, productId: String)
 
@@ -118,7 +118,7 @@ object Skus extends Table[Sku]("sku") {
 
   def parentProduct = column[String]("parent_product")
 
-  def skuType = column[String]("sku_type")
+  def skuType = column[Option[String]]("sku_type")
 
   def listPrice = column[BigDecimal]("list_price")
 

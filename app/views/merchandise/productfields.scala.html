@@ -103,19 +103,69 @@
     });
     });
 
+    function updateTips( t ) {
+        var tips = $( "#skuValidateTips" );
+        tips.text( t ).addClass( "ui-state-highlight" );
+        setTimeout(function() {
+        tips.removeClass( "ui-state-highlight", 1500 );
+        }, 500 );
+    }
+
+    function checkLength( o, n, min, max ) {
+        if ( o.val().length > max || o.val().length < min ) {
+            o.addClass( "ui-state-error" );
+            updateTips( "Length of " + n + " must be between " +
+            min + " and " + max + "." );
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function checkRegexp( o, regexp) {
+        if ( !( regexp.test( o.val() ) ) ) {
+            o.addClass( "ui-state-error" );
+            return false;
+        } else {
+            return true;
+        }
+    }
+
    function showSkuMgtForm(){
+        var length = $('.sku_mgt').length;
         $("#skuInfo").dialog({
             height: 300,
             modal:true,
+            beforeClose:function(event, ui){
+                $('#childSkus_' + (length-1) + '__skuName').val("");
+                $('#childSkus_' + (length-1) + '__skuDesc').val("");
+                $('#childSkus_' + (length-1) + '__skuType').val("");
+                $('#childSkus_' + (length-1) + '__listPrice').val("");
+                $('#childSkus_' + (length-1) + '__salePrice').val("");
+            },
             buttons:{
                 "@Messages("sku.ok.button")": function(){
+                    var skuType = $('#childSkus_' + (length-1) + '__skuType');
+                    var listPrice = $('#childSkus_' + (length-1) + '__listPrice');
+                    var salePrice = $('#childSkus_' + (length-1) + '__salePrice');
+                    if(skuType.val().trim() == ""){
+                        updateTips("@Messages("sku.type.validation.msg")");
+                        return;
+                    }
+                    if(listPrice.val().trim() == "" || !checkRegexp(listPrice,/^([0-9\.])+$/)){
+                        updateTips("@Messages("sku.listprice.validation.msg")");
+                        return;
+                    }
+
+                    if(listPrice.val().trim() != "" && !checkRegexp(listPrice,/^([0-9\.])+$/)){
+                        updateTips("@Messages("sku.listprice.validation.msg")");
+                        return;
+                    }
                     $(this).dialog("close");
                  }
             }
         }
         );
-        $('#skuInfo').show();
-        var length = $('.sku_mgt').length;
         if($('#childSkus_' + (length-1) + '__skuType').val() != ""){
             var template = $('.sku_template');
             template.before('<div class="sku_mgt">' + template.html() + '</div>');
@@ -190,6 +240,7 @@ productForm("image"),
 
 <fieldset>
 <div id="skuInfo" title="@Messages("product.price.mgt")" style="display:none" >
+<p class="validateTips" id="skuValidateTips"></p>
 @repeat(productForm("childSkus")) { skuField =>
     @skuGroup(skuField)
 }
@@ -203,6 +254,24 @@ productForm("image"),
 )
 </div>
 </fieldset>
+<div id="skuGroupTable" class="ui-widget">
+        <table id="users" class="ui-widget ui-widget-content">
+            <thead>
+            <tr class="ui-widget-header ">
+                <th>Name</th>
+                <th>Email</th>
+                <th>Password</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>John Doe</td>
+                <td>john.doe@example.com</td>
+                <td>johndoe1</td>
+            </tr>
+            </tbody>
+        </table>
+</div>
 <div id="tree" style="display:none" title="@Messages("product.category.select")">
 <!-- When using initAjax, it may be nice to put a throbber here, that spins until the initial content is loaded: -->
 </div>

@@ -35,7 +35,6 @@ object Products extends Controller with Merchants {
         "skuId" -> optional(text),
         "skuName" -> text,
         "skuDesc" -> optional(text),
-        "skuType" -> nonEmptyText,
         "listPrice" -> bigDecimal,
         "salePrice" -> optional(bigDecimal),
         "saleStartDate" -> optional(text),

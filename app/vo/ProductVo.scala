@@ -24,9 +24,9 @@ case class ProductVo(id: Option[String], merchantId: String, name: String, descr
   }
 }
 
-case class SkuVo(id: Option[String], name: String, description: Option[String], skuType: String, listPrice: BigDecimal, salePrice: Option[BigDecimal], saleStartDate: Option[String], saleEndDate: Option[String]) {
+case class SkuVo(id: Option[String], name: String, description: Option[String], listPrice: BigDecimal, salePrice: Option[BigDecimal], saleStartDate: Option[String], saleEndDate: Option[String]) {
   def sku(productId: String) = {
-    Sku(id.getOrElse(IdGenerator.generateSkuId()), name, description, skuType, productId, listPrice, salePrice, AppHelper.convertDateFromText(saleStartDate), AppHelper.convertDateFromText(saleEndDate))
+    Sku(id.getOrElse(IdGenerator.generateSkuId()), name, description, None, productId, listPrice, salePrice, AppHelper.convertDateFromText(saleStartDate), AppHelper.convertDateFromText(saleEndDate))
   }
 }
 
@@ -52,6 +52,6 @@ object ProductVo {
 
 object SkuVo {
   def apply(sku: Sku):SkuVo = {
-    SkuVo(Some(sku.id), sku.name, sku.description, sku.skuType, sku.listPrice, sku.salePrice, AppHelper.convertDateToText(sku.saleStartDate), AppHelper.convertDateToText(sku.saleEndDate))
+    SkuVo(Some(sku.id), sku.name, sku.description, sku.listPrice, sku.salePrice, AppHelper.convertDateToText(sku.saleStartDate), AppHelper.convertDateToText(sku.saleEndDate))
   }
 }
