@@ -39,8 +39,10 @@
 
 <script type="text/javascript">
     function showCategoryTree() {
-    $("#tree").dialog(
-    {height: 300,modal:true}
+    $("#tree").dialog({
+         height: 300,
+         modal:true
+    }
     );
     }
 
@@ -102,8 +104,15 @@
     });
 
    function showSkuMgtForm(){
-        $("#skuInfo").dialog(
-        {height: 300,modal:true}
+        $("#skuInfo").dialog({
+            height: 300,
+            modal:true,
+            buttons:{
+                "@Messages("sku.ok.button")": function(){
+                    $(this).dialog("close");
+                 }
+            }
+        }
         );
         $('#skuInfo').show();
         var length = $('.sku_mgt').length;
@@ -112,7 +121,6 @@
             template.before('<div class="sku_mgt">' + template.html() + '</div>');
             renumber();
         }
-
    }
 
 </script>

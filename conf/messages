@@ -31,4 +31,10 @@ merch.newproduct=新增商品
 merch.myproducts=我的商品
 merch.baseinfo=基础信息
 product.image=商品图片
-
+product.sku.mgt.label=价格管理
+sku.name.label=名称
+sku.desc.label=描述
+sku.type.label=分类
+sku.listprice.label=标价
+sku.saleprice.label=促销价格
+sku.ok.button=确定

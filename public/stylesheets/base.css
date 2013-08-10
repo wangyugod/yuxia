@@ -591,3 +591,9 @@ ul:after,
 	clear: both;
 	visibility: hidden;
 }
+
+/* own css
+======================*/
+.sku_template {
+    display: none;
+}
