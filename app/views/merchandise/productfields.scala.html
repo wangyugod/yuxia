@@ -17,12 +17,6 @@
     )
 
     @inputText(
-      field("skuType"),
-    '_label -> Messages("sku.type.label"),
-    '_error -> productForm.globalError
-    )
-
-    @inputText(
       field("listPrice"),
     '_label -> Messages("sku.listprice.label"),
     '_error -> productForm.globalError
@@ -136,19 +130,15 @@
         $("#skuInfo").dialog({
             height: 300,
             modal:true,
-            beforeClose:function(event, ui){
-                $('#childSkus_' + (length-1) + '__skuName').val("");
-                $('#childSkus_' + (length-1) + '__skuDesc').val("");
-                $('#childSkus_' + (length-1) + '__skuType').val("");
-                $('#childSkus_' + (length-1) + '__listPrice').val("");
-                $('#childSkus_' + (length-1) + '__salePrice').val("");
+            open:function(event, ui){
+                $(".ui-dialog-titlebar-close", $(this).parent()).hide();
             },
             buttons:{
                 "@Messages("sku.ok.button")": function(){
-                    var skuType = $('#childSkus_' + (length-1) + '__skuType');
+                    var skuName = $('#childSkus_' + (length-1) + '__skuName');
                     var listPrice = $('#childSkus_' + (length-1) + '__listPrice');
                     var salePrice = $('#childSkus_' + (length-1) + '__salePrice');
-                    if(skuType.val().trim() == ""){
+                    if(skuName.val().trim() == ""){
                         updateTips("@Messages("sku.type.validation.msg")");
                         return;
                     }
@@ -161,12 +151,25 @@
                         updateTips("@Messages("sku.listprice.validation.msg")");
                         return;
                     }
+                    alert("skuName is " + skuName.val());
+                    $( "#skuTable tbody" ).append( "<tr>" +
+                    "<td>" + skuName.val() + "</td>" +
+                    "<td>" + listPrice.val() + "</td>" +
+                    "<td>" + salePrice.val() + "</td>" +
+                    "</tr>" );
                     $(this).dialog("close");
-                 }
+                 },
+                "@Messages("sku.cancel.button")": function(){
+                    $('#childSkus_' + (length-1) + '__skuName').val("");
+                    $('#childSkus_' + (length-1) + '__skuDesc').val("");
+                    $('#childSkus_' + (length-1) + '__listPrice').val("");
+                    $('#childSkus_' + (length-1) + '__salePrice').val("");
+                    $(this).dialog("close");
+                }
             }
         }
         );
-        if($('#childSkus_' + (length-1) + '__skuType').val() != ""){
+        if($('#childSkus_' + (length-1) + '__skuName').val() != ""){
             var template = $('.sku_template');
             template.before('<div class="sku_mgt">' + template.html() + '</div>');
             renumber();
@@ -255,20 +258,15 @@ productForm("image"),
 </div>
 </fieldset>
 <div id="skuGroupTable" class="ui-widget">
-        <table id="users" class="ui-widget ui-widget-content">
+        <table id="skuTable" class="ui-widget ui-widget-content">
             <thead>
             <tr class="ui-widget-header ">
-                <th>Name</th>
-                <th>Email</th>
-                <th>Password</th>
+                <th>价格分类</th>
+                <th>标价</th>
+                <th>促销价格</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>John Doe</td>
-                <td>john.doe@example.com</td>
-                <td>johndoe1</td>
-            </tr>
             </tbody>
         </table>
 </div>
