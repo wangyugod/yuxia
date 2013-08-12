@@ -40,3 +40,6 @@ sku.saleprice.label=促销价格
 sku.ok.button=确定
 sku.type.validation.msg=分类不能为空,请指定价格分类
 sku.listprice.validation.msg=标价只能包含小数点和数字，不能包含其他字符
+sku.salestartdate.label=促销开始日期
+sku.saleenddate.label=促销结束日期
+sku.cancel.button=退出

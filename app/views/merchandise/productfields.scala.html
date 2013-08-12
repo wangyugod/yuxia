@@ -3,7 +3,14 @@
 @import helper._
 
 @skuGroup(field: Field, className: String = "sku_mgt") = {
-  <div class="@className" >
+  <div id="skuMgt_0" class="@className" >
+    @inputText(
+      field("skuId"),
+      'type -> "hidden",
+      '_label -> "",
+      '_error -> productForm.globalError
+    )
+
     @inputText(
       field("skuName"),
     '_label -> Messages("sku.name.label"),
@@ -25,6 +32,18 @@
     @inputText(
       field("salePrice"),
     '_label -> Messages("sku.saleprice.label"),
+    '_error -> productForm.globalError
+    )
+
+    @inputText(
+      field("saleStartDate"),
+    '_label -> Messages("sku.salestartdate.label"),
+    '_error -> productForm.globalError
+    )
+
+    @inputText(
+      field("saleEndDate"),
+    '_label -> Messages("sku.saleenddate.label"),
     '_error -> productForm.globalError
     )
 
@@ -125,19 +144,69 @@
         }
     }
 
-   function showSkuMgtForm(){
+    function clearSku(index) {
+        $('#childSkus_' + index + '__skuName').val("");
+        $('#childSkus_' + index + '__skuDesc').val("");
+        $('#childSkus_' + index + '__listPrice').val("");
+        $('#childSkus_' + index + '__salePrice').val("");
+    }
+
+    function removeSku(element, index){
+        if(index == undefined)
+            return;
+        //$(element).parent().parent().remove();
+        var length = $('.sku_mgt').length
+        $( "#skuTable tbody" ).children().remove()
+        if(length == 1){
+            clearSku(0);
+        } else {
+            $('#skuMgt_' + index + '.sku_mgt').remove();
+            length = length - 1;
+            renumber();
+            for(var i = 0; i < length; i++){
+            var skuName = $('#childSkus_' + i + '__skuName');
+            var listPrice = $('#childSkus_' + i + '__listPrice');
+            var salePrice = $('#childSkus_' + i + '__salePrice');
+            $( "#skuTable tbody" ).append( "<tr>" +
+                "<td><a href='#' onclick='showSkuMgtForm(" + i + ")'>" + skuName.val() + "</a></td>" +
+                "<td>" + listPrice.val() + "</td>" +
+                "<td>" + salePrice.val() + "</td>" +
+                "<td><a href='#' onclick='removeSku(this, " + i + ")'>@Messages("product.delete")</a></td>" +
+                "</tr>" );
+            }
+        }
+
+
+    }
+
+   function showSkuMgtForm(index){
         var length = $('.sku_mgt').length;
-        $("#skuInfo").dialog({
-            height: 300,
-            modal:true,
-            open:function(event, ui){
-                $(".ui-dialog-titlebar-close", $(this).parent()).hide();
-            },
-            buttons:{
+        if($('#childSkus_' + (length-1) + '__skuName').val() != "" && index == undefined){
+            var template = $('.sku_template');
+            template.before('<div id="skuMgt_' + length + '" class="sku_mgt">' + template.html() + '</div>');
+            renumber();
+            length = length + 1;
+        }
+        var currentIdx = 0;
+        if(index == undefined){
+            currentIdx = length - 1;
+        } else {
+            currentIdx = index;
+        }
+        for(var i = 0; i < length; i++){
+            if(i == currentIdx){
+                $('#skuMgt_' + i).show();
+            } else {
+                $('#skuMgt_' + i).hide();
+            }
+        }
+        var btonJson ;
+        if(index == undefined) {
+            btonJson = {
                 "@Messages("sku.ok.button")": function(){
-                    var skuName = $('#childSkus_' + (length-1) + '__skuName');
-                    var listPrice = $('#childSkus_' + (length-1) + '__listPrice');
-                    var salePrice = $('#childSkus_' + (length-1) + '__salePrice');
+                    var skuName = $('#childSkus_' + currentIdx + '__skuName');
+                    var listPrice = $('#childSkus_' + currentIdx + '__listPrice');
+                    var salePrice = $('#childSkus_' + currentIdx + '__salePrice');
                     if(skuName.val().trim() == ""){
                         updateTips("@Messages("sku.type.validation.msg")");
                         return;
@@ -151,29 +220,57 @@
                         updateTips("@Messages("sku.listprice.validation.msg")");
                         return;
                     }
-                    alert("skuName is " + skuName.val());
                     $( "#skuTable tbody" ).append( "<tr>" +
-                    "<td>" + skuName.val() + "</td>" +
+                    "<td><a href='#' onclick='showSkuMgtForm(" + currentIdx + ")'>" + skuName.val() + "</a></td>" +
                     "<td>" + listPrice.val() + "</td>" +
                     "<td>" + salePrice.val() + "</td>" +
+                    "<td><a href='#' onclick='removeSku(this, " + currentIdx + ")'>@Messages("product.delete")</a></td>" +
                     "</tr>" );
                     $(this).dialog("close");
-                 },
+                    },
                 "@Messages("sku.cancel.button")": function(){
-                    $('#childSkus_' + (length-1) + '__skuName').val("");
-                    $('#childSkus_' + (length-1) + '__skuDesc').val("");
-                    $('#childSkus_' + (length-1) + '__listPrice').val("");
-                    $('#childSkus_' + (length-1) + '__salePrice').val("");
+                    clearSku(length - 1);
                     $(this).dialog("close");
                 }
             }
+        } else {
+            btonJson = {
+                "@Messages("sku.ok.button")": function(){
+                var skuName = $('#childSkus_' + currentIdx + '__skuName');
+                var listPrice = $('#childSkus_' + currentIdx + '__listPrice');
+                var salePrice = $('#childSkus_' + currentIdx + '__salePrice');
+                if(skuName.val().trim() == ""){
+                    updateTips("@Messages("sku.type.validation.msg")");
+                    return;
+                }
+                if(listPrice.val().trim() == "" || !checkRegexp(listPrice,/^([0-9\.])+$/)){
+                    updateTips("@Messages("sku.listprice.validation.msg")");
+                    return;
+                }
+
+                if(listPrice.val().trim() != "" && !checkRegexp(listPrice,/^([0-9\.])+$/)){
+                    updateTips("@Messages("sku.listprice.validation.msg")");
+                    return;
+                }
+                var rows = $( "#skuTable tbody tr" );
+                var currentRowHtml = "<td><a href='#' onclick='showSkuMgtForm(" + currentIdx + ")'>" + skuName.val() + "</a></td>" +
+                                     "<td>" + listPrice.val() + "</td>" + "<td>" + salePrice.val() + "</td>" + "<td><a href='#' onclick='removeSku(this, " + currentIdx + ")'>@Messages("product.delete")</a></td>";
+                rows.eq(currentIdx).html(currentRowHtml)
+                $(this).dialog("close");
+                }
+            }
+        }
+        $("#skuInfo").dialog({
+            height: 300,
+            modal:true,
+            open:function(event, ui){
+                $(".ui-dialog-titlebar-close", $(this).parent()).hide();
+            },
+            closeOnEscape: false,
+            buttons: btonJson
         }
         );
-        if($('#childSkus_' + (length-1) + '__skuName').val() != ""){
-            var template = $('.sku_template');
-            template.before('<div class="sku_mgt">' + template.html() + '</div>');
-            renumber();
-        }
+
    }
 
 </script>
@@ -266,7 +363,7 @@ productForm("image"),
                 <th>促销价格</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody id="skuTbody">
             </tbody>
         </table>
 </div>
@@ -276,9 +373,12 @@ productForm("image"),
 
 <script type="text/javascript">
     var renumber = function() {
+
     $('.sku_mgt').each(function(i) {
+    $(this).attr('id', $(this).attr('id').replace(/skuMgt_.+?/g, 'skuMgt_' + i));
     $('input', this).each(function() {
-    $(this).attr('name', $(this).attr('name').replace(/childSkus\[.+?\]/g, 'informations[' + i + ']'))
+    $(this).attr('name', $(this).attr('name').replace(/childSkus\[.+?\]/g, 'childSkus[' + i + ']'));
+    $(this).attr('id', $(this).attr('id').replace(/childSkus_.+?_/g, 'childSkus_' + i + '_'))
     })
     })
     }

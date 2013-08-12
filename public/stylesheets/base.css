@@ -601,3 +601,9 @@ ul:after,
 .validateTips {
     border: 1px solid transparent; padding: 0.3em;
 }
+
+table th {
+    border: 1px solid #EEEEEE;
+    padding: 0.6em 10px;
+    text-align: left;
+}
