@@ -149,24 +149,36 @@
         $('#childSkus_' + index + '__skuDesc').val("");
         $('#childSkus_' + index + '__listPrice').val("");
         $('#childSkus_' + index + '__salePrice').val("");
+        $('#childSkus_' + index + '__saleStartDate').val("");
+        $('#childSkus_' + index + '__saleEndDate').val("");
     }
 
     function removeSku(element, index){
         if(index == undefined)
             return;
         //$(element).parent().parent().remove();
-        var length = $('.sku_mgt').length
-        $( "#skuTable tbody" ).children().remove()
+        var length = $('.sku_mgt').length;
+        $( "#skuTable tbody" ).children().remove();
         if(length == 1){
             clearSku(0);
         } else {
             $('#skuMgt_' + index + '.sku_mgt').remove();
             length = length - 1;
             renumber();
-            for(var i = 0; i < length; i++){
+            refillSkuTable(length);
+        }
+    }
+
+    function refillSkuTable(length){
+        if(length == undefined)
+            length = $('.sku_mgt').length;
+        for(var i = 0; i < length; i++){
             var skuName = $('#childSkus_' + i + '__skuName');
             var listPrice = $('#childSkus_' + i + '__listPrice');
             var salePrice = $('#childSkus_' + i + '__salePrice');
+            if(skuName.val() == ""){
+                break;
+            }
             $( "#skuTable tbody" ).append( "<tr>" +
                 "<td><a href='#' onclick='showSkuMgtForm(" + i + ")'>" + skuName.val() + "</a></td>" +
                 "<td>" + listPrice.val() + "</td>" +
@@ -174,9 +186,6 @@
                 "<td><a href='#' onclick='removeSku(this, " + i + ")'>@Messages("product.delete")</a></td>" +
                 "</tr>" );
             }
-        }
-
-
     }
 
    function showSkuMgtForm(index){
@@ -186,6 +195,8 @@
             template.before('<div id="skuMgt_' + length + '" class="sku_mgt">' + template.html() + '</div>');
             renumber();
             length = length + 1;
+            $("#childSkus_" + (length - 1) + "__saleStartDate").datepicker();
+            $("#childSkus_" + (length - 1) + "__saleEndDate").datepicker();
         }
         var currentIdx = 0;
         if(index == undefined){
@@ -226,11 +237,12 @@
                     "<td>" + salePrice.val() + "</td>" +
                     "<td><a href='#' onclick='removeSku(this, " + currentIdx + ")'>@Messages("product.delete")</a></td>" +
                     "</tr>" );
-                    $(this).dialog("close");
+                    $(this).dialog('destroy').appendTo("#skuDialog");
+                    <!--$(this).dialog("close");-->
                     },
                 "@Messages("sku.cancel.button")": function(){
                     clearSku(length - 1);
-                    $(this).dialog("close");
+                    $(this).dialog('destroy').appendTo("#skuDialog");
                 }
             }
         } else {
@@ -270,8 +282,17 @@
             buttons: btonJson
         }
         );
-
    }
+
+    $(function(){
+        renumber();
+        refillSkuTable();
+        //initialize date picker
+        $("#startDate").datepicker();
+        $("#endDate").datepicker();
+        $("#childSkus_0__saleStartDate").datepicker();
+        $("#childSkus_0__saleEndDate").datepicker();
+    });
 
 </script>
 <fieldset>
@@ -339,6 +360,7 @@ productForm("image"),
 </fieldset>
 
 <fieldset>
+<div id="skuDialog"></div>
 <div id="skuInfo" title="@Messages("product.price.mgt")" style="display:none" >
 <p class="validateTips" id="skuValidateTips"></p>
 @repeat(productForm("childSkus")) { skuField =>
@@ -361,6 +383,7 @@ productForm("image"),
                 <th>价格分类</th>
                 <th>标价</th>
                 <th>促销价格</th>
+                <th>操作</th>
             </tr>
             </thead>
             <tbody id="skuTbody">

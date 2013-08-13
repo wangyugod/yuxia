@@ -171,10 +171,11 @@ object Product {
       Products.where(_.id === p.id).update(p)
     }
 
-    if(childSkus != existingProd.childSkus){
+    println("childSkus is " + childSkus)
+    if (childSkus != existingProd.childSkus) {
       println("updating skus for product")
       Query(Skus).where(_.parentProduct === p.id).delete
-      for(sku <- childSkus){
+      for (sku <- childSkus) {
         Skus.insert(sku)
       }
     }
@@ -190,6 +191,8 @@ object Product {
   }
 
   def delete(id: String) = DBHelper.database.withTransaction {
+    Query(ProductCategories).where(_.productId === id).delete
+    Query(Skus).where(_.parentProduct === id).delete
     Products.where(_.id === id).delete
   }
 }

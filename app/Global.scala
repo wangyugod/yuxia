@@ -33,7 +33,7 @@ object Global extends GlobalSettings {
       //Merchants.ddl.create
 //      Products.ddl.drop
 //      Products.ddl.create
-//      Skus.ddl.drop
+      Skus.ddl.drop
       Skus.ddl.create
       //ProductCategories.ddl.create
 //      Categories.ddl.create

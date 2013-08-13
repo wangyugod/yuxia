@@ -76,8 +76,7 @@ object Products extends Controller with Merchants {
       productForm.bindFromRequest().fold(
         formWithErrors => BadRequest(html.merchandise.newproduct(formWithErrors)),
         form => {
-          println("form product id is " + form.productId)
-          println("form product id2 is " + form.productId)
+          println("form is " + form )
           request.body.file("image").map {
             file => file.ref.moveTo(new File(AppHelper.productImageDir + form.productId + ".jpg"))
           }
