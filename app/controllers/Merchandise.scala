@@ -31,7 +31,7 @@ trait Merchants {
   }
 }
 
-object Merchandise extends Controller with Merchants {
+object Merchandise extends Controller with Merchants{
 
 
   val loginForm: Form[(String, String)] = Form(
@@ -104,6 +104,12 @@ object Merchandise extends Controller with Merchants {
   def signup = Action {
     implicit request => {
       Ok(html.merchandise.merchreg(merchantForm))
+    }
+  }
+
+  def logout = Action {
+    implicit request => {
+      Redirect(routes.Merchandise.login()).withNewSession
     }
   }
 

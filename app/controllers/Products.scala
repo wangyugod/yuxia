@@ -18,7 +18,7 @@ import vo._
  * Time: 8:00 PM
  * To change this template use File | Settings | File Templates.
  */
-object Products extends Controller with Merchants {
+object Products extends Controller with Merchants with MerchSecured {
 
   val productForm: Form[ProductVo] = Form(
     mapping(
@@ -31,7 +31,7 @@ object Products extends Controller with Merchants {
       "endDate" -> optional(text),
       "categories" -> text,
       "selectedCat" -> nonEmptyText,
-      "childSkus" -> seq( mapping(
+      "childSkus" -> seq(mapping(
         "skuId" -> optional(text),
         "skuName" -> text,
         "skuDesc" -> optional(text),
@@ -39,7 +39,7 @@ object Products extends Controller with Merchants {
         "salePrice" -> optional(bigDecimal),
         "saleStartDate" -> optional(text),
         "saleEndDate" -> optional(text)
-        )(SkuVo.apply)(SkuVo.unapply)
+      )(SkuVo.apply)(SkuVo.unapply)
       )
     )(ProductVo.apply)(ProductVo.unapply _)
     /*{
@@ -54,7 +54,7 @@ object Products extends Controller with Merchants {
         val categories = Category.findByIds(catIds)
         var s = "";
         for(cat <- categories){
-          s = s + "," + cat.name
+          s = s + "," + cat.name                                                                f
         }
         if(s != ""){
           s = s.substring(1)
@@ -65,18 +65,14 @@ object Products extends Controller with Merchants {
 
   )
 
-  def newProduct = Action {
-    implicit request => {
-      Ok(html.merchandise.newproduct(productForm))
-    }
-  }
+  def newProduct = isAuthenticated(implicit request => Ok(html.merchandise.newproduct(productForm)))
 
-  def create = Action(parse.multipartFormData) {
+  def create = isAuthenticatedWithMultipartParser(parse.multipartFormData){
     implicit request => {
       productForm.bindFromRequest().fold(
         formWithErrors => BadRequest(html.merchandise.newproduct(formWithErrors)),
         form => {
-          println("form is " + form )
+          println("form is " + form)
           request.body.file("image").map {
             file => file.ref.moveTo(new File(AppHelper.productImageDir + form.productId + ".jpg"))
           }
@@ -87,16 +83,16 @@ object Products extends Controller with Merchants {
         }
       )
     }
-  }
+   }
 
-  def list = Action {
+  def list = isAuthenticated {
     implicit request => {
       val merchantId = request.session.get(MERCHANT_ID).get
       Ok(html.merchandise.productlist(Product.findByMerchantId(merchantId)))
     }
   }
 
-  def get(id: String) = Action {
+  def get(id: String) = isAuthenticated {
     implicit request => {
       val product = Product.findById(id)
       product match {
@@ -110,7 +106,7 @@ object Products extends Controller with Merchants {
     }
   }
 
-  def update = Action(parse.multipartFormData) {
+  def update = isAuthenticatedWithMultipartParser(parse.multipartFormData) {
     implicit request =>
       productForm.bindFromRequest().fold(
         formWithErrors => BadRequest(html.merchandise.product(formWithErrors)),
@@ -129,7 +125,7 @@ object Products extends Controller with Merchants {
       )
   }
 
-  def delete(id: String) = Action {
+  def delete(id: String) = isAuthenticated {
     implicit request => {
       Product.delete(id)
       Redirect(routes.Products.list())
@@ -143,15 +139,15 @@ object Products extends Controller with Merchants {
     }
   }
 
-  def childCategory(id:String) = Action {
+  def childCategory(id: String) = Action {
     implicit request => {
       val childCategory = Category.childCategories(id);
       Ok(JsArray(catToJson(childCategory)))
     }
   }
 
-  def rootCatJson(cat:Category) = {
-    if(cat.isRoot){
+  def rootCatJson(cat: Category) = {
+    if (cat.isRoot) {
       "isFolder" -> JsString("true")
     } else {
       "isFolder" -> JsString("false")

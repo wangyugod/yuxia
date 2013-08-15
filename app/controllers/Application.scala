@@ -17,7 +17,7 @@ object Application extends Controller with Users {
 
   def pageNotFound = Action{
     implicit request =>{
-      Ok(html.pageNotFound())
+      BadRequest(html.pageNotFound())
     }
   }
 

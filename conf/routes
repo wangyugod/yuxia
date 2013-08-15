@@ -14,6 +14,7 @@ POST    /myaccount                  controllers.ProfileController.update
 GET     /signout                    controllers.ProfileController.signout
 GET     /merch/login                controllers.Merchandise.login
 POST    /merch/login                controllers.Merchandise.authenticate
+GET     /merch/logout               controllers.Merchandise.logout
 GET     /merch/signup               controllers.Merchandise.signup
 POST    /merch/signup               controllers.Merchandise.create
 GET     /merch/prod/newprod         controllers.Products.newProduct
@@ -24,6 +25,7 @@ GET     /merch/prod/childCat/:id    controllers.Products.childCategory(id)
 GET     /merch/prod/:id             controllers.Products.get(id)
 POST    /merch/prod                 controllers.Products.update
 DELETE  /merch/prod/:id             controllers.Products.delete(id)
+GET     /prod/:id                   controllers.Browse.productDetail(id)
 
 
 

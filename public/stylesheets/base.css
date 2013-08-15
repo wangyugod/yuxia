@@ -607,3 +607,19 @@ table th {
     padding: 0.6em 10px;
     text-align: left;
 }
+
+.breadcrumb {
+    height: 20px;
+    padding: 0 0 4px 6px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    line-height: 20px;
+    vertical-align: baseline;
+}
+
+#preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 352px;
+}
