@@ -28,8 +28,8 @@ Date: August 2012
 1. Reset                                                                                    
 ============================================================================================*/
 body{
-	font-size: 62.5%;
-	font-family: Helvetica;
+    font: 12px/150% Arial,Verdana,"\5b8b\4f53";
+    color: #333;
 	height: 100%;
 	-webkit-text-size-adjust: none; /* fixed Chrome browse */
 	-webkit-font-size: 1.1em; /* fixed Chrome browse */
@@ -247,7 +247,7 @@ fieldset > dl .error{
 }
 
 .content{
-	width: 759px;
+	width: 1210px;
 	min-height: 500px;
 }
 
@@ -292,7 +292,6 @@ fieldset > dl .error{
 
 /* 2.1.4 3-Column Layout */
 .column_3 .content {
-	width: 100%;
 	border-left: 1px solid #e4f0cd;
 	border-right: 1px solid #e4f0cd;
 	margin: 0 5px;
@@ -623,3 +622,113 @@ table th {
     left: 0;
     width: 352px;
 }
+
+#product-intro {
+    position: relative;
+    z-index: 1;
+    min-height: 474px;
+    height: auto!important;
+    height: 474px;
+}
+
+#product-intro .dt {
+    float: left;
+    width: 72px;
+    text-align: left;
+}
+
+#product-intro .dd {
+    width: 524px;
+    float: left;
+}
+
+#product-name {
+    padding-bottom: 10px;
+    border-bottom: 1px dotted #ccc;
+    padding-left: 370px;
+    zoom: 1;
+}
+
+#product-summary {
+    width: 600px;
+    float: left;
+    padding: 10px;
+    padding-left: 370px;
+}
+
+#summary-price {
+    height: 18px;
+    overflow: hidden;
+}
+
+#summary-price .p-price {
+    color: #e4393c;
+    font-size: 18px;
+}
+
+#summary-price .dd {
+    line-height: 12px;
+}
+
+#product-summary .dt {
+    font-family: simsun;
+}
+
+#choose {
+    border-top: 1px dotted #ddd;
+    padding-top: 10px;
+    padding-left: 370px;
+    float: left;
+    margin-bottom: 20px;
+}
+
+#choose .item {
+    float: left;
+    margin: 2px 8px 2px 0;
+}
+
+#choose .selected {
+    position: relative;
+    zoom: 1;
+}
+
+#choose-qty .wrap-input {
+    position: relative;
+}
+
+#choose-qty .btn-reduce {
+    left: 0;
+    background-position: -216px -190px;
+}
+
+#choose-qty .btn-add {
+    right: 0;
+    background-position: -232px -190px;
+}
+
+#choose-qty .text {
+    width: 30px;
+    height: 16px;
+    border: 1px solid #ccc;
+    padding: 2px;
+    text-align: center;
+}
+
+#preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 352px;
+}
+
+#heroimg{
+    width: 350px;
+    height: 350px;
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+}
+
+ol, ul {
+list-style: none;
+}
+

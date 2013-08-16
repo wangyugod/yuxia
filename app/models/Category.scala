@@ -9,6 +9,7 @@ import slick.session.Database
 import Database.threadLocalSession
 import scala.slick.driver.H2Driver.simple._
 import org.joda.time.LocalDate
+import java.util.Calendar
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,7 +37,11 @@ case class Category(id: String, name: String, description: String, longDescripti
 }
 
 case class Product(id: String, name: String, description: String, longDescription: String, startDate: Option[Date], endDate: Option[Date], merchantId: String, imageUrl: String) {
-  def categories: Seq[Category] = DBHelper.database.withSession {
+  lazy val childSkus = getChildSkus
+  lazy val categories = getCategories
+  lazy val priceRange = getPriceRange
+
+  def getCategories: Seq[Category] = DBHelper.database.withSession {
     val categories = for (pc <- ProductCategories if (pc.productId === id))
     yield pc.categoryId
     categories.list() match {
@@ -45,8 +50,16 @@ case class Product(id: String, name: String, description: String, longDescriptio
     }
   }
 
-  def childSkus: Seq[Sku] = DBHelper.database.withSession {
+  def getChildSkus: Seq[Sku] = DBHelper.database.withSession {
     Query(Skus).where(_.parentProduct === id).list()
+  }
+
+  def getPriceRange: (BigDecimal, BigDecimal) = DBHelper.database.withSession {
+    val sortedSkus = childSkus.sortWith((sku1, sku2) => {
+      sku1.price < sku2.price
+    })
+    println("sorted sku is " + sortedSkus)
+    (sortedSkus.head.price, sortedSkus.reverse.head.price)
   }
 }
 
@@ -54,7 +67,26 @@ case class ProductCategory(productId: String, categoryId: String)
 
 case class CategoryCategory(parentCatId: String, childCatId: String)
 
-case class Sku(id: String, name: String, description: Option[String], skuType: Option[String], productId: String, listPrice: BigDecimal, salePrice: Option[BigDecimal], saleStartDate: Option[Date], saleEndDate: Option[Date])
+case class Sku(id: String, name: String, description: Option[String], skuType: Option[String], productId: String, listPrice: BigDecimal, salePrice: Option[BigDecimal], saleStartDate: Option[Date], saleEndDate: Option[Date]) {
+  def price: BigDecimal = {
+    salePrice match {
+      case Some(spr) if (spr < listPrice) => {
+        (saleStartDate, saleEndDate) match {
+          case (None, None) => spr
+          case (None, Some(sed)) if (saleEndDate.get.getTime >= Calendar.getInstance().getTimeInMillis) => spr
+          case (Some(ssd), None) if (ssd.getTime <= Calendar.getInstance().getTimeInMillis) => {
+            spr
+          }
+          case (Some(ssd), Some(sed)) if (ssd.getTime <= Calendar.getInstance().getTimeInMillis && saleEndDate.get.getTime >= Calendar.getInstance().getTimeInMillis) => {
+            spr
+          }
+          case _ => listPrice
+        }
+      }
+      case _ => listPrice
+    }
+  }
+}
 
 case class ProductSku(skuId: String, productId: String)
 

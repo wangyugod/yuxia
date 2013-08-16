@@ -43,3 +43,9 @@ sku.listprice.validation.msg=标价只能包含小数点和数字，不能包含
 sku.salestartdate.label=促销开始日期
 sku.saleenddate.label=促销结束日期
 sku.cancel.button=退出
+
+#pdp
+pdp.price.label=价格
+pdp.shipping.scope.label=配送范围
+pdp.rating.label=评分
+pdp.choose.sku.label=选择类型

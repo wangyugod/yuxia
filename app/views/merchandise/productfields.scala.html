@@ -195,8 +195,6 @@
             template.before('<div id="skuMgt_' + length + '" class="sku_mgt">' + template.html() + '</div>');
             renumber();
             length = length + 1;
-            $("#childSkus_" + (length - 1) + "__saleStartDate").datepicker();
-            $("#childSkus_" + (length - 1) + "__saleEndDate").datepicker();
         }
         var currentIdx = 0;
         if(index == undefined){
@@ -204,6 +202,8 @@
         } else {
             currentIdx = index;
         }
+        $("#childSkus_" + currentIdx + "__saleStartDate").datepicker();
+        $("#childSkus_" + currentIdx + "__saleEndDate").datepicker();
         for(var i = 0; i < length; i++){
             if(i == currentIdx){
                 $('#skuMgt_' + i).show();
@@ -268,7 +268,7 @@
                 var currentRowHtml = "<td><a href='#' onclick='showSkuMgtForm(" + currentIdx + ")'>" + skuName.val() + "</a></td>" +
                                      "<td>" + listPrice.val() + "</td>" + "<td>" + salePrice.val() + "</td>" + "<td><a href='#' onclick='removeSku(this, " + currentIdx + ")'>@Messages("product.delete")</a></td>";
                 rows.eq(currentIdx).html(currentRowHtml)
-                $(this).dialog("close");
+                $(this).dialog('destroy').appendTo("#skuDialog");
                 }
             }
         }

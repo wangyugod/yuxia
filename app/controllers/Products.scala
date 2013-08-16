@@ -54,7 +54,7 @@ object Products extends Controller with Merchants with MerchSecured {
         val categories = Category.findByIds(catIds)
         var s = "";
         for(cat <- categories){
-          s = s + "," + cat.name                                                                f
+          s = s + "," + cat.name
         }
         if(s != ""){
           s = s.substring(1)
@@ -92,7 +92,7 @@ object Products extends Controller with Merchants with MerchSecured {
     }
   }
 
-  def get(id: String) = isAuthenticated {
+  def get(id: String) = Action {
     implicit request => {
       val product = Product.findById(id)
       product match {
@@ -106,7 +106,7 @@ object Products extends Controller with Merchants with MerchSecured {
     }
   }
 
-  def update = isAuthenticatedWithMultipartParser(parse.multipartFormData) {
+  def update = Action(parse.multipartFormData) {
     implicit request =>
       productForm.bindFromRequest().fold(
         formWithErrors => BadRequest(html.merchandise.product(formWithErrors)),
@@ -125,7 +125,7 @@ object Products extends Controller with Merchants with MerchSecured {
       )
   }
 
-  def delete(id: String) = isAuthenticated {
+  def delete(id: String) = Action {
     implicit request => {
       Product.delete(id)
       Redirect(routes.Products.list())

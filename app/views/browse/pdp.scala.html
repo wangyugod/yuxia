@@ -1,7 +1,57 @@
 @(product: Product)(implicit user:Option[Profile])
-
 @main(product.name, user) {
+<div id="product-intro">
+    <div id="product-name">
+        <h1>@product.name</h1>
+        <span style="font-size:13px">@product.description</span>
+    </div>
+    <div class="clearfix" clstag="">
+        <ul id="product-summary">
+            <li id="summary-price">
+                <div class="dt">@Messages("pdp.price.label")</div>
+                <div class="dd" id="itemPrice">@product.priceRange._1 -- @product.priceRange._2</div>
+            </li>
+            <li id="summary-rating">
+                <div class="dt">@Messages("pdp.rating.label")</div>
+                <div class="dd">
+                    <span class="star sa5"></span>
+                    <a href="#comment" style="float: left;">(已有494人评价)</a>
+                </div>
+            </li>
+            <li id="summary-address-scope">
+                <div class="dt">@Messages("pdp.shipping.scope.label")</div>
+                <div class="dd"></div>
+            </li>
+        </ul>
+        <ul id="choose">
+            <li id="choose-sku">
+                <div class="dt">@Messages("pdp.choose.sku.label")</div>
+                <div class="dd">
+                    @for(sku <- product.childSkus){
+                    <div class="item">
+                        <a href="#" title="白色">@sku.name</a>
+                    </div>
+                    }
+                </div>
+            </li>
+            <li id="choose-qty">
+                <div class="dt">购买数量：</div>
+                <div class="dd">
+                    <div class="wrap-input">
+                        <a class="btn-reduce" href="javascript:;" onclick="setAmount.reduce('#buy-num')">-</a>
+                        <input class="text" id="buy-num" value="1" onkeyup="setAmount.modify('#buy-num');">
+                        <a class="btn-add" href="javascript:;" onclick="setAmount.add('#buy-num')">+</a>
+                    </div>
+                </div>
+            </li>
 
-<p>This is pdp page</p>
+        </ul>
+    </div>
+    <div id="preview">
+        <div id="heroimg">
+            <img width="350" height="350" src="@routes.Assets.at("images/product/" + product.imageUrl)">
+        </div>
+    </div>
+</div>
 
 }
