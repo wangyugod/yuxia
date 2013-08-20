@@ -8,7 +8,7 @@ import play.api.GlobalSettings
 
 // Use H2Driver to connect to an H2 database
 
-import scala.slick.driver.H2Driver.simple._
+import scala.slick.driver.MySQLDriver.simple._
 
 import play.api.Play.current
 import play.api.Application
@@ -32,12 +32,14 @@ object Global extends GlobalSettings {
       //Profiles.ddl.create
       //Merchants.ddl.create
 //      Products.ddl.drop
-//      Products.ddl.create
-      Skus.ddl.drop
-      Skus.ddl.create
+      //Products.ddl.create
+      //Skus.ddl.drop
+//      Skus.ddl.create
       //ProductCategories.ddl.create
 //      Categories.ddl.create
-//      CategoryCategories.ddl.create
+//      CategoryCategories.ddl.drop
+
+      CategoryCategories.ddl.create
 
       /*if (Query(Profiles).list().isEmpty){
         println("Simon is emtpty yet")
@@ -46,7 +48,7 @@ object Global extends GlobalSettings {
 
       if(Query(Categories).list().isEmpty){
         println("insert categories")
-        /*Categories.insert(Category("cat1", "工作餐", "工作餐，简单快捷", ""))
+        Categories.insert(Category("cat1", "工作餐", "工作餐，简单快捷", ""))
         Categories.insert(Category("cat11", "套餐", "套餐，包含饮料", ""))
         Categories.insert(Category("cat12", "炒饭", "我是蛋炒饭", ""))
         Categories.insert(Category("cat13", "面食", "这里有各种各样的面食", ""))
@@ -57,7 +59,7 @@ object Global extends GlobalSettings {
         CategoryCategories.insert(CategoryCategory("cat1", "cat12"))
         CategoryCategories.insert(CategoryCategory("cat1", "cat13"))
         CategoryCategories.insert(CategoryCategory("cat2", "cat21"))
-        CategoryCategories.insert(CategoryCategory("cat2", "cat22"))*/
+        CategoryCategories.insert(CategoryCategory("cat2", "cat22"))
         Categories.insert(Category("cat111", "套餐11", "套餐，包含饮料", ""))
         Categories.insert(Category("cat112", "炒饭11", "我是蛋炒饭", ""))
         Categories.insert(Category("cat113", "面食11", "这里有各种各样的面食", ""))

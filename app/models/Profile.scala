@@ -1,6 +1,6 @@
 package models
 
-import scala.slick.driver.H2Driver.simple._
+import scala.slick.driver.MySQLDriver.simple._
 import java.sql.Date
 import play.api.db.DB
 import play.api.Play.current

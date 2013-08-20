@@ -11,6 +11,8 @@ object ApplicationBuild extends Build {
     // Add your project dependencies here,
      // Add your project dependencies here,
     "com.typesafe.slick" % "slick-extensions_2.10" % "1.0.0",
+    //"com.typesafe.play" %% "play-slick" % "0.4.0",
+    "mysql" % "mysql-connector-java" % "5.1.26",
     jdbc
   )
 

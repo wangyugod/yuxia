@@ -6,7 +6,7 @@ import play.api.db.DB
 import play.api.Play.current
 import slick.session.Database
 import Database.threadLocalSession
-import scala.slick.driver.H2Driver.simple._
+import scala.slick.driver.MySQLDriver.simple._
 
 /**
  * Created with IntelliJ IDEA.

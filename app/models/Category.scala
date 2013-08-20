@@ -7,7 +7,7 @@ import play.api.db.DB
 import play.api.Play.current
 import slick.session.Database
 import Database.threadLocalSession
-import scala.slick.driver.H2Driver.simple._
+import scala.slick.driver.MySQLDriver.simple._
 import org.joda.time.LocalDate
 import java.util.Calendar
 
@@ -173,7 +173,7 @@ object CategoryCategories extends Table[CategoryCategory]("category_category") {
 
   def * = parentCatId ~ childCatId <>(CategoryCategory, CategoryCategory.unapply(_))
 
-  def pk = primaryKey("cat_cat_pk", (parentCatId, parentCatId))
+  def pk = primaryKey("cat_cat_pk", (parentCatId, childCatId))
 }
 
 object Product {
