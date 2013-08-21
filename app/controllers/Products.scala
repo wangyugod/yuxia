@@ -74,7 +74,7 @@ object Products extends Controller with Merchants with MerchSecured {
         form => {
           println("form is " + form)
           request.body.file("image").map {
-            file => file.ref.moveTo(new File(AppHelper.productImageDir + form.productId + ".jpg"))
+            file => file.ref.moveTo(new File(AppHelper.productImageDir + form.productId + ".jpg"), true)
           }
           val catIds = form.categories.split(",")
           Product.create(form.product, catIds, form.childSkus)
@@ -115,7 +115,7 @@ object Products extends Controller with Merchants with MerchSecured {
             file => {
               val dir: String = AppHelper.productImageDir
               println("image file path " + dir + form.productId)
-              file.ref.moveTo(new File(dir + form.productId + ".jpg"))
+              file.ref.moveTo(new File(dir + form.productId + ".jpg"), true)
             }
           }
           Product.update(form.product, form.categories.split(","), form.childSkus)

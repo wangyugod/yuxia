@@ -1,6 +1,6 @@
 package models
 
-import java.sql.Date
+import java.sql.{Timestamp, Date}
 import helper.DBHelper
 import scala.Predef._
 import play.api.db.DB
@@ -36,7 +36,7 @@ case class Category(id: String, name: String, description: String, longDescripti
   def isRoot = parentCategory.isEmpty
 }
 
-case class Product(id: String, name: String, description: String, longDescription: String, startDate: Option[Date], endDate: Option[Date], merchantId: String, imageUrl: String) {
+case class Product(id: String, name: String, description: String, longDescription: String, startDate: Option[Date], endDate: Option[Date], merchantId: String, imageUrl: String, lastUpdatedTime: Timestamp) {
   lazy val childSkus = getChildSkus
   lazy val categories = getCategories
   lazy val priceRange = getPriceRange
@@ -67,8 +67,9 @@ case class ProductCategory(productId: String, categoryId: String)
 
 case class CategoryCategory(parentCatId: String, childCatId: String)
 
-case class Sku(id: String, name: String, description: Option[String], skuType: Option[String], productId: String, listPrice: BigDecimal, salePrice: Option[BigDecimal], saleStartDate: Option[Date], saleEndDate: Option[Date]) {
-  def price: BigDecimal = {
+case class Sku(id: String, name: String, description: Option[String], skuType: Option[String], productId: String, listPrice: BigDecimal, salePrice: Option[BigDecimal], saleStartDate: Option[Date], saleEndDate: Option[Date], lastUpdatedTime: Timestamp) {
+  lazy val price = getPrice
+  def getPrice: BigDecimal = {
     salePrice match {
       case Some(spr) if (spr < listPrice) => {
         (saleStartDate, saleEndDate) match {
@@ -110,9 +111,11 @@ object Products extends Table[Product]("product") {
 
   def imageUrl = column[String]("image_url")
 
-  def * = id ~ name ~ description ~ longDescription ~ startDate ~ endDate ~ merchantId ~ imageUrl <>(
-    (id, name, description, longDescription, startDate, endDate, merchantId, imageUrl) => Product(id, name, description, longDescription, startDate, endDate, merchantId, imageUrl),
-    (p: Product) => Some(p.id, p.name, p.description, p.longDescription, p.startDate, p.endDate, p.merchantId, p.imageUrl)
+  def lastUpdatedTime = column[Timestamp]("last_updated_time")
+
+  def * = id ~ name ~ description ~ longDescription ~ startDate ~ endDate ~ merchantId ~ imageUrl ~ lastUpdatedTime <>(
+    (id, name, description, longDescription, startDate, endDate, merchantId, imageUrl, lastUpdatedTime) => Product(id, name, description, longDescription, startDate, endDate, merchantId, imageUrl, lastUpdatedTime),
+    (p: Product) => Some(p.id, p.name, p.description, p.longDescription, p.startDate, p.endDate, p.merchantId, p.imageUrl, p.lastUpdatedTime)
     )
 }
 
@@ -160,9 +163,11 @@ object Skus extends Table[Sku]("sku") {
 
   def saleEndDate = column[Option[Date]]("sale_end_date")
 
-  def * = id ~ name ~ description ~ skuType ~ parentProduct ~ listPrice ~ salePrice ~ saleStartDate ~ saleEndDate <>(
-    (id, name, description, skuType, parentProduct, listPrice, salePrice, saleStartDate, saleEndDate) => Sku(id, name, description, skuType, parentProduct, listPrice, salePrice, saleStartDate, saleEndDate),
-    (sku: Sku) => Some(sku.id, sku.name, sku.description, sku.skuType, sku.productId, sku.listPrice, sku.salePrice, sku.saleStartDate, sku.saleEndDate)
+  def lastUpdatedTime = column[Timestamp]("last_updated_time")
+
+  def * = id ~ name ~ description ~ skuType ~ parentProduct ~ listPrice ~ salePrice ~ saleStartDate ~ saleEndDate ~ lastUpdatedTime <>(
+    (id, name, description, skuType, parentProduct, listPrice, salePrice, saleStartDate, saleEndDate, lastUpdatedTime) => Sku(id, name, description, skuType, parentProduct, listPrice, salePrice, saleStartDate, saleEndDate, lastUpdatedTime),
+    (sku: Sku) => Some(sku.id, sku.name, sku.description, sku.skuType, sku.productId, sku.listPrice, sku.salePrice, sku.saleStartDate, sku.saleEndDate, sku.lastUpdatedTime)
     )
 }
 

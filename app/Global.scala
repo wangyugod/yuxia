@@ -32,14 +32,14 @@ object Global extends GlobalSettings {
       //Profiles.ddl.create
       //Merchants.ddl.create
 //      Products.ddl.drop
-      //Products.ddl.create
+      Products.ddl.create
       //Skus.ddl.drop
-//      Skus.ddl.create
+      Skus.ddl.create
       //ProductCategories.ddl.create
 //      Categories.ddl.create
 //      CategoryCategories.ddl.drop
 
-      CategoryCategories.ddl.create
+//      CategoryCategories.ddl.create
 
       /*if (Query(Profiles).list().isEmpty){
         println("Simon is emtpty yet")
