@@ -26,13 +26,15 @@ object Browse extends Controller with Users {
     }
   }
 
-  def searchResult = Action{
-    val params = Map("q" -> "name:炒饭", "wt" -> "json", "indent" -> "true")
-    val result = SearchHelper.query(params)
-    val obj = (result \ ("response")).as[JsObject]
-    val searchResult = SearchResult(obj)
-    println("search result is " + searchResult)
-    Ok(Json.toJson(result \ ("response")))
+  def searchResult = Action {
+    implicit request => {
+      val params = Map("q" -> "name:炒饭", "wt" -> "json", "indent" -> "true")
+      val result = SearchHelper.query(params)
+      val obj = (result \ ("response")).as[JsObject]
+      val searchResult = SearchResult(obj)
+      println("search result is " + searchResult)
+      Ok(html.browse.srp("Search Result Page"))
+    }
   }
 
 }

@@ -49,3 +49,10 @@ pdp.price.label=价格
 pdp.shipping.scope.label=配送范围
 pdp.rating.label=评分
 pdp.choose.sku.label=选择类型
+
+
+#SRP
+srp.search.order=排序
+srp.order.saleqty=销量
+srp.order.price=价格
+srp.order.rating=评分

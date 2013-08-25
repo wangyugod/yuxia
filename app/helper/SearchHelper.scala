@@ -5,6 +5,7 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.client.utils.URIBuilder
 import play.api.libs.json.{Json, JsObject}
+import scala.io.Source
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,7 +31,7 @@ object SearchHelper {
       val uri = builder.build()
       httpGet.setURI(uri)
       val response = client.execute(httpGet)
-      val lines = scala.io.Source.fromInputStream(response.getEntity.getContent()).getLines().mkString("\n")
+      val lines = Source.fromInputStream(response.getEntity.getContent()).getLines().mkString("\n")
       val result = Json.parse(lines)
       result
     } finally {
