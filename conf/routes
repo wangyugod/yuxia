@@ -26,7 +26,7 @@ GET     /merch/prod/:id             controllers.Products.get(id)
 POST    /merch/prod                 controllers.Products.update
 DELETE  /merch/prod/:id             controllers.Products.delete(id)
 GET     /prod/:id                   controllers.Browse.productDetail(id)
-GET     /search                     controllers.Browse.searchResult
+GET     /search                     controllers.Browse.search
 
 
 

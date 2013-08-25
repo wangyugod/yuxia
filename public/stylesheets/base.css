@@ -665,9 +665,8 @@ html, body, div, span, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, ad
 
 #search-2013 {
     width: 510px;
-    padding-right: 126px;
     float: left;
-    padding: 4px 86px 0 0;
+    padding: 4px 126px 0 0;
 }
 
 #search-2013 .i-search {
@@ -791,6 +790,56 @@ a:link, a:visited {
     text-decoration: none;
 }
 
+#settleup-2013 {
+    float: right;
+    position: relative;
+    z-index: 9;
+    width: 126px;
+    height: 30px;
+    margin-top: 12px;
+}
+
+#settleup-2013 dt {
+    position: absolute;
+    z-index: 3;
+    width: 74px;
+    height: 30px;
+    padding: 0 20px 0 30px;
+    border: 1px solid #EFEFEF;
+    background-position: -115px -84px;
+    background-color: #F7F7F7;
+    cursor: pointer;
+    text-align: center;
+}
+
+#settleup-2013 dt .shopping {
+    position: absolute;
+    top: -13px;
+    left: 20px;
+    background-image: url(/assets/images/20130330A_1.png);
+    background-position: -133px -279px;
+    padding-left: 6px;
+    color: #fff;
+
+}
+
+#settleup-2013 dt .shopping span {
+    float: left;
+    display: block;
+    height: 20px;
+    padding-right: 6px;
+    background-image: url(/assets/images/20130330A_1.png);
+    background-position: 100% -250px;
+}
+
+#settleup-2013 dt, #settleup-2013 dl.hover dt, #settleup-2013 .nogoods b {
+    background-image: url(/assets/images/20130330A_1.png);
+    background-repeat: no-repeat;
+}
+
+#settleup-2013 dt a {
+    line-height: 27px;
+}
 /** pdp **/
 .sku_template {
     display: none;

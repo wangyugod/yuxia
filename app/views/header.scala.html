@@ -1,0 +1,49 @@
+<div id="o-header-2013">
+    <div class="w" id="header-2013">
+        <div id="logo-2013" class="ld">
+            <a href="@routes.Application.index()" hidefocus="true" >
+                <b></b>
+                <img src="@routes.Assets.at("images/logo.jpg")" width="270" height="60" alt="@Messages("site.name")">
+            </a>
+        </div>
+        <!--logo end-->
+        <script type="text/javascript">
+            function search(key){
+                if(key.trim() != ""){
+                    location.href="@routes.Browse.search?q=" + $('#' + key).val()
+                }
+            }
+        </script>
+        <div id="search-2013">
+            <div class="i-search ld">
+                <ul id="shelper" class="hide"></ul>
+                <div class="form">
+                    <input type="text" class="text" accesskey="s" id="key" autocomplete="off" onkeydown="javascript:if(event.keyCode==13) search('key');" style="color: rgb(153, 153, 153);">
+                    <input type="button" value="搜索" class="button" onclick="search('key');return false;">
+                </div>
+            </div>
+        </div>
+        <!--search end-->
+        <div id="myaccount">
+            <dl>
+                <dt class="ld"><s></s><a href="@routes.ProfileController.myAccount/">我的帐户</a><b></b></dt>
+                <dd>
+                    <div class="loading-style1"><b></b></div>
+                </dd>
+            </dl>
+        </div>
+        <!--my360buy end-->
+        <div id="settleup-2013" >
+            <dl>
+                <dt class="ld"><s></s><span class="shopping"><span id="shopping-amount">2</span></span><a href="http://cart.jd.com/cart/cart.html" id="settleup-url">去购物车结算</a> <b></b> </dt>
+                <dd>
+                    <div class="prompt">
+                        <div class="loading-style1"><b></b>0</div>
+                    </div>
+                </dd>
+            </dl>
+        </div>
+        <!--settleup end-->
+    </div>
+    <!--header end-->
+</div>

@@ -26,9 +26,11 @@ object Browse extends Controller with Users {
     }
   }
 
-  def searchResult = Action {
+  def search = Action {
     implicit request => {
-      val params = Map("q" -> "name:炒饭", "wt" -> "json", "indent" -> "true")
+      val keywords = request.queryString.get("q").get.head
+      println("keywords is " + keywords)
+      val params = Map("q" -> ("text:" + keywords), "wt" -> "json", "indent" -> "true")
       val result = SearchHelper.query(params)
       val obj = (result \ ("response")).as[JsObject]
       val searchResult = SearchResult(obj)
@@ -36,5 +38,4 @@ object Browse extends Controller with Users {
       Ok(html.browse.srp("Search Result Page"))
     }
   }
-
 }
