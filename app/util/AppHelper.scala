@@ -1,8 +1,9 @@
-package helper
+package util
 
 import java.sql.Date
 import play.api.Play
 import play.api.Play._
+import play.api.i18n.Messages
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,5 +36,14 @@ object AppHelper {
 
   def productImageDir = {
     Play.application.path.getPath + "\\" + Play.current.configuration.getString("prod.image.dir").get
+  }
+
+  def displayPrice(priceRange:(BigDecimal, BigDecimal)) = {
+    priceRange match {
+      case (x, y) if x == y => Messages("srp.price.single", x)
+      case (x, y) => {
+        Messages("srp.price.range", x.setScale(2).toString(), y.setScale(2).toString())
+      }
+    }
   }
 }

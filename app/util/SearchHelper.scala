@@ -1,4 +1,4 @@
-package helper
+package util
 
 import play.api._
 import org.apache.http.client.methods.HttpGet
@@ -16,9 +16,12 @@ import scala.io.Source
  */
 object SearchHelper {
 
+  private val log = Logger(this.getClass)
   lazy val searchEngineUrl = Play.current.configuration.getString("solr.url").get
 
   def query(parameters: Map[String, String]) = {
+    if(log.isDebugEnabled)
+      log.debug("query started with parameters " + parameters)
     val client = new DefaultHttpClient()
     try{
       val httpGet = new HttpGet(searchEngineUrl)
@@ -32,6 +35,8 @@ object SearchHelper {
       httpGet.setURI(uri)
       val response = client.execute(httpGet)
       val lines = Source.fromInputStream(response.getEntity.getContent()).getLines().mkString("\n")
+      if(log.isDebugEnabled)
+        log.debug("search response:\n " + lines)
       val result = Json.parse(lines)
       result
     } finally {

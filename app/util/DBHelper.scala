@@ -1,4 +1,4 @@
-package helper
+package util
 
 import slick.session.Database
 import play.api.db.DB

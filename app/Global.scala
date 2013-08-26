@@ -1,5 +1,5 @@
 
-import helper.IdGenerator
+import util.IdGenerator
 import java.sql.Date
 import models.{Profile, Profiles}
 import models._

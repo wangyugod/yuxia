@@ -4,7 +4,7 @@ import play.api.mvc._
 import play.api._
 import views.html
 import models.Product
-import helper.SearchHelper
+import util.SearchHelper
 import play.api.libs.json.{JsObject, Json}
 import vo.SearchResult
 
@@ -16,6 +16,8 @@ import vo.SearchResult
  * To change this template use File | Settings | File Templates.
  */
 object Browse extends Controller with Users {
+  private val log = Logger(this.getClass)
+
   def productDetail(id: String) = Action {
     implicit request => {
       val product = Product.findById(id)
@@ -29,13 +31,13 @@ object Browse extends Controller with Users {
   def search = Action {
     implicit request => {
       val keywords = request.queryString.get("q").get.head
-      println("keywords is " + keywords)
       val params = Map("q" -> ("text:" + keywords), "wt" -> "json", "indent" -> "true")
       val result = SearchHelper.query(params)
       val obj = (result \ ("response")).as[JsObject]
       val searchResult = SearchResult(obj)
-      println("search result is " + searchResult)
-      Ok(html.browse.srp("Search Result Page"))
+      if(log.isDebugEnabled)
+        log.debug("search result is " + searchResult)
+      Ok(html.browse.srp("Search Result Page", searchResult))
     }
   }
 }

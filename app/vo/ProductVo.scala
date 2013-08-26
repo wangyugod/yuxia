@@ -2,7 +2,7 @@ package vo
 
 import java.sql.{Timestamp, Date}
 import models._
-import helper._
+import util._
 
 /**
  * Created with IntelliJ IDEA.

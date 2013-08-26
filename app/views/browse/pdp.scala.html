@@ -9,7 +9,8 @@
         <ul id="product-summary">
             <li id="summary-price">
                 <div class="dt">@Messages("pdp.price.label")</div>
-                <div class="dd" id="itemPrice">@product.priceRange._1 -- @product.priceRange._2</div>
+                <div class="dd" id="itemPrice">
+                    <strong class="p-price" id="jd-price">@util.AppHelper.displayPrice(product.priceRange)</strong></div>
             </li>
             <li id="summary-rating">
                 <div class="dt">@Messages("pdp.rating.label")</div>

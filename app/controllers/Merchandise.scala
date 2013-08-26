@@ -7,7 +7,7 @@ import validation.Constraints
 import views.html
 
 import models._
-import helper._
+import util._
 
 /**
  * Created with IntelliJ IDEA.

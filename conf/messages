@@ -57,3 +57,6 @@ srp.order.saleqty=销量
 srp.order.price=价格
 srp.order.rating=评分
 srp.page.title=商品搜索
+srp.product.total=共<strong>{0}</strong>个商品
+srp.price.single=￥{0}
+srp.price.range=￥{0}--￥{1}

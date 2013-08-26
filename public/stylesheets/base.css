@@ -294,12 +294,7 @@ fieldset > dl .error{
 
 /* 2.2  Wrapper and Page Container
 ----------------------------------------------------------*/
-#wrapper{
-	width: 924px;
-	margin: 0 auto;
-	padding: 0 16px;
 
-}
 
 #topSection > div + div, .aside > div + div, .aside > div + a, .aside > a + div, .aside > a + a, #btmSection > div + div{
 	margin-top: 15px;
@@ -840,6 +835,79 @@ a:link, a:visited {
 #settleup-2013 dt a {
     line-height: 27px;
 }
+
+#plist .p-price {
+    height: 20px;
+    overflow: hidden;
+}
+
+#plist .p-price strong {
+    float: left;
+    margin-right: 5px;
+    font-family: verdana;
+    font-size: 14px;
+    color: #E4393C;
+}
+
+#plist .extra span, #shop-choice .extra span {
+    float: left;
+    overflow: hidden;
+    height: 15px;
+}
+
+#plist .extra a:link, #plist .extra a:visited {
+    float: left;
+    color: #005aa0;
+}
+
+#plist .btn-buy, #plist .btns .btn-coll, #plist .btn-compare, #plist .notice-store, #plist-shop .go-shop, #plist .btn-panic-buying {
+    float: left;
+    height: 19px;
+    padding: 0px 9px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    margin: 0 4px 0 0;
+    background: #F7F7F7;
+    line-height: 18px;
+    line-height: 19px\9;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    color: #333;
+    background: -moz-linear-gradient(top,#f7f7f7,#f2f2f2);
+    background: -webkit-gradient(linear,0 0,0 100%,from(#f7f7f7),to(#f2f2f2));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#f7f7f7", endColorstr="#f2f2f2");
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr="#f7f7f7", endColorstr="#f2f2f2")";
+}
+
+.star {
+    margin-right: 5px;
+}
+
+.star .star-white {
+    width: 76px;
+    background: url(/assets/images/20130606B.png) no-repeat 0 -70px;
+}
+
+.star .h4 {
+    width: 60px;
+}
+
+.star .star-yellow {
+    position: relative;
+    z-index: 1;
+    background: url(/assets/images/20130606B.png) #fff no-repeat 0 -86px;
+}
+
+#plist .extra {
+    margin-top: 5px;
+    padding: 2px 0;
+    height: 16px;
+    line-height: 16px;
+    overflow: hidden;
+    font-family: verdana;
+    color: #005aa0;
+}
 /** pdp **/
 .sku_template {
     display: none;
@@ -902,6 +970,12 @@ table th {
     float: left;
     padding: 10px;
     padding-left: 370px;
+}
+
+#product-summary li {
+    padding: 6px 0;
+    overflow: hidden;
+    clear: both;
 }
 
 #summary-price {
@@ -1036,6 +1110,23 @@ list-style: none;
     border-left: 1px solid #fff;
 }
 
+.pagin .prev, .pagin .next, .pagin .prev-disabled, .pagin .next-disabled {
+    padding: 4px 10px 5px;
+    border-radius: 3px;
+    background: #fff;
+}
+
+.pagin-m .prev, .pagin-m .next, .pagin-m .prev-disabled, .pagin-m .next-disabled {
+    padding-top: 3px;
+    height: 14px;
+    line-height: 14px;
+}
+
+.pagin .prev-disabled, .pagin .next-disabled {
+    color: #ccc;
+    cursor: default;
+}
+
 .pagin .text, .pagin .current {
     font-family: verdana;
 }
@@ -1047,12 +1138,6 @@ list-style: none;
 
 .pagin a, .pagin span {
     border-radius: 3px;
-}
-
-.pagin-m a, .pagin-m span {
-    height: 14px;
-    line-height: 14px;
-    font-size: 12px;
 }
 
 .pagin a, .pagin span {
@@ -1067,6 +1152,12 @@ list-style: none;
     overflow: hidden;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
+}
+
+.pagin-m a, .pagin-m span {
+    height: 14px;
+    line-height: 14px;
+    font-size: 12px;
 }
 
 #filter .total {
@@ -1131,4 +1222,11 @@ list-style: none;
 a {
     text-decoration: none;
     cursor: pointer;
+}
+
+/*merchandise UI*/
+#merchMenu{
+    width: 100px;
+    height: 300px;
+    border-right: 1px solid #a5acb2
 }

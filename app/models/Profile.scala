@@ -7,7 +7,7 @@ import play.api.Play.current
 import slick.session.Database
 import Database.threadLocalSession
 import scala.Predef._
-import helper.DBHelper
+import util.DBHelper
 
 
 /**

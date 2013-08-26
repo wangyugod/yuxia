@@ -1,6 +1,6 @@
 package models
 
-import helper.DBHelper
+import util.DBHelper
 import scala.Predef._
 import play.api.db.DB
 import play.api.Play.current
