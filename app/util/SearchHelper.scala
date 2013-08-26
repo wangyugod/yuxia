@@ -22,6 +22,7 @@ object SearchHelper {
   def query(parameters: Map[String, String]) = {
     if(log.isDebugEnabled)
       log.debug("query started with parameters " + parameters)
+
     val client = new DefaultHttpClient()
     try{
       val httpGet = new HttpGet(searchEngineUrl)
@@ -30,14 +31,13 @@ object SearchHelper {
       for(key <- parameters.keySet){
         builder.addParameter(key, parameters.get(key).get)
       }
-
       val uri = builder.build()
       httpGet.setURI(uri)
       val response = client.execute(httpGet)
       val lines = Source.fromInputStream(response.getEntity.getContent()).getLines().mkString("\n")
       if(log.isDebugEnabled)
         log.debug("search response:\n " + lines)
-      val result = Json.parse(lines)
+      val result = Json.parse(lines).as[JsObject]
       result
     } finally {
       client.getConnectionManager().shutdown();

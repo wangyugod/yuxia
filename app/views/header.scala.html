@@ -8,10 +8,14 @@
         </div>
         <!--logo end-->
         <script type="text/javascript">
-            function search(key){
+            function search(key, pageNum){
+                var url = "";
                 if(key.trim() != ""){
-                    location.href="@routes.Browse.search?q=" + $('#' + key).val()
+                    url = "@routes.Browse.search?q=" + $('#' + key).val()
+                    if(pageNum != undefined)
+                        url = url + "&page=" + pageNum;
                 }
+                location.href=url
             }
         </script>
         <div id="search-2013">

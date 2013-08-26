@@ -31,11 +31,19 @@ object Browse extends Controller with Users {
   def search = Action {
     implicit request => {
       val keywords = request.queryString.get("q").get.head
-      val params = Map("q" -> ("text:" + keywords), "wt" -> "json", "indent" -> "true")
+      val pageParameter = request.queryString.get("page")
+      val pageNum: Int = pageParameter match {
+        case Some(x) => x.head.toInt - 1
+        case _ => 0
+      }
+      if (log.isDebugEnabled)
+        log.debug("current page is " + pageNum)
+      val rows = Play.current.configuration.getInt("pagination.quantity").get
+      val start = pageNum * rows
+      val params = Map("q" -> ("text:" + keywords), "wt" -> "json", "indent" -> "true", "rows" -> rows.toString, "start" -> start.toString)
       val result = SearchHelper.query(params)
-      val obj = (result \ ("response")).as[JsObject]
-      val searchResult = SearchResult(obj)
-      if(log.isDebugEnabled)
+      val searchResult = SearchResult(result)
+      if (log.isDebugEnabled)
         log.debug("search result is " + searchResult)
       Ok(html.browse.srp("Search Result Page", searchResult))
     }

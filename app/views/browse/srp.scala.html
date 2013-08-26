@@ -20,9 +20,22 @@
                         <b></b>
                     </dd>
                 </dl>
-                <div class="pagin pagin-m"><span class="text"><i>1</i>/23</span>
-                    <span class="prev-disabled">上一页<b></b></span>
-                    <a class="next" href="670-671-672-0-0-0-0-0-0-0-1-3-2-1.html">下一页<b></b></a>
+                <div class="pagin pagin-m">
+                    <span class="text" ><i>@result.currentPage</i>/@result.pageQty</span>
+                    @result.currentPage match {
+                        case 1 => {
+                            <span class="prev-disabled">上一页<b></b></span>
+                            <a class="next" href="#" id="srp-next">下一页<b></b></a>
+                        }
+                        case result.pageQty => {
+                            <a class="prev" href="#" id="srp-prev">上一页<b></b></a>
+                            <span class="prev-disabled">下一页<b></b></span>
+                        }
+                        case _ => {
+                            <a class="prev" href="#" id="srp-prev">上一页<b></b></a>
+                            <a class="next" href="#" id="srp-next">下一页<b></b></a>
+                        }
+                    }
                 </div>
                 <div class="total"><span>@Html(Messages("srp.product.total", result.numFound))</span></div>
             </div>
@@ -56,6 +69,25 @@
             </ul>
         </div>
     </div>
+    <script type="text/javascript">
+        $(function(){
+            $('#key').val("@result.keyword");
+            if($('#srp-next').length){
+                $('#srp-next').bind("click",function(){
+                    search('key', parseInt("@result.currentPage", 10) + 1);
+                });
+            }
+
+            if($('#srp-prev').length){
+                $('#srp-prev').bind("click",function(){
+                    search('key', parseInt("@result.currentPage", 10) - 1);
+                });
+            }
+
+
+
+        })
+    </script>
 
 
     <div class="left">
