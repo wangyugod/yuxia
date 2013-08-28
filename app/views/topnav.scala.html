@@ -1,0 +1,31 @@
+
+<div class="w">
+    <div id="nav-2013">
+        <ul id="navitems-2013">
+            <li class="fore1" id="nav-home" ><a href="@routes.Application.index()">首页</a></li>
+            @for((cat, idx) <- Category.topNavCategories.zipWithIndex){
+                <li class="fore@(idx+2)"><a href="@routes.Browse.categoryLanding(cat.id)">@cat.name</a></li>
+            }
+
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function(){
+        $('#navitems-2013 li').hover(
+            function(){
+                $(this).addClass("hover");
+            },
+            function(){
+                $(this).removeClass("hover");
+            }
+        )
+        $('#navitems-2013 li').bind("click",
+            function(){
+                $('#navitems-2013 li .curr').removeClass("curr");
+                $(this).addClass("curr");
+            }
+        )
+    }
+    );
+</script>

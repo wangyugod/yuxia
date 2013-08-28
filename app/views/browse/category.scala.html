@@ -1,0 +1,105 @@
+@(message: String, result: vo.SearchResult)(implicit user:Option[Profile])
+
+@main(Messages("srp.page.title"), user) {
+<div class="right-extra">
+    <span>Here is right area</span>
+    <div id="filter">
+        <div class="fore1">
+            <dl class="order">
+                <dt>@Messages("srp.search.order")</dt>
+                <dd>
+                    <a href="#">@Messages("srp.order.saleqty")</a>
+                    <b></b>
+                </dd>
+                <dd class="">
+                    <a href="#">@Messages("srp.order.price")</a>
+                    <b></b>
+                </dd>
+                <dd class="">
+                    <a href="#">@Messages("srp.order.rating")</a>
+                    <b></b>
+                </dd>
+            </dl>
+            <div class="pagin pagin-m">
+                <span class="text" ><i>@result.currentPage</i>/@result.pageQty</span>
+                @result.currentPage match {
+                case result.pageQty if(result.pageQty == 1) => {
+                    <span class="prev-disabled">上一页<b></b></span>
+                    <span class="prev-disabled">下一页<b></b></span>
+                }
+                case 1 => {
+                <span class="prev-disabled">上一页<b></b></span>
+                <a class="next" href="#" id="srp-next">下一页<b></b></a>
+                }
+                case result.pageQty => {
+                <a class="prev" href="#" id="srp-prev">上一页<b></b></a>
+                <span class="prev-disabled">下一页<b></b></span>
+                }
+                case _ => {
+                <a class="prev" href="#" id="srp-prev">上一页<b></b></a>
+                <a class="next" href="#" id="srp-next">下一页<b></b></a>
+                }
+                }
+            </div>
+            <div class="total"><span>@Html(Messages("srp.product.total", result.numFound))</span></div>
+        </div>
+    </div>
+    <div id="plist" class="plist-n7a">
+        <ul class="list-h">
+            @result.products match {
+            case Nil => {
+                @Messages("srp.not.found")
+            }
+            case p => {
+            @for((item, idx) <- p.zipWithIndex){
+            <li index="@idx">
+                <div class="p-img">
+                    <a target="_blank" href="@routes.Browse.productDetail(item.id)"><img width="220" height="220" alt="" src="@routes.Assets.at("images/product/" + item.imageUrl)" data-img="1" title=""></a>
+                    <div class="picon pi6"><b></b></div>
+                </div>
+                <div class="p-name"><a target="_blank" href="@routes.Browse.productDetail(item.id)" title="">@item.name</a></div>
+                <div class="p-price"><strong>@util.AppHelper.displayPrice(item.priceRange)</strong><span id="p779369"></span></div>
+                <div class="extra"><span class="evaluate"><a target="_blank" href="http://club.jd.com/review/779369-1-1.html">已有0人评价</a></span><span class="reputation">(0%好评)</span></div>
+                <div class="btns">
+                    <a onclick="log(1,7,779369)" href="http://gate.jd.com/InitCart.aspx?pid=779369&amp;pcount=1&amp;ptype=1" target="_blank" class="btn-buy">加入购物车</a>
+                    <a id="coll779369" href="javascript:;" class="btn-coll">关注</a>
+                    <a class="btn-compare btn-compare-s" id="comp_779369" skuid="779369"><span></span>对比</a>
+                </div>
+            </li>
+            }
+            }
+            }
+
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    function searchCategory(pageNum){
+        var url = "";
+        url = "@routes.Browse.categoryLanding(result.keyword)"
+        if(pageNum != undefined)
+            url = url + "?page=" + pageNum;
+        location.href=url
+    }
+
+    $(function(){
+    if($('#srp-next').length){
+        $('#srp-next').bind("click",function(){
+            searchCategory(parseInt("@result.currentPage", 10) + 1);
+        });
+    }
+
+    if($('#srp-prev').length){
+        $('#srp-prev').bind("click",function(){
+            searchCategory(parseInt("@result.currentPage", 10) - 1);
+        });
+    }
+    })
+</script>
+
+
+<div class="left">
+    <span>Here is left area</span>
+</div>
+
+}
