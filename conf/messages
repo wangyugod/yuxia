@@ -1,4 +1,4 @@
-site.name=及时雨
+site.name=雨侠网
 site.anonymous=亲
 site.welcome=欢迎光临
 signin.label=登录
@@ -60,4 +60,4 @@ srp.page.title=商品搜索
 srp.product.total=共<strong>{0}</strong>个商品
 srp.price.single=￥{0}
 srp.price.range=￥{0}--￥{1}
-srp.not.found=对不起，没有找到相关产品
+srp.not.found=很抱歉，没有找到相关产品

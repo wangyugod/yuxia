@@ -785,6 +785,8 @@ a:link, a:visited {
     text-decoration: none;
 }
 
+
+/**/
 #settleup-2013 {
     float: right;
     position: relative;
@@ -836,6 +838,78 @@ a:link, a:visited {
     line-height: 27px;
 }
 
+/*navigation bar*/
+#nav-2013 {
+    position: relative;
+    z-index: 6;
+    height: 40px;
+    padding-left: 210px;
+    margin-bottom: 10px;
+    background: #E4393C;
+}
+
+#categorys-2013 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 210px;
+    height: 40px;
+}
+
+#navitems-2013 {
+    background: -moz-linear-gradient(top,#E64346,#E13335);
+    background: -webkit-gradient(linear,0 0,0 100%,from(#E64346),to(#E13335));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#E64346", endColorstr="#E13335");
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr="#E64346", endColorstr="#E13335")";
+}
+
+#navitems-2013 li {
+    float: left;
+    position: relative;
+    width: 83px;
+}
+
+#navitems-2013 li a {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 85px;
+    text-align: center;
+    color: #fff;
+    font: 700 15px/40px "microsoft yahei";
+    text-decoration: none;
+}
+
+#navitems-2013 .curr a, #navitems-2013 .hover a {
+    background: #A40000;
+}
+
+#navitems-2013, #navitems-2013 li, #navitems-2013 li a {
+    height: 40px;
+}
+
+.ld {
+    position: relative;
+    zoom: 1;
+}
+
+h2, h3 {
+    font-size: 14px;
+}
+
+
+
+.mt, .smt {
+    cursor: default;
+}
+
+.m, .mt, .mc, .mb, .sm, .smt, .smc, .smb {
+    overflow: hidden;
+    zoom: 1;
+}
+
+
+/*product list*/
 #plist .p-price {
     height: 20px;
     overflow: hidden;

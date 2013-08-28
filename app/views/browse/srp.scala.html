@@ -44,7 +44,7 @@
             <ul class="list-h">
                 @result.products match {
                     case Nil => {
-                        "No Result Found"
+                        @Messages("srp.not.found")
                     }
                     case p => {
                        @for((item, idx) <- p.zipWithIndex){
@@ -83,9 +83,6 @@
                     search('key', parseInt("@result.currentPage", 10) - 1);
                 });
             }
-
-
-
         })
     </script>
 

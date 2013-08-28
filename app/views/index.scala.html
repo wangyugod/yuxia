@@ -1,6 +1,6 @@
 @(message: String, userList:Seq[Profile])(implicit user:Option[Profile])
 
-@main("Welcome to YuXia", user) {
+@main(Messages("site.name"), user) {
 
 <p>This is home page</p>
 @for(user <- userList){

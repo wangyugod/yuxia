@@ -18,7 +18,7 @@ import java.util.Calendar
  * Time: 4:47 PM
  * To change this template use File | Settings | File Templates.
  */
-case class Category(id: String, name: String, description: String, longDescription: String) {
+case class Category(id: String, name: String, description: String, longDescription: String, isTopNav: Boolean) {
   def childCategories: Seq[Category] = DBHelper.database.withSession {
     val childCatQuery = for (cc <- CategoryCategories if cc.parentCatId === id) yield cc.childCatId
     Query(Categories).where(_.id inSetBind childCatQuery.list()).list()
@@ -138,9 +138,11 @@ object Categories extends Table[Category]("category") {
 
   def longDescription = column[String]("long_desc")
 
-  def * = id ~ name ~ description ~ longDescription <>(
-    (id, name, description, longDescription) => Category(id, name, description, longDescription),
-    (cat: Category) => Some(cat.id, cat.name, cat.description, cat.longDescription)
+  def isTopNav = column[Boolean]("top_nav_flag")
+
+  def * = id ~ name ~ description ~ longDescription ~ isTopNav <> (
+    (id, name, description, longDescription, isTopNav) => Category(id, name, description, longDescription, isTopNav),
+    (cat: Category) => Some(cat.id, cat.name, cat.description, cat.longDescription, cat.isTopNav)
     )
 }
 
@@ -263,5 +265,9 @@ object Category {
 
   def findById(id: String): Option[Category] = DBHelper.database.withSession {
     Query(Categories).where(_.id === id).firstOption
+  }
+
+  lazy val topNavCategories: Seq[Category] = DBHelper.database.withSession{
+    Query(Categories).where(_.isTopNav === true).list()
   }
 }

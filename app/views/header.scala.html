@@ -11,7 +11,7 @@
             function search(key, pageNum){
                 var url = "";
                 if(key.trim() != ""){
-                    url = "@routes.Browse.search?q=" + $('#' + key).val()
+                    url = "@routes.Browse.searchByKeyword?q=" + $('#' + key).val()
                     if(pageNum != undefined)
                         url = url + "&page=" + pageNum;
                 }
