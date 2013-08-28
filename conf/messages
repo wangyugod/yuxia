@@ -8,6 +8,7 @@ signout.label=退出
 clickhere.label=点这里
 myaccount.label=我的帐户
 login.failed.msg=您的用户名或密码不正确
+site.login.title=欢迎登录雨侠网
 
 #merchandise
 merch.product.title=商品管理

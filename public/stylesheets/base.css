@@ -1298,6 +1298,130 @@ a {
     cursor: pointer;
 }
 
+/*Footer Style*/
+#footer-2013 {
+    padding-bottom: 30px;
+    text-align: center;
+}
+
+#footer-2013 .links a, #footer-2013 .links span {
+    margin: 0 10px;
+}
+
+/*login*/
+#login-body{
+    background: #f2f2f2;
+}
+#entry {
+    background: #e8e8e8;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    padding: 5px;
+    margin: 60px auto 55px;
+    position: relative;
+}
+
+#entry .mc {
+    border: 1px solid #e1e1e1;
+    background: #ffffff;
+    height: 296px;
+}
+
+#entry .mc .form{
+    margin: 5px;
+}
+
+.w1 {
+    width: 890px;
+    margin: 0 auto;
+}
+
+#logo {
+    padding: 10px 0;
+    float: none;
+    margin: 0;
+    position: relative;
+}
+
+#entry .item {
+    height: 64px;
+    line-height: 26px;
+    overflow: visible;
+    position: relative;
+    width: 320px;
+    z-index: 1;
+}
+
+#entry .text {
+    float: none;
+    width: 282px;
+    height: 24px;
+    line-height: 24px;
+    padding: 4px 20px 4px 3px;
+    border: 1px solid #cccccc;
+    font-size: 14px;
+    font-family: arial,"宋体";
+}
+
+#entry .checkbox {
+    margin-top: 7px;
+}
+
+#entry .item .item-ifo {
+    position: relative;
+    width: 307px;
+}
+
+#entry #autoentry {
+    height: 37px;
+    margin-top: 8px;
+}
+
+.form .item {
+    overflow: hidden;
+    zoom: 1;
+}
+
+.form label, .form input, .form select, .form textarea, .form button, .form .label {
+    float: left;
+    font-size: 12px;
+}
+
+#entry .mar {
+    margin-right: 10px;
+}
+
+#entry .login-btn2013 {
+    height: 52px;
+}
+
+.btn-img {
+    cursor: pointer;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    text-align: center;
+}
+
+#entry .btn-entry {
+    width: 307px;
+    height: 34px;
+    font-family: "微软雅黑";
+    line-height: 100px;
+    text-indent: -9999px;
+    background: url(/assets/images/login-img2013.png) no-repeat 0 0;
+    overflow: hidden;
+}
+
+.w2 {
+    width: 990px;
+    padding: 0;
+    margin: 0 auto;
+    zoom: 1;
+}
+
 /*merchandise UI*/
 #merchMenu{
     width: 100px;
