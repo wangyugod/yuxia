@@ -9,6 +9,16 @@ clickhere.label=点这里
 myaccount.label=我的帐户
 login.failed.msg=您的用户名或密码不正确
 site.login.title=欢迎登录雨侠网
+site.signup.title=欢迎注册雨侠网
+login.free.register=免费注册
+login.auto.login=自动登录
+login.forgot.password=忘记密码
+login.password=密码
+login.email=邮箱
+error.email=该字段值必须为email
+error.required=该字段不能为空
+error.password.minlength=密码长度不能小于6位
+error.password.notmatch=您两次输入的密码不匹配
 
 #merchandise
 merch.product.title=商品管理

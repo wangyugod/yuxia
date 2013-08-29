@@ -12,8 +12,7 @@
 </head>
 <script type="text/javascript">
     function signin(){
-    alert('dsds');
-    $("form").submit();
+        $("form").submit();
     }
 </script>
 <body id="login-body">
@@ -22,28 +21,60 @@
 </div>
 @helper.form(routes.ProfileController.authenticate)      {
 
+
 <div class="w1" id="entry">
     <div class="mc " id="bgDiv">
         <div class="form ">
             <div class="item fore1">
-                <span>邮箱</span>
+                <span>@Messages("login.email")</span>
                 <div class="item-ifo">
                     <input type="text" id="login" name="login" value="@form(" login").value" class="text" tabindex="1" autocomplete="off">
                     <label id="loginname_succeed" class="blank invisible"></label>
-                    <label id="loginname_error" class="hide"><b></b></label>
+                    @form.error("login") match{
+                        case Some(err) => {
+                            <label id="loginname_error" class="null">@Messages(err.message)</label>
+                            <script type="text/javascript">
+                                $(function(){
+                                    $('#login').addClass("highlight2");
+                                });
+                            </script>
+                        }
+                        case None => {}
+                    }
+
                 </div>
             </div>
             <div class="item fore2">
-                <span>密码</span>
+                <span>@Messages("login.password")</span>
                 <div class="item-ifo">
-                    <input type="password" id="password" name="password" class="text" tabindex="2" autocomplete="off">
+                    <input type="password" id="password" name="password" class="text" tabindex="2" autocomplete="off" onkeydown="javascript:if(event.keyCode==13) signin();">
+                    <label id="loginpwd_succeed" class="blank invisible"></label>
+                    @form.error("password") match{
+                    case Some(err) => {
+                        <label id="loginpwd_error" class="null">@Messages(err.message)</label>
+                        <script type="text/javascript">
+                            $(function(){
+                                $('#password').addClass("highlight2");
+                            });
+                        </script>
+                    }
+                    case None => {}
+                    }
+
+                    @form.error("login.failed") match{
+                    case Some(err) => {
+                        <label id="loginpwd_error" class="null">@Messages(err.message)</label>
+                    }
+                    case None => {}
+                    }
+
                 </div>
             </div>
             <div class="item fore4" id="autoentry">
                 <div class="item-ifo">
                     <input type="checkbox" class="checkbox" name="chkRememberMe" clstag="passport|keycount|login|04">
-                    <label class="mar">自动登录</label>
-                    <label><a href="http://safe.jd.com/findPwd/index.action" class="" clstag="passport|keycount|login|05">忘记密码?</a></label>
+                    <label class="mar">@Messages("login.auto.login")</label>
+                    <label><a href="" class="" clstag="passport|keycount|login|05">@Messages("login.forgot.password")</a></label>
                     <div class="clr"></div>
                 </div>
             </div>
@@ -51,7 +82,7 @@
             <div class="item login-btn2013">
                 <input type="button" onclick="javascript: signin()" class="btn-img btn-entry" id="loginsubmit" tabindex="8" >
             </div>
-            <span><a href="https://reg.jd.com/reg/person">免费注册&gt;&gt;</a></span>
+            <span><a href="@routes.ProfileController.signup">@Messages("login.free.register")&gt;&gt;</a></span>
         </div>
     </div>
 </div>

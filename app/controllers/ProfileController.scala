@@ -9,6 +9,7 @@ import views.html
 import models._
 import util._
 import play.api.i18n.Messages
+import play.api.Logger
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,17 +20,20 @@ import play.api.i18n.Messages
  */
 
 trait Users {
-  val LOGIN_KEY = "login"
+  val LOGIN_KEY = "user_login"
+  val USER_NAME = "user_name"
+  val USER_ID = "user_id"
 
   implicit def user(implicit session: Session): Option[Profile] = {
     session.get(LOGIN_KEY) match {
-      case Some(login) => Profile.findUserByLogin(login)
+      case Some(login) => Some(Profile(session.get(USER_ID).get, session.get(LOGIN_KEY).get, "", session.get(USER_NAME).get, None, None))
       case None => None
     }
   }
 }
 
 object ProfileController extends Controller with Users {
+  private val log = Logger(this.getClass)
 
 
   val profileForm: Form[Profile] = Form(
@@ -37,21 +41,17 @@ object ProfileController extends Controller with Users {
       "id" -> optional(text),
       "login" -> email,
       "password" -> tuple(
-        "main" -> text(minLength = 6),
+        "main" -> text.verifying(Messages("error.password.minlength"), {_.length >= 6}),
         "confirm" -> text
       ).verifying(
         // Add an additional constraint: both passwords must match
-        "Passwords don't match", passwords => passwords._1 == passwords._2
+        Messages("error.password.notmatch"), passwords => passwords._1 == passwords._2
       ),
-      "name" -> nonEmptyText,
-      "gender" -> optional(text),
-      "birthday" -> optional(text.verifying(Constraints.pattern( """(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])""".r, "Date Constraint", "Your input should be in format YYYY-MM-DD")))
+      "name" -> nonEmptyText
     )
-    {
-      ((id, login, passwords, name, gender, birthday) => Profile(id.getOrElse(IdGenerator.generateProfileId), login, passwords._1, name, gender, AppHelper.convertDateFromText(birthday)))
-    }
+      ((id, login, passwords, name) => Profile(id.getOrElse(IdGenerator.generateProfileId), login, passwords._1, name, None, None))
       ((profile: Profile) => {
-        Some((Some(profile.id), profile.login, (profile.password, ""), profile.name, profile.gender, AppHelper.convertDateToText(profile.birthDay)))
+        Some((Some(profile.id), profile.login, (profile.password, ""), profile.name))
       }) verifying("User with the same loign already exists", profile => Profile.findUserByLogin(profile.login).isEmpty)
   )
 
@@ -71,16 +71,14 @@ object ProfileController extends Controller with Users {
 
   val loginForm: Form[(String, String)] = Form(
     tuple(
-      "login" -> nonEmptyText.verifying(email.constraints.head),
-      "password" -> text
-    ) verifying(Messages("login.failed.msg"), result => result match {
-      case (login, password) => Profile.authenticateUser(login, password).isDefined
-    })
+      "login" -> email,
+      "password" -> nonEmptyText
+    )
   )
 
   def login = Action {
     implicit request =>
-      Ok(html.login(loginForm))
+      Ok(html.login(loginForm)).withCookies(Cookie("DG", scala.util.Random.nextString(2)))
   }
 
   def authenticate = Action {
@@ -89,7 +87,15 @@ object ProfileController extends Controller with Users {
         formWithErrors => {
           BadRequest(html.login(formWithErrors))
         },
-        user => Redirect(routes.Application.index()).withSession(LOGIN_KEY -> user._1)
+        user => {
+          val foundUser = Profile.authenticateUser(user._1, user._2)
+          if (foundUser.isDefined) {
+            Redirect(routes.Application.index()).withSession(LOGIN_KEY -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id)
+          } else {
+            BadRequest(html.login(loginForm.withError("login.failed", Messages("login.failed.msg"))))
+          }
+
+        }
       )
   }
 
@@ -101,11 +107,13 @@ object ProfileController extends Controller with Users {
   def create = Action {
     implicit request => profileForm.bindFromRequest.fold(
       formWithErrors => {
+        if(log.isDebugEnabled)
+          log.debug("Error form is " + formWithErrors)
         BadRequest(html.signup(formWithErrors))
       },
       profile => {
         Profile.createUser(profile)
-        Redirect(routes.Application.index()).withSession(LOGIN_KEY -> profile.login)
+        Redirect(routes.Application.index()).withSession(LOGIN_KEY -> profile.login, USER_NAME -> profile.name, USER_ID -> profile.id)
       }
     )
   }
@@ -130,7 +138,7 @@ object ProfileController extends Controller with Users {
 
   def signout = Action {
     implicit request =>
-      Redirect(routes.Application.index()).withNewSession
+      Redirect(routes.ProfileController.login()).withNewSession
   }
 
 

@@ -1396,6 +1396,11 @@ a {
     height: 52px;
 }
 
+#entry .highlight2 {
+    border: 1px solid #f00;
+    color: #f00;
+}
+
 .btn-img {
     cursor: pointer;
     overflow: hidden;
@@ -1421,6 +1426,99 @@ a {
     margin: 0 auto;
     zoom: 1;
 }
+
+#entry .null, #entry .error, #loginname_error.error, #loginpwd_error.error, #authcode_error.error {
+    position: absolute;
+    width: 302px;
+    padding: 2px 0 2px 3px;
+    left: 0px;
+    top: 34px;
+    border: 1px solid #ffbdbf;
+    color: #e6393d;
+    background: #ffebec;
+    float: none;
+    line-height: 16px;
+    z-index: 100;
+}
+
+/*Signup*/
+#regist {
+    background: #FFF;
+    margin-bottom: 10px;
+}
+
+#regist .mc {
+    padding: 30px 0 20px;
+    border: solid #dddddd;
+    border-width: 0px 1px 1px;
+}
+
+#regist .text {
+    width: 238px;
+    height: 16px;
+    padding: 10px 25px 10px 5px;
+    border: 1px solid #cccccc;
+    float: none;
+    font-size: 14px;
+    font-family: arial,"宋体";
+    color: #999;
+}
+
+#regist .highlight2 {
+    border: 1px solid #FF0000;
+    color: #f00;
+}
+
+#regist .item {
+    padding-top: 9px;
+    height: 60px;
+    line-height: 34px;
+    position: relative;
+    z-index: 1;
+}
+
+.ftx04, .flk04 a:link, .flk04 a:visited, a.flk04:link, a.flk04:visited {
+    color: #F00;
+}
+
+#regist .label {
+    width: 190px;
+    text-align: right;
+    font-size: 14px;
+    color: #999;
+    padding-right: 10px;
+}
+
+#regist .item .item-ifo {
+    position: relative;
+    width: 270px;
+}
+
+#regist .btn-regist {
+    width: 270px;
+    height: 36px;
+    color: #FFF;
+    font-family: "微软雅黑";
+    font-size: 16px;
+    text-indent: -9999px;
+    font-weight: 800;
+    overflow: hidden;
+    background: url(/assets/images/regist-btn.jpg) no-repeat;
+}
+
+#regist .focus, #regist .error {
+    color: #e4393c;
+    line-height: 36px;
+    height: 36px;
+    position: absolute;
+    top: 0px;
+    right: -275px;
+    width: 260px;
+    padding: 0 5px;
+    background: #FFEBEB;
+    border: 1px solid #ffbdbe;
+}
+
 
 /*merchandise UI*/
 #merchMenu{
