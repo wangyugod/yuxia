@@ -15,7 +15,7 @@ import scala.slick.driver.MySQLDriver.simple._
  * Time: 5:17 PM
  * To change this template use File | Settings | File Templates.
  */
-case class Merchant(id: String, login: String, password: String, merchantNum: String, name: String)
+case class Merchant(id: String, login: String, password: String, name: String, description: Option[String])
 
 
 object Merchants extends Table[Merchant]("merchant") {
@@ -25,13 +25,13 @@ object Merchants extends Table[Merchant]("merchant") {
 
   def password = column[String]("password")
 
-  def merchantNum = column[String]("merchantNum")
-
   def name = column[String]("name")
 
-  def * = id ~ login ~ password ~ merchantNum ~ name <>(
-    (id, login, password, merchantNum, name) => Merchant(id, login, password, merchantNum, name),
-    (p: Merchant) => Some(p.id, p.login, p.password, p.merchantNum, p.name)
+  def description = column[Option[String]]("description")
+
+  def * = id ~ login ~ password ~ name ~ description <>(
+    (id, login, password, name, description) => Merchant(id, login, password, name, description),
+    (p: Merchant) => Some(p.id, p.login, p.password, p.name, p.description)
     )
 }
 
@@ -44,14 +44,14 @@ object Merchant {
     }
   }
 
-  def create(merchant:Merchant) = {
-    DBHelper.database.withTransaction{
+  def create(merchant: Merchant) = {
+    DBHelper.database.withTransaction {
       Merchants.insert(merchant)
     }
   }
 
-  def findByLogin(login:String): Option[Merchant] = {
-    DBHelper.database.withSession{
+  def findByLogin(login: String): Option[Merchant] = {
+    DBHelper.database.withSession {
       Query(Merchants).where(_.login === login).firstOption
     }
   }

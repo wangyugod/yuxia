@@ -22,10 +22,11 @@ trait Merchants {
   val MERCHANT_NAME = "merch_name"
   val MERCHANT_NUMBER = "merch_num"
   val MERCHANT_ID = "merch_id"
+  val MERCHANT_DESC = "merch_desc"
 
   implicit def merchant(implicit session: Session): Option[Merchant] = {
     session.get(MERCHANT_LOGIN) match {
-      case Some(login) => Some(Merchant(session.get(MERCHANT_ID).get, session.get(MERCHANT_LOGIN).get, "", session.get(MERCHANT_NUMBER).get, session.get(MERCHANT_NAME).get))
+      case Some(login) => Some(Merchant(session.get(MERCHANT_ID).get, session.get(MERCHANT_LOGIN).get, "", session.get(MERCHANT_NAME).get, session.get(MERCHANT_DESC)))
       case None => None
     }
   }
@@ -45,6 +46,7 @@ object Merchandise extends Controller with Merchants{
     mapping(
       "id" -> optional(text),
       "login" -> email,
+      "description" -> optional(text),
       "password" -> tuple(
         "main" -> text(minLength = 6),
         "confirm" -> text
@@ -52,12 +54,11 @@ object Merchandise extends Controller with Merchants{
         // Add an additional constraint: both passwords must match
         "Passwords don't match", passwords => passwords._1 == passwords._2
       ),
-      "name" -> nonEmptyText,
-      "merchantNum" -> optional(text)
+      "name" -> nonEmptyText
     )
-      ((id, login, passwords, name, merchantNum) => Merchant(id.getOrElse(IdGenerator.generateProfileId), login, passwords._1, name, merchantNum.getOrElse("")))
+      ((id, login, description, passwords, name) => Merchant(id.getOrElse(IdGenerator.generateProfileId), login, passwords._1, name, description))
       ((merchant: Merchant) => {
-        Some(Some(merchant.id), merchant.login, (merchant.password, ""), merchant.name, Some(merchant.merchantNum))
+        Some(Some(merchant.id), merchant.login, merchant.description, (merchant.password, ""), merchant.name)
       }) verifying("User with the same loign already exists", profile => Merchant.findByLogin(profile.login).isEmpty)
   )
 
@@ -70,7 +71,7 @@ object Merchandise extends Controller with Merchants{
         merchant => {
           Merchant.create(merchant)
           merchantForm.fill(merchant)
-          Redirect(routes.Merchandise.signup())
+          Redirect(routes.Products.list()).withSession(MERCHANT_LOGIN -> merchant.login, MERCHANT_ID -> merchant.id, MERCHANT_NAME -> merchant.name, MERCHANT_DESC -> merchant.description.getOrElse(""))
         }
       )
     }
@@ -85,7 +86,7 @@ object Merchandise extends Controller with Merchants{
         merchant => {
           val loginMerchant = Merchant.authenticateUser(merchant._1, merchant._2)
           if(loginMerchant.isDefined){
-            Redirect(routes.Products.list()).withSession(MERCHANT_LOGIN -> merchant._1, MERCHANT_ID -> loginMerchant.get.id, MERCHANT_NAME -> loginMerchant.get.name, MERCHANT_NUMBER ->  loginMerchant.get.merchantNum)
+            Redirect(routes.Products.list()).withSession(MERCHANT_LOGIN -> merchant._1, MERCHANT_ID -> loginMerchant.get.id, MERCHANT_NAME -> loginMerchant.get.name, MERCHANT_DESC -> loginMerchant.get.description.getOrElse(""))
           } else {
             BadRequest(html.merchandise.merchlogin(loginForm.withError("error", "invalid login or password")))
           }

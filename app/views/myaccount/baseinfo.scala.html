@@ -1,0 +1,66 @@
+@(profileForm:Form[Profile])(implicit user: Option[Profile])
+
+@import helper._
+@myAccount(user){
+
+<div class="o-mt">
+    <h2>账户信息</h2>
+</div>
+<div class="m" id="baseinfo">
+    <div class="mc">
+        <div class="i-m">
+            <div class="i-mc">
+                @form(action = routes.ProfileController.update) {
+                <input type="hidden" name="id" value="@profileForm.data.get("id")"/>
+                <input type="hidden" name="login" value="@profileForm.data.get("login")"/>
+                <div class="form">
+                    <div class="item">
+                        <span class="label">@Messages("myacct.email.label")</span>
+                        <div class="fl">
+                            <strong class="email">@profileForm.data.get("login")&nbsp;&nbsp;&nbsp;</strong>
+                        </div>
+                        <div class="clr"></div>
+                    </div>
+                    <div class="item">
+                        <span class="label"><em>*</em>@Messages("myacct.name.label")</span>
+                        <div class="fl">
+                            <div>
+                                <input name="name" id="name" type="text" value="@profileForm.data.get("name")" class="text"><s></s>
+                                <div class="clr"></div><div class="prompt-06"><span id="petName_msg"></span></div>
+                            </div>
+                        </div>
+                        <div class="clr"></div>
+                    </div>
+                    <div class="item">
+                        <span class="label"><em>*</em>@Messages("myacct.gender.label")</span>
+                        <div class="fl">
+                            <input type="radio" name="gender" value="M" id="RadioGroup1_0" class="radio" @(if(profileForm.data.get("gender") == Some("M"))" checked")><label>男</label>
+                            <input type="radio" name="gender" value="F" id="RadioGroup1_1" class="radio" @(if(profileForm.data.get("gender") == Some("F"))" checked")><label>女</label>
+                        </div>
+                        <div class="clr"></div>
+                    </div>
+                    <div class="item">
+                        <span class="label"><em>*</em>@Messages("myacct.birthday.label")</span>
+                        <div class="fl">
+                            <div>
+                                <input name="birthday" id="birthday" type="text" value="@profileForm.data.get("birthday")" class="text" placeholder="格式YYYY-MM-DD"><s></s>
+                                <div class="clr"></div><div class="prompt-06"><span id="birthday_msg"></span></div>
+                            </div>
+                        </div>
+                        <div class="clr"></div>
+                    </div>
+                    <div class="item">
+                        <span class="label">&nbsp;</span>
+                        <div class="fl">
+                            <a href="javascript:void(0)" onclick="javascript: $('form').submit()" class="btn btn-7"><s></s>@Messages("myacct.submitbtn.label")</a>
+                        </div>
+                        <div class="clr"></div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+}

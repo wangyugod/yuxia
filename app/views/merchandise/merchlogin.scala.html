@@ -1,24 +1,86 @@
 @(form:Form[(String,String)])(implicit flash:Flash)
+<!DOCTYPE html>
 
-@merchbase(Messages("merch.login"), None) {
+<html>
+<head>
+    <title>@Messages("merch.login.title")</title>
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/base.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/component.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/layout.css")">
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+    <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+</head>
+<body id="login-body">
+<div class="w2">
+    <div id="logo"><a href="@routes.Application.index" ><img src="@routes.Assets.at("images/logo.jpg")" alt="@Messages("site.name")" width="170" height="60"></a><b></b></div>
+</div>
 @helper.form(routes.Merchandise.authenticate)      {
+<div class="w1" id="entry">
+    <div class="mc " id="bgDiv">
+        <div class="form ">
+            <div class="item fore1">
+                <span>@Messages("login.email")</span>
+                <div class="item-ifo">
+                    <input type="text" id="login" name="login" value="@form(" login").value" class="text" tabindex="1" autocomplete="off">
+                    <label id="loginname_succeed" class="blank invisible"></label>
+                    @form.error("login") match{
+                    case Some(err) => {
+                    <label id="loginname_error" class="null">@Messages(err.message)</label>
+                    <script type="text/javascript">
+                        $(function(){
+                        $('#login').addClass("highlight2");
+                        });
+                    </script>
+                    }
+                    case None => {}
+                    }
 
-@form.errors.map { error =>
-<p class="error">
-    @error.message
-</p>
+                </div>
+            </div>
+            <div class="item fore2">
+                <span>@Messages("login.password")</span>
+                <div class="item-ifo">
+                    <input type="password" id="password" name="password" class="text" tabindex="2" autocomplete="off" onkeydown="javascript:if(event.keyCode==13) signin();">
+                    <label id="loginpwd_succeed" class="blank invisible"></label>
+                    @form.error("password") match{
+                    case Some(err) => {
+                    <label id="loginpwd_error" class="null">@Messages(err.message)</label>
+                    <script type="text/javascript">
+                        $(function(){
+                        $('#password').addClass("highlight2");
+                        });
+                    </script>
+                    }
+                    case None => {}
+                    }
+
+                    @form.error("login.failed") match{
+                    case Some(err) => {
+                    <label id="loginpwd_error" class="null">@Messages(err.message)</label>
+                    }
+                    case None => {}
+                    }
+
+                </div>
+            </div>
+            <div class="item fore4" id="autoentry">
+                <div class="item-ifo">
+                    <input type="checkbox" class="checkbox" name="chkRememberMe">
+                    <label class="mar">@Messages("login.auto.login")</label>
+                    <label><a href="" class="">@Messages("login.forgot.password")</a></label>
+                    <div class="clr"></div>
+                </div>
+            </div>
+
+            <div class="item login-btn2013">
+                <input type="button" onclick="$('form').submit();" class="btn-img btn-entry" id="loginsubmit" tabindex="8" >
+            </div>
+            <span><a href="@routes.Merchandise.signup">@Messages("merch.free.register")&gt;&gt;</a></span>
+        </div>
+    </div>
+</div>
+
 }
 
-<p>
-    <input type="login" name="login" placeholder="Login" id="login" value="@form(" login").value">
-</p>
-<p>
-    <input type="password" name="password" id="password" placeholder="Password">
-</p>
-<p>
-    <button type="submit" id="loginbutton">@Messages("merch.login")</button>
-    <a href="@routes.Merchandise.signup">@Messages("merch.signup")</a>
-</p>
-
-}
-}
+</body>
+</html>

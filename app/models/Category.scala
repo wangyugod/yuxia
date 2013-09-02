@@ -8,7 +8,6 @@ import play.api.Play.current
 import slick.session.Database
 import Database.threadLocalSession
 import scala.slick.driver.MySQLDriver.simple._
-import org.joda.time.LocalDate
 import java.util.Calendar
 
 /**

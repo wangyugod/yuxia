@@ -32,7 +32,7 @@ trait Users {
   }
 }
 
-object ProfileController extends Controller with Users {
+object ProfileController extends Controller with Users with Secured {
   private val log = Logger(this.getClass)
 
 
@@ -41,7 +41,9 @@ object ProfileController extends Controller with Users {
       "id" -> optional(text),
       "login" -> email,
       "password" -> tuple(
-        "main" -> text.verifying(Messages("error.password.minlength"), {_.length >= 6}),
+        "main" -> text.verifying(Messages("error.password.minlength"), {
+          _.length >= 6
+        }),
         "confirm" -> text
       ).verifying(
         // Add an additional constraint: both passwords must match
@@ -107,7 +109,7 @@ object ProfileController extends Controller with Users {
   def create = Action {
     implicit request => profileForm.bindFromRequest.fold(
       formWithErrors => {
-        if(log.isDebugEnabled)
+        if (log.isDebugEnabled)
           log.debug("Error form is " + formWithErrors)
         BadRequest(html.signup(formWithErrors))
       },
@@ -121,20 +123,25 @@ object ProfileController extends Controller with Users {
   def update = Action {
     implicit request => profileUpdateForm.bindFromRequest.fold(
       formWithErrors => {
-        BadRequest(html.basicInformation(formWithErrors))
+        if(log.isDebugEnabled)
+          log.debug("error form is \n" + formWithErrors.errors)
+        BadRequest(html.myaccount.baseinfo(formWithErrors))
       },
       profile => {
         val oldProfile = Profile.findUserByLogin(profile.login).get
-        Profile.updateUser(Profile(profile.id, profile.login, oldProfile.password, profile.name, profile.gender, profile.birthDay))
-        Redirect(routes.Application.index()).withSession(LOGIN_KEY -> profile.login)
+        val newProfile: Profile = Profile(profile.id, profile.login, oldProfile.password, profile.name, profile.gender, profile.birthDay)
+        Profile.updateUser(newProfile)
+        Redirect(routes.ProfileController.myAccount())
       }
     )
   }
 
-  def myAccount = Action {
-    implicit request =>
-      Ok(html.basicInformation(profileUpdateForm))
-  }
+  def myAccount = isAuthenticated(
+    implicit request =>{
+      val profile = Profile.findUserByLogin(request.session.get(LOGIN_KEY).get)
+      Ok(html.myaccount.baseinfo(profileUpdateForm.fill(profile.get)))
+    }
+  )
 
   def signout = Action {
     implicit request =>

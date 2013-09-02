@@ -41,73 +41,6 @@ body{
 	padding: 0;
 }
 
-table{
-	border-collapse: collapse;
-	border-spacing: 0;
-}
-
-fieldset,img{ 
-	border: 0;
-}
-
-address,caption,cite,code,dfn,em,th,var,small{
-	font-style: normal; 
-	font-weight: normal;
-}
-
-ol,ul,li{
-	list-style: none;
-}
-
-caption,th{
-	text-align: left;
-}
-
-h1,h2,h3,h4,h5,h6{
-	font-weight: normal;
-}
-
-q:before,q:after{
-	content: '';
-}
-
-abbr,acronym{ 
-	border: 0;
-}
-
-a{
-	text-decoration: none;
-	cursor: pointer;
-}
-
-iframe{
-	border: none;
-}
-
-b,strong,.bold{
-	font-weight: 700;
-}
-
-p{
-	line-height: 1.3em;
-}
-
-ul > li, dl > dt, dl > dd{
-	float: left;
-}
-
-dl > dt + dd{
-	margin-left: 5px;
-}
-
-small{
-	font-size: 0.9em;
-}
-
-fieldset > dl{
-	width: 100%;
-	display: block;
-}
 
 /* 1.1  Basic Form
 ----------------------------------------------------------*/
@@ -446,102 +379,6 @@ fieldset > dl .error{
 	color: #ff4949;
 }
 
-
-
-/**----MiniCart---**/
-.miniCart{
-	position: absolute;
-	z-index: 1600;
-	top: 20px;
-	right: 0;
-	width: 300px;
-	background: #fff;
-	border: 1px solid #acacac;
-	padding-bottom: 15px;
-	text-align: left;
-	opacity: 0;
-	visibility: hidden;
-	transition: all 0.3s ease-out;
-	-webkit-transition: all 0.3s ease-out;
-	-moz-transition: all 0.3s ease-out;
-	-ms-transition: all 0.3s ease-out;
-}
-
-.cartBox > ul > li:hover > a + .miniCart{
-	opacity: 1;
-	visibility: visible;
-}
-
-.miniCart > *{margin: 15px 15px 0;}
-
-.miniCart > .miniCartTitle{
-	border-top: 4px solid #acacac;
-	border-bottom: 1px solid #efefef;
-	margin: 1px 0 0;
-	padding: 10px 15px;
-	font-size: 14px;
-	font-family: webFont;
-	text-transform: uppercase;
-	background: url(/acs/static/acs/image/common/patterns/pattern3.png) repeat 0 0;
-}
-
-.miniCart > .miniCartList{
-	max-height: 200px;
-	overflow-y: auto;
-	overflow-x: hidden;
-}
-
-.miniCart .cartItem{padding: 10px 0;}
-
-.miniCart .cartItem + .cartItem{border-top: 1px solid #efefef;}
-
-.miniCart > .subTotal{
-	font-size: 14px;
-	text-align: right;
-	margin-top: 30px;
-}
-
-.miniCart > .subTotal > *{
-	float: none;
-	display: inline-block;
-}
-
-.miniCart > .subTotal > dt{color: #828282;}
-
-/* 2.2 Mini Cart Item
-----------------------------------------------------------*/
-.miniCartList .imgBox{margin-right: 10px;}
-
-.miniCartList .imgBox > a{
-	display: block;
-	width: 50px;
-	height: 50px;
-}
-
-.miniCartList .imgBox > a img{
-	width: 50px;
-	height: 50px;
-	display: block;
-}
-
-.miniCartList .infoBox{float: none;}
-
-.miniCartList .infoBox > p{display: inline-block;}
-
-.miniCartList .qty{
-	color: #828282;
-	margin-left: 5px;
-}
-
-/* 2.3 mini Cart Empty
-----------------------------------------------------------*/
-.miniCart .empty{
-	border-top: 5px solid #acacac;
-	margin: 1px 0 0;
-	padding: 30px 20px;
-	font-size: 12px;
-	text-align: center;
-}
 
 /* 2.4  Bottom Section
 ----------------------------------------------------------*/
@@ -1131,6 +968,7 @@ list-style: none;
 .left {
     float: left;
     width: 210px;
+    margin-right: 10px;
 }
 
 .right-extra {
@@ -1519,6 +1357,218 @@ a {
     border: 1px solid #ffbdbe;
 }
 
+/*My Account*/
+.m, .sm {
+    margin-bottom: 10px;
+}
+
+.m, .mt, .mc, .mb, .sm, .smt, .smc, .smb {
+    overflow: hidden;
+    zoom: 1;
+}
+
+h2, h3 {
+    font-size: 14px;
+}
+
+#accountMenu{
+    width: 150px;
+}
+#accountMenu .mt {
+    height: 32px;
+    padding: 0 6px;
+    background-color: #CCCCCC;
+    border-top: 2px solid #B5B5B5;
+    line-height: 32px;
+    color: #fff;
+}
+
+
+#accountMenu .mt h2 {
+    line-height: 32px;
+}
+
+.mt h2, .smt h3 {
+    font-family: "microsoft yahei";
+}
+
+#accountMenu .mc {
+    border: solid #E6E6E6;
+    border-width: 0 1px 1px;
+    overflow: hidden;
+}
+
+#accountMenu dl dt {
+    position: relative;
+    margin-bottom: -1px;
+    height: 30px;
+    padding: 0 12px;
+    font-weight: bold;
+    line-height: 30px;
+    cursor: pointer;
+    color: #333333;
+    background-color: #F9F9F9;
+}
+
+dl > dt + dd {
+    margin-left: 5px;
+}
+
+#accountMenu dd {
+    padding: 4px 0 5px;
+}
+
+#accountMenu dl dt b {
+    display: block;
+    position: absolute;
+    top: 12px;
+    left: 125px;
+    width: 9px;
+    height: 5px;
+    background: url(/assets/images/yxleft.png) -64px 0;
+    font-size: 0;
+    line-height: 0;
+    overflow: hidden;
+}
+
+#accountMenu dl.close dt b {
+    background: url(/assets/images/yxleft.png) -64px -6px;
+}
+
+#accountMenu dd .item {
+    padding: 2px 0 2px 24px;
+}
+
+#accountMenu dl dd a:link, #accountMenu dl dd a:visited {
+    color: #333333;
+}
+
+#accountMenu dd .curr {
+    font-weight: bold;
+}
+
+.right {
+    width: 1030px;
+    float: right;
+    font-family: Verdana;
+}
+
+.right .o-mt {
+    border: 1px solid #e6e6e6;
+    border-bottom: 2px solid #c30000;
+    height: 33px;
+    line-height: 33px;
+    margin-bottom: 10px;
+}
+
+.right .o-mt h2 {
+    color: #cc0000;
+    padding-left: 16px;
+    float: left;
+}
+
+.right .i-m {
+    float: left;
+    width: 600px;
+    padding-top: 10px;
+}
+
+.right .i-m .form .text {
+    width: 140px;
+}
+
+#baseinfo .i-m .item {
+    padding-bottom: 20px;
+}
+
+.right .item .label {
+    width: 185px;
+    text-align: right;
+    color: #666666;
+}
+
+.right .form .label, .right .form label {
+    margin-right: 8px;
+}
+
+.form .label {
+    float: left;
+    font-size: 12px;
+}
+
+.form .text {
+    width: 130px;
+    margin-right: 5px;
+}
+
+em {
+    font-style: normal;
+}
+
+.form em {
+    color: #ff6600;
+    margin-right: 3px;
+}
+
+.right .fl {
+    width: 400px;
+}
+
+.form .text, .form .area, .sele {
+    padding: 4px;
+    border: 1px solid;
+    border-color: #aaa #ddd #ddd #aaa;
+}
+
+.form label, .form input, .form select, .form textarea, .form button, .form .label {
+    float: left;
+    font-size: 12px;
+}
+
+.right .radio {
+    margin-top: 5px;
+    float: left;
+}
+
+.right .form .check, .right .form .radio {
+    margin-top: 3px;
+}
+
+.form .item .fl .btn-7, .form .item .fl .btn-8 {
+    color: #333333;
+}
+
+.btn, .btn s {
+    background: url(/assets/images/btn.png) no-repeat;
+}
+
+.btn {
+    display: inline-block;
+    padding-right: 13px;
+}
+
+.btn-3, .btn-7, .btn-11, .btn-15 {
+    line-height: 25px;
+}
+
+.btn-7 {
+    background-position: right -393px;
+}
+
+.btn-7 s {
+    background-position: 0 -367px;
+}
+
+.btn s {
+    float: left;
+    width: 3px;
+    margin-right: 10px;
+}
+
+.btn-3 s, .btn-7 s, .btn-11 s, .btn-15 s {
+    height: 25px;
+}
+
 
 /*merchandise UI*/
 #merchMenu{
@@ -1526,3 +1576,5 @@ a {
     height: 300px;
     border-right: 1px solid #a5acb2
 }
+
+

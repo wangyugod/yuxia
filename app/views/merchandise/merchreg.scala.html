@@ -1,58 +1,110 @@
-@(merchantForm:Form[Merchant])(implicit flash:Flash)
+@(merchantForm: Form[Merchant])(implicit flash:Flash)
 
-@import helper._
+<!DOCTYPE html>
 
-@merchbase(Messages("merch.signup"), None) {
+<html>
+<head>
+    <title>@Messages("merch.free.register")</title>
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/base.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/component.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/layout.css")">
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+    <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+</head>
+<body id="login-body">
+<div class="w2">
+    <div id="logo"><a href="@routes.Application.index" ><img src="@routes.Assets.at("images/logo.jpg")" alt="@Messages("site.name")" width="170" height="60"></a><b></b></div>
+</div>
+<div class="w2" id="regist">
+    <div class="mc">
+        @helper.form(action = routes.Merchandise.create) {
+        <div class="form">
+            <div class="item" id="select-regName">
+                <span class="label"><b class="ftx04">*</b>@Messages("login.email")：</span>
+                <div class="fl item-ifo">
+                    <div class="o-intelligent-regName">
+                        <input type="text" id="login" name="login" class="text" tabindex="1" autocomplete="off" value="@merchantForm.data.get("login")" onpaste="return false;"style="color: rgb(153, 153, 153);">
+                        @if(merchantForm.error("login").isDefined){
+                        <label id="regName_error" class="error">@Messages(merchantForm.error("login").get.message)</label>
+                        <script type="text/javascript">
+                            $(function(){
+                            $('#login').addClass("highlight2");
+                            });
+                        </script>
+                        }
 
-@println("flashvalue" + flash.get("success"))
-@flash.get("success").map { message =>
-<p class="success">
-    @message
-</p>
-<script type="text/javascript">
+                    </div>
+                </div>
+            </div>
+            <div class="item" id="select-userName">
+                <span class="label"><b class="ftx04">*</b>商户名：</span>
+                <div class="fl item-ifo">
+                    <div class="o-intelligent-regName">
+                        <input type="text" id="name" name="name" class="text" tabindex="1" autocomplete="off" value="@merchantForm.data.get("name")" onpaste="return false;"style="color: rgb(153, 153, 153);">
+                        @if(merchantForm.error("name").isDefined){
+                        <label id="userName_error" class="error">@Messages(merchantForm.error("name").get.message)</label>
+                        <script type="text/javascript">
+                            $(function(){
+                            $('#name').addClass("highlight2");
+                            });
+                        </script>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div id="o-password">
+                <div class="item">
+                    <span class="label"><b class="ftx04">*</b>请设置密码：</span>
 
-</script>
-}
-@form(action = routes.Merchandise.create) {
-<fieldset>
-    @inputText(
-    merchantForm("login"),
-    '_label -> "Email",
-    '_help -> "Please choose a valid email.",
-    '_error -> merchantForm.globalError
-    )
+                    <div class="fl item-ifo">
+                        <input type="password" id="password.main" name="password.main" class="text" tabindex="2" value="@merchantForm.data.get("password.main")" style="ime-mode:disabled;" onpaste="return  false" autocomplete="off" sta="0">
+                        @if(merchantForm.error("password.main").isDefined){
+                        <label id="pwd_error" class="error">@Messages(merchantForm.error("password.main").get.message)</label>
+                        <script type="text/javascript">
+                            $(function(){
+                            $('#password\\.main').addClass("highlight2");
+                            });
+                        </script>
+                        }
 
-    @inputPassword(
-    merchantForm("password.main"),
-    '_label -> "Password",
-    '_help -> "A password must be at least 6 characters. "
-    )
+                    </div>
+                </div>
 
-    @inputPassword(
-    merchantForm("password.confirm"),
-    '_label -> "Repeat password",
-    '_help -> "Please repeat your password again.",
-    '_error -> merchantForm.error("password")
-    )
+                <div class="item">
+                    <span class="label"><b class="ftx04">*</b>请确认密码：</span>
+                    <div class="fl item-ifo">
+                        <input type="password" id="password.confirm" name="password.confirm" class="text" tabindex="3" onpaste="return  false" autocomplete="off">
+                        @if(merchantForm.error("password").isDefined){
+                        <label id="pwdRepeat_error" class="error">@Messages(merchantForm.error("password").get.message)</label>
+                        <script type="text/javascript">
+                            $(function(){
+                            $('#password\\.confirm').addClass("highlight2");
+                            });
+                        </script>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="item" id="merch-desc">
+                <span class="label">商家介绍：</span>
+                <div class="fl item-ifo">
+                    <div class="o-intelligent-regName">
+                        <input type="text" id="description" name="description" class="text" tabindex="1" autocomplete="off" value="@merchantForm.data.get("description")" onpaste="return false;"style="color: rgb(153, 153, 153);">
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <span class="label">&nbsp;</span>
+                <input type="button" class="btn-img btn-regist hover-btn" id="registsubmit" value="立即注册" tabindex="8" onclick="$('form').submit()">
+            </div>
 
-    @inputText(
-    merchantForm("name"),
-    '_label -> "Name",
-    '_help -> "Please choose a valid name."
-    )
+        </div>
 
-    @inputText(
-    merchantForm("merchantNum"),
-    '_label -> "Merchant Number",
-    '_help -> "Please choose a valid merchant number."
-    )
+        }
 
-</fieldset>
-
-<div class="submit-action">
-    <input type="submit" class="btn primary" value="Sign Up">
-    <a href="@routes.Merchandise.login" class="btn">Cancel</a>
+    </div>
 </div>
 
-}
-}
+
+</body>
+</html>

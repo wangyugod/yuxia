@@ -10,11 +10,6 @@
     <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
     <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
 </head>
-<script type="text/javascript">
-    function signin(){
-        $("form").submit();
-    }
-</script>
 <body id="login-body">
 <div class="w2">
     <div id="logo"><a href="@routes.Application.index" ><img src="@routes.Assets.at("images/logo.jpg")" alt="@Messages("site.name")" width="170" height="60"></a><b></b></div>
@@ -72,15 +67,15 @@
             </div>
             <div class="item fore4" id="autoentry">
                 <div class="item-ifo">
-                    <input type="checkbox" class="checkbox" name="chkRememberMe" clstag="passport|keycount|login|04">
+                    <input type="checkbox" class="checkbox" name="chkRememberMe">
                     <label class="mar">@Messages("login.auto.login")</label>
-                    <label><a href="" class="" clstag="passport|keycount|login|05">@Messages("login.forgot.password")</a></label>
+                    <label><a href="" class="">@Messages("login.forgot.password")</a></label>
                     <div class="clr"></div>
                 </div>
             </div>
 
             <div class="item login-btn2013">
-                <input type="button" onclick="javascript: signin()" class="btn-img btn-entry" id="loginsubmit" tabindex="8" >
+                <input type="button" onclick="$('form').submit();" class="btn-img btn-entry" id="loginsubmit" tabindex="8" >
             </div>
             <span><a href="@routes.ProfileController.signup">@Messages("login.free.register")&gt;&gt;</a></span>
         </div>

@@ -20,11 +20,21 @@ error.required=该字段不能为空
 error.password.minlength=密码长度不能小于6位
 error.password.notmatch=您两次输入的密码不匹配
 
+#My Account
+my.site.name=我的雨侠
+myacct.email.label=邮箱：
+myacct.name.label=昵称：
+myacct.gender.label=性别：
+myacct.birthday.label=生日：
+myacct.submitbtn.label=提交
+
+
+
 #merchandise
 merch.product.title=商品管理
-merch.login.titile=商户登陆
+merch.login.title=商户登陆
+merch.free.register=商户注册
 merch.login=登录
-merch.signup=注册
 product.desc=商品描述
 product.longdesc=商品详情
 product.name=商品标题
