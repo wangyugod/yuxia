@@ -40,7 +40,7 @@
             <div class="item fore2">
                 <span>@Messages("login.password")</span>
                 <div class="item-ifo">
-                    <input type="password" id="password" name="password" class="text" tabindex="2" autocomplete="off" onkeydown="javascript:if(event.keyCode==13) signin();">
+                    <input type="password" id="password" name="password" class="text" tabindex="2" autocomplete="off" onkeydown="javascript:if(event.keyCode==13) $('form').submit();">
                     <label id="loginpwd_succeed" class="blank invisible"></label>
                     @form.error("password") match{
                     case Some(err) => {

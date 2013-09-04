@@ -32,15 +32,22 @@
                             });
                         </script>
                         }
-
+                        @if(merchantForm.hasGlobalErrors){
+                        <label id="regName_error" class="error">@merchantForm.globalErrors.head.message</label>
+                        <script type="text/javascript">
+                            $(function(){
+                            $('#login').addClass("highlight2");
+                            });
+                        </script>
+                        }
                     </div>
                 </div>
             </div>
             <div class="item" id="select-userName">
-                <span class="label"><b class="ftx04">*</b>商户名：</span>
+                <span class="label"><b class="ftx04">*</b>@Messages("merch.name.label")</span>
                 <div class="fl item-ifo">
                     <div class="o-intelligent-regName">
-                        <input type="text" id="name" name="name" class="text" tabindex="1" autocomplete="off" value="@merchantForm.data.get("name")" onpaste="return false;"style="color: rgb(153, 153, 153);">
+                        <input type="text" id="name" name="name" class="text" tabindex="2" autocomplete="off" value="@merchantForm.data.get("name")" onpaste="return false;"style="color: rgb(153, 153, 153);">
                         @if(merchantForm.error("name").isDefined){
                         <label id="userName_error" class="error">@Messages(merchantForm.error("name").get.message)</label>
                         <script type="text/javascript">
@@ -54,10 +61,10 @@
             </div>
             <div id="o-password">
                 <div class="item">
-                    <span class="label"><b class="ftx04">*</b>请设置密码：</span>
+                    <span class="label"><b class="ftx04">*</b>@Messages("merch.password.label")</span>
 
                     <div class="fl item-ifo">
-                        <input type="password" id="password.main" name="password.main" class="text" tabindex="2" value="@merchantForm.data.get("password.main")" style="ime-mode:disabled;" onpaste="return  false" autocomplete="off" sta="0">
+                        <input type="password" id="password.main" name="password.main" class="text" tabindex="3" style="ime-mode:disabled;" onpaste="return  false" autocomplete="off" sta="0">
                         @if(merchantForm.error("password.main").isDefined){
                         <label id="pwd_error" class="error">@Messages(merchantForm.error("password.main").get.message)</label>
                         <script type="text/javascript">
@@ -73,7 +80,7 @@
                 <div class="item">
                     <span class="label"><b class="ftx04">*</b>请确认密码：</span>
                     <div class="fl item-ifo">
-                        <input type="password" id="password.confirm" name="password.confirm" class="text" tabindex="3" onpaste="return  false" autocomplete="off">
+                        <input type="password" id="password.confirm" name="password.confirm" class="text" tabindex="4" onpaste="return  false" autocomplete="off">
                         @if(merchantForm.error("password").isDefined){
                         <label id="pwdRepeat_error" class="error">@Messages(merchantForm.error("password").get.message)</label>
                         <script type="text/javascript">
@@ -89,7 +96,7 @@
                 <span class="label">商家介绍：</span>
                 <div class="fl item-ifo">
                     <div class="o-intelligent-regName">
-                        <input type="text" id="description" name="description" class="text" tabindex="1" autocomplete="off" value="@merchantForm.data.get("description")" onpaste="return false;"style="color: rgb(153, 153, 153);">
+                        <input type="text" id="description" name="description" class="text" tabindex="5" autocomplete="off" value="@merchantForm.data.get("description")" onpaste="return false;"style="color: rgb(153, 153, 153);">
                     </div>
                 </div>
             </div>

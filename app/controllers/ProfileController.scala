@@ -54,7 +54,7 @@ object ProfileController extends Controller with Users with Secured {
       ((id, login, passwords, name) => Profile(id.getOrElse(IdGenerator.generateProfileId), login, passwords._1, name, None, None))
       ((profile: Profile) => {
         Some((Some(profile.id), profile.login, (profile.password, ""), profile.name))
-      }) verifying("User with the same loign already exists", profile => Profile.findUserByLogin(profile.login).isEmpty)
+      }) verifying(Messages("error.login.alreadyexist"), profile => Profile.findUserByLogin(profile.login).isEmpty)
   )
 
   val profileUpdateForm: Form[Profile] = Form(

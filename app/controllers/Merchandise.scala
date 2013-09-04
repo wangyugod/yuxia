@@ -8,6 +8,8 @@ import views.html
 
 import models._
 import util._
+import play.api.Logger
+import play.api.i18n.Messages
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,7 +34,9 @@ trait Merchants {
   }
 }
 
-object Merchandise extends Controller with Merchants{
+object Merchandise extends Controller with Merchants {
+
+  private val log = Logger(this.getClass)
 
 
   val loginForm: Form[(String, String)] = Form(
@@ -48,24 +52,28 @@ object Merchandise extends Controller with Merchants{
       "login" -> email,
       "description" -> optional(text),
       "password" -> tuple(
-        "main" -> text(minLength = 6),
+        "main" -> text.verifying(Messages("error.password.minlength"), {
+          _.length >= 6}),
         "confirm" -> text
       ).verifying(
         // Add an additional constraint: both passwords must match
-        "Passwords don't match", passwords => passwords._1 == passwords._2
+        Messages("error.password.notmatch"), passwords => passwords._1 == passwords._2
       ),
       "name" -> nonEmptyText
     )
       ((id, login, description, passwords, name) => Merchant(id.getOrElse(IdGenerator.generateProfileId), login, passwords._1, name, description))
       ((merchant: Merchant) => {
         Some(Some(merchant.id), merchant.login, merchant.description, (merchant.password, ""), merchant.name)
-      }) verifying("User with the same loign already exists", profile => Merchant.findByLogin(profile.login).isEmpty)
+      }) verifying(Messages("error.login.alreadyexist"), profile => Merchant.findByLogin(profile.login).isEmpty
+      )
   )
 
   def create = Action {
     implicit request => {
       merchantForm.bindFromRequest().fold(
         formWithErrors => {
+          if (log.isDebugEnabled)
+            log.debug("error form is \n" + formWithErrors)
           BadRequest(html.merchandise.merchreg(formWithErrors))
         },
         merchant => {
@@ -85,7 +93,7 @@ object Merchandise extends Controller with Merchants{
         },
         merchant => {
           val loginMerchant = Merchant.authenticateUser(merchant._1, merchant._2)
-          if(loginMerchant.isDefined){
+          if (loginMerchant.isDefined) {
             Redirect(routes.Products.list()).withSession(MERCHANT_LOGIN -> merchant._1, MERCHANT_ID -> loginMerchant.get.id, MERCHANT_NAME -> loginMerchant.get.name, MERCHANT_DESC -> loginMerchant.get.description.getOrElse(""))
           } else {
             BadRequest(html.merchandise.merchlogin(loginForm.withError("error", "invalid login or password")))

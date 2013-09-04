@@ -19,6 +19,7 @@ error.email=该字段值必须为email
 error.required=该字段不能为空
 error.password.minlength=密码长度不能小于6位
 error.password.notmatch=您两次输入的密码不匹配
+error.login.alreadyexist=该邮箱已被注册
 
 #My Account
 my.site.name=我的雨侠
@@ -35,6 +36,10 @@ merch.product.title=商品管理
 merch.login.title=商户登陆
 merch.free.register=商户注册
 merch.login=登录
+merch.name.label=商户名：
+merch.password.label=请设置密码：
+
+
 product.desc=商品描述
 product.longdesc=商品详情
 product.name=商品标题

@@ -29,16 +29,21 @@
         <div class="fl item-ifo">
             <div class="o-intelligent-regName">
                 <input type="text" id="login" name="login" class="text" tabindex="1" autocomplete="off" value="@profileForm.data.get("login")" onpaste="return false;"style="color: rgb(153, 153, 153);">
-                @profileForm.error("login") match{
-                    case Some(err) => {
-                        <label id="regName_error" class="error">@Messages(err.message)</label>
-                        <script type="text/javascript">
-                            $(function(){
-                                $('#login').addClass("highlight2");
-                            });
-                        </script>
+                @if(profileForm.error("login").isDefined){
+                <label id="regName_error" class="error">@Messages(profileForm.error("login").get.message)</label>
+                <script type="text/javascript">
+                    $(function(){
+                    $('#login').addClass("highlight2");
+                    });
+                </script>
                 }
-                case None => {}
+                @if(profileForm.hasGlobalErrors){
+                <label id="regName_error" class="error">@profileForm.globalErrors.head.message</label>
+                <script type="text/javascript">
+                    $(function(){
+                    $('#login').addClass("highlight2");
+                    });
+                </script>
                 }
             </div>
         </div>
@@ -48,18 +53,14 @@
         <div class="fl item-ifo">
             <div class="o-intelligent-regName">
                 <input type="text" id="name" name="name" class="text" tabindex="1" autocomplete="off" value="@profileForm.data.get("name")" onpaste="return false;"style="color: rgb(153, 153, 153);">
-                @profileForm.error("name") match{
-                case Some(err) => {
-                <label id="userName_error" class="error">@Messages(err.message)</label>
+                @if(profileForm.error("name").isDefined){
+                <label id="userName_error" class="error">@Messages(profileForm.error("name").get.message)</label>
                 <script type="text/javascript">
                     $(function(){
-                        $('#name').addClass("highlight2");
+                    $('#name').addClass("highlight2");
                     });
                 </script>
                 }
-                case None => {}
-                }
-
             </div>
         </div>
     </div>
@@ -68,19 +69,15 @@
             <span class="label"><b class="ftx04">*</b>请设置密码：</span>
 
             <div class="fl item-ifo">
-                <input type="password" id="password.main" name="password.main" class="text" tabindex="2" value="@profileForm.data.get("password.main")" style="ime-mode:disabled;" onpaste="return  false" autocomplete="off" sta="0">
-                @profileForm.error("password.main") match{
-                case Some(err) => {
-                <label id="pwd_error" class="error">@Messages(err.message)</label>
+                <input type="password" id="password.main" name="password.main" class="text" tabindex="2" style="ime-mode:disabled;" onpaste="return  false" autocomplete="off" sta="0">
+                @if(profileForm.error("password.main").isDefined){
+                <label id="pwd_error" class="error">@Messages(profileForm.error("password.main").get.message)</label>
                 <script type="text/javascript">
                     $(function(){
                     $('#password\\.main').addClass("highlight2");
                     });
                 </script>
                 }
-                case None => {}
-                }
-
             </div>
         </div>
 
@@ -88,16 +85,13 @@
             <span class="label"><b class="ftx04">*</b>请确认密码：</span>
             <div class="fl item-ifo">
                 <input type="password" id="password.confirm" name="password.confirm" class="text" tabindex="3" onpaste="return  false" autocomplete="off">
-                @profileForm.error("password") match{
-                case Some(err) => {
-                <label id="pwdRepeat_error" class="error">@Messages(err.message)</label>
+                @if(profileForm.error("password").isDefined){
+                <label id="pwd_error" class="error">@Messages(profileForm.error("password").get.message)</label>
                 <script type="text/javascript">
                     $(function(){
                     $('#password\\.confirm').addClass("highlight2");
                     });
                 </script>
-                }
-                case None => {}
                 }
             </div>
         </div>
