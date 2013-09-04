@@ -96,7 +96,7 @@ object Merchandise extends Controller with Merchants {
           if (loginMerchant.isDefined) {
             Redirect(routes.Products.list()).withSession(MERCHANT_LOGIN -> merchant._1, MERCHANT_ID -> loginMerchant.get.id, MERCHANT_NAME -> loginMerchant.get.name, MERCHANT_DESC -> loginMerchant.get.description.getOrElse(""))
           } else {
-            BadRequest(html.merchandise.merchlogin(loginForm.withError("error", "invalid login or password")))
+            BadRequest(html.merchandise.merchlogin(loginForm.withError("login.failed", Messages("login.failed.msg"))))
           }
         }
       )

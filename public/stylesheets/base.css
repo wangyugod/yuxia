@@ -1569,6 +1569,10 @@ em {
     height: 25px;
 }
 
+.prompt-error {
+    color: #cc0000;
+}
+
 
 /*merchandise UI*/
 #merchMenu{

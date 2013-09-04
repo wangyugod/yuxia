@@ -63,7 +63,7 @@ object ProfileController extends Controller with Users with Secured {
       "login" -> email,
       "name" -> nonEmptyText,
       "gender" -> optional(text),
-      "birthday" -> optional(text.verifying(Constraints.pattern( """(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])""".r, "Date Constraint", "Your input should be in format YYYY-MM-DD")))
+      "birthday" -> optional(text.verifying(Constraints.pattern( """(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])""".r, "Date Constraint", Messages("error.myacct.birthday"))))
     )
       ((id, login, name, gender, birthday) => Profile(id.getOrElse(IdGenerator.generateProfileId), login, "", name, gender, AppHelper.convertDateFromText(birthday)))
       ((profile: Profile) => {

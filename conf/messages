@@ -28,6 +28,7 @@ myacct.name.label=昵称：
 myacct.gender.label=性别：
 myacct.birthday.label=生日：
 myacct.submitbtn.label=提交
+error.myacct.birthday=生日的格式应为YYYY-MM-DD
 
 
 

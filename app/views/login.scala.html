@@ -15,8 +15,6 @@
     <div id="logo"><a href="@routes.Application.index" ><img src="@routes.Assets.at("images/logo.jpg")" alt="@Messages("site.name")" width="170" height="60"></a><b></b></div>
 </div>
 @helper.form(routes.ProfileController.authenticate)      {
-
-
 <div class="w1" id="entry">
     <div class="mc " id="bgDiv">
         <div class="form ">
@@ -25,44 +23,38 @@
                 <div class="item-ifo">
                     <input type="text" id="login" name="login" value="@form(" login").value" class="text" tabindex="1" autocomplete="off">
                     <label id="loginname_succeed" class="blank invisible"></label>
-                    @form.error("login") match{
-                        case Some(err) => {
-                            <label id="loginname_error" class="null">@Messages(err.message)</label>
-                            <script type="text/javascript">
-                                $(function(){
-                                    $('#login').addClass("highlight2");
-                                });
-                            </script>
-                        }
-                        case None => {}
+                    @if(form.error("login").isDefined){
+                    <label id="login_error" class="error">@Messages(form.error("login").get.message)</label>
+                    <script type="text/javascript">
+                        $(function(){
+                        $('#login').addClass("highlight2");
+                        });
+                    </script>
                     }
-
                 </div>
             </div>
             <div class="item fore2">
                 <span>@Messages("login.password")</span>
                 <div class="item-ifo">
-                    <input type="password" id="password" name="password" class="text" tabindex="2" autocomplete="off" onkeydown="javascript:if(event.keyCode==13) signin();">
+                    <input type="password" id="password" name="password" class="text" tabindex="2" autocomplete="off" onkeydown="javascript:if(event.keyCode==13) $('form').submit();">
                     <label id="loginpwd_succeed" class="blank invisible"></label>
-                    @form.error("password") match{
-                    case Some(err) => {
-                        <label id="loginpwd_error" class="null">@Messages(err.message)</label>
-                        <script type="text/javascript">
-                            $(function(){
-                                $('#password').addClass("highlight2");
-                            });
-                        </script>
-                    }
-                    case None => {}
+                    @if(form.error("password").isDefined){
+                    <label id="loginpwd_error" class="error">@Messages(form.error("password").get.message)</label>
+                    <script type="text/javascript">
+                        $(function(){
+                        $('#password').addClass("highlight2");
+                        });
+                    </script>
                     }
 
-                    @form.error("login.failed") match{
-                    case Some(err) => {
-                        <label id="loginpwd_error" class="null">@Messages(err.message)</label>
+                    @if(form.error("login.failed").isDefined){
+                    <label id="loginpwd_error" class="error">@Messages(form.error("login.failed").get.message)</label>
+                    <script type="text/javascript">
+                        $(function(){
+                        $('#password').addClass("highlight2");
+                        });
+                    </script>
                     }
-                    case None => {}
-                    }
-
                 </div>
             </div>
             <div class="item fore4" id="autoentry">

@@ -26,13 +26,16 @@
                         <div class="fl">
                             <div>
                                 <input name="name" id="name" type="text" value="@profileForm.data.get("name")" class="text"><s></s>
-                                <div class="clr"></div><div class="prompt-06"><span id="petName_msg"></span></div>
+                                <div class="clr"></div>
+                                @if(profileForm.error("name").isDefined){
+                                    <div class="prompt-error"><span id="petName_msg">@Messages(profileForm.error("name").get.message)</span></div>
+                                }
                             </div>
                         </div>
                         <div class="clr"></div>
                     </div>
                     <div class="item">
-                        <span class="label"><em>*</em>@Messages("myacct.gender.label")</span>
+                        <span class="label">@Messages("myacct.gender.label")</span>
                         <div class="fl">
                             <input type="radio" name="gender" value="M" id="RadioGroup1_0" class="radio" @(if(profileForm.data.get("gender") == Some("M"))" checked")><label>男</label>
                             <input type="radio" name="gender" value="F" id="RadioGroup1_1" class="radio" @(if(profileForm.data.get("gender") == Some("F"))" checked")><label>女</label>
@@ -44,10 +47,13 @@
                         <div class="fl">
                             <div>
                                 <input name="birthday" id="birthday" type="text" value="@profileForm.data.get("birthday")" class="text" placeholder="格式YYYY-MM-DD"><s></s>
-                                <div class="clr"></div><div class="prompt-06"><span id="birthday_msg"></span></div>
+                                <div class="clr"></div>
+                                @if(profileForm.error("birthday").isDefined){
+                                <div class="prompt-error"><span id="petName_msg">@Messages(profileForm.error("birthday").get.message)</span></div>
+                                }
                             </div>
                         </div>
-                        <div class="clr"></div>
+
                     </div>
                     <div class="item">
                         <span class="label">&nbsp;</span>
