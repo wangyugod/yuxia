@@ -1,0 +1,41 @@
+@(user:Option[Merchant])
+<div id="topbar">
+    <script type="text/javascript">
+        $(function() {
+            $('#bookmarkme').click(function() {
+                if (window.sidebar && window.sidebar.addPanel) { // Mozilla Firefox Bookmark
+                    window.sidebar.addPanel(document.title,window.location.href,'');
+                } else if(window.external && ('AddFavorite' in window.external)) { // IE Favorite
+                    window.external.AddFavorite(location.href,document.title);
+                } else if(window.opera && window.print) { // Opera Hotlist
+                    this.title=document.title;
+                    return true;
+                } else { // webkit - safari/chrome
+                    alert('Press ' + (navigator.userAgent.toLowerCase().indexOf('mac') != - 1 ? 'Command/Cmd' : 'CTRL') + ' + D to bookmark this page.');
+                }
+            });
+        });
+    </script>
+    <div class="w">
+        <ul class="fl lh">
+            <li class="fore1 ld"><b></b><a href="#" id="bookmarkme" rel="nofollow">收藏</a></li>
+        </ul>
+        <ul class="fr lh">
+            @user match {
+            case Some(user) => {
+                <li class="fore1" id="loginbar">@Messages("topbar.hello.label", user.name)<span><a href="@routes.Merchandise.logout">@Messages("topbar.logout.label")</a></span></li>
+            }
+            case None => {
+                <li class="fore1" id="loginbar">@Messages("site.welcome")<span><a href="@routes.Merchandise.login">@Messages("topbar.login.label")</a> <a href="@routes.Merchandise.signup" class="link-regist">[免费注册]</a></span></li>
+
+            }
+            }
+            <li class="fore2 ld">
+                <s></s>
+                <a href="http://jd2008.jd.com/JdHome/OrderList.aspx" rel="nofollow">我的订单</a>
+            </li>
+
+        </ul>
+        <span class="clr"></span>
+    </div>
+</div>
