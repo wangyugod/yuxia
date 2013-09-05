@@ -15,7 +15,17 @@ import scala.slick.driver.MySQLDriver.simple._
  * Time: 5:17 PM
  * To change this template use File | Settings | File Templates.
  */
-case class Merchant(id: String, login: String, password: String, name: String, description: Option[String])
+case class Merchant(id: String, login: String, password: String, name: String, description: Option[String], registeredBy: String) {
+  lazy val advancedInfo = DBHelper.database.withSession {
+    Query(MerchantAdvInfos).where(_.id === this.id).firstOption
+  }
+}
+
+case class MerchantAdvInfo(id: String, merchNum: Option[String], artificialPerson: String, artPerCert: String, addressId: String, phoneNum: String){
+  lazy val address = DBHelper.database.withSession{
+    Query(Addresses).where(_.id === this.addressId).first()
+  }
+}
 
 
 object Merchants extends Table[Merchant]("merchant") {
@@ -29,12 +39,32 @@ object Merchants extends Table[Merchant]("merchant") {
 
   def description = column[Option[String]]("description")
 
-  def * = id ~ login ~ password ~ name ~ description <>(
-    (id, login, password, name, description) => Merchant(id, login, password, name, description),
-    (p: Merchant) => Some(p.id, p.login, p.password, p.name, p.description)
+  def registeredBy = column[String]("reg_by")
+
+  def * = id ~ login ~ password ~ name ~ description ~ registeredBy <>(
+    (id, login, password, name, description, registeredBy) => Merchant(id, login, password, name, description, registeredBy),
+    (p: Merchant) => Some(p.id, p.login, p.password, p.name, p.description, p.registeredBy)
     )
 }
 
+object MerchantAdvInfos extends Table[MerchantAdvInfo]("merchant_adv_info") {
+  def id = column[String]("id", O.PrimaryKey)
+
+  def merchNum = column[Option[String]]("merch_num")
+
+  def artificialPerson = column[String]("artificial_per")
+
+  def artPerCert = column[String]("art_per_cert")
+
+  def addressId = column[String]("address_id")
+
+  def phoneNum = column[String]("phone_num")
+
+  def * = id ~ merchNum ~ artificialPerson ~ artPerCert ~ addressId ~ phoneNum <> (
+    (id, merchNum, artificialPerson, artPerCert, addressId, phoneNum) => MerchantAdvInfo(id, merchNum, artificialPerson, artPerCert, addressId, phoneNum),
+    (mai: MerchantAdvInfo) => Some(mai.id, mai.merchNum, mai.artificialPerson, mai.artPerCert, mai.addressId, mai.phoneNum)
+    )
+}
 
 object Merchant {
   def authenticateUser(login: String, password: String): Option[Merchant] = {

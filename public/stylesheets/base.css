@@ -968,7 +968,7 @@ list-style: none;
 .left {
     float: left;
     width: 210px;
-    margin-right: 10px;
+    margin-right: 30px;
 }
 
 .right-extra {
@@ -1576,9 +1576,7 @@ em {
 
 /*merchandise UI*/
 #merchMenu{
-    width: 100px;
-    height: 300px;
-    border-right: 1px solid #a5acb2
+    width: 150px;
 }
 
 

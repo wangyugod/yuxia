@@ -28,7 +28,7 @@ trait Merchants {
 
   implicit def merchant(implicit session: Session): Option[Merchant] = {
     session.get(MERCHANT_LOGIN) match {
-      case Some(login) => Some(Merchant(session.get(MERCHANT_ID).get, session.get(MERCHANT_LOGIN).get, "", session.get(MERCHANT_NAME).get, session.get(MERCHANT_DESC)))
+      case Some(login) => Some(Merchant(session.get(MERCHANT_ID).get, session.get(MERCHANT_LOGIN).get, "", session.get(MERCHANT_NAME).get, session.get(MERCHANT_DESC), ""))
       case None => None
     }
   }
@@ -61,7 +61,7 @@ object Merchandise extends Controller with Merchants {
       ),
       "name" -> nonEmptyText
     )
-      ((id, login, description, passwords, name) => Merchant(id.getOrElse(IdGenerator.generateProfileId), login, passwords._1, name, description))
+      ((id, login, description, passwords, name) => Merchant(id.getOrElse(IdGenerator.generateProfileId), login, passwords._1, name, description, Constants.SELF_REGISTERED))
       ((merchant: Merchant) => {
         Some(Some(merchant.id), merchant.login, merchant.description, (merchant.password, ""), merchant.name)
       }) verifying(Messages("error.login.alreadyexist"), profile => Merchant.findByLogin(profile.login).isEmpty

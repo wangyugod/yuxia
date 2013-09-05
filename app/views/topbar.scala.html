@@ -23,10 +23,10 @@
         <ul class="fr lh">
             @user match {
             case Some(user) => {
-                <li class="fore1" id="loginbar">您好，@user.name !<span><a href="@routes.ProfileController.signout">[退出]</a></span></li>
+                <li class="fore1" id="loginbar">@Messages("topbar.hello.label", user.name)<span><a href="@routes.ProfileController.signout">@Messages("topbar.logout.label")</a></span></li>
             }
             case None => {
-                <li class="fore1" id="loginbar">您好，欢迎来到京东！<span><a href="@routes.ProfileController.login">[登录]</a> <a href="@routes.ProfileController.signup" class="link-regist">[免费注册]</a></span></li>
+                <li class="fore1" id="loginbar">@Messages("site.welcome")<span><a href="@routes.ProfileController.login">@Messages("topbar.login.label")</a> <a href="@routes.ProfileController.signup" class="link-regist">[免费注册]</a></span></li>
 
             }
             }

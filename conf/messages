@@ -1,6 +1,6 @@
 site.name=雨侠网
 site.anonymous=亲
-site.welcome=欢迎光临
+site.welcome=您好，欢迎来到雨侠！
 signin.label=登录
 register.label=注册
 notme.label=不是我
@@ -15,11 +15,16 @@ login.auto.login=自动登录
 login.forgot.password=忘记密码
 login.password=密码
 login.email=邮箱
-error.email=该字段值必须为email
+error.email=该字段值必须为email巍峨                  w
 error.required=该字段不能为空
 error.password.minlength=密码长度不能小于6位
 error.password.notmatch=您两次输入的密码不匹配
 error.login.alreadyexist=该邮箱已被注册
+
+#Top Bar
+topbar.login.label=[登录]
+topbar.logout.label=[退出]
+topbar.hello.label=您好，{0}
 
 #My Account
 my.site.name=我的雨侠
