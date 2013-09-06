@@ -85,6 +85,12 @@ object Merchant {
       Query(Merchants).where(_.login === login).firstOption
     }
   }
+
+  def findById(id: String): Option[Merchant] = {
+    DBHelper.database.withSession {
+      Query(Merchants).where(_.id === id).firstOption
+    }
+  }
 }
 
 

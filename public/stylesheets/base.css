@@ -1525,6 +1525,12 @@ em {
     font-size: 12px;
 }
 
+.right .i-m .form .area {
+    width: 308px;
+    height: 65px;
+    float: none;
+}
+
 .right .radio {
     margin-top: 5px;
     float: left;
@@ -1579,4 +1585,29 @@ em {
     width: 150px;
 }
 
+h4, h5, h6 {
+    font-size: 12px;
+}
+
+
+.right .i-m h5 {
+    color: #cc0000;
+    border-bottom: 1px solid #e6e6e6;
+    line-height: 30px;
+    padding-left: 15px;
+    margin-bottom: 20px;
+}
+
+.sele {
+    margin-right: 10px;
+    font-size: 12px;
+}
+
+#baseinfo .sele {
+    width: 100px;
+}
+
+.right .i-m .form .text1 {
+    width: 300px;
+}
 

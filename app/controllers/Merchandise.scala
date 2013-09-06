@@ -10,6 +10,7 @@ import models._
 import util._
 import play.api.Logger
 import play.api.i18n.Messages
+import vo.MerchantVo
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,7 +27,7 @@ trait Merchants {
   val MERCHANT_ID = "merch_id"
   val MERCHANT_DESC = "merch_desc"
 
-  implicit def merchant(implicit session: Session): Option[Merchant] = {
+  implicit def toMerchant(implicit session: Session): Option[Merchant] = {
     session.get(MERCHANT_LOGIN) match {
       case Some(login) => Some(Merchant(session.get(MERCHANT_ID).get, session.get(MERCHANT_LOGIN).get, "", session.get(MERCHANT_NAME).get, session.get(MERCHANT_DESC), ""))
       case None => None
@@ -34,7 +35,7 @@ trait Merchants {
   }
 }
 
-object Merchandise extends Controller with Merchants {
+object Merchandise extends Controller with Merchants with MerchSecured {
 
   private val log = Logger(this.getClass)
 
@@ -67,6 +68,32 @@ object Merchandise extends Controller with Merchants {
       }) verifying(Messages("error.login.alreadyexist"), profile => Merchant.findByLogin(profile.login).isEmpty
       )
   )
+
+  val advMerchantForm: Form[MerchantVo] = Form(
+    mapping(
+      "id" -> optional(text),
+      "login" -> email,
+      "name" -> nonEmptyText,
+      "description" -> optional(text),
+      "merchNum" -> optional(text),
+      "artificialPerson" -> nonEmptyText,
+      "artPerCert" -> nonEmptyText,
+      "phoneNum" -> nonEmptyText,
+      "addressId" -> optional(text),
+      "province" -> nonEmptyText,
+      "city" -> nonEmptyText,
+      "district" -> nonEmptyText,
+      "contactPhone" -> nonEmptyText,
+      "addressLine" -> nonEmptyText,
+      "contactPerson" -> nonEmptyText
+    )(MerchantVo.apply)(MerchantVo.unapply)
+  )
+
+  def update = Action {
+    implicit request => {
+      Ok
+    }
+  }
 
   def create = Action {
     implicit request => {
@@ -121,6 +148,14 @@ object Merchandise extends Controller with Merchants {
       Redirect(routes.Merchandise.login()).withNewSession
     }
   }
+
+  def merchAccount = isAuthenticated(
+    implicit request => {
+      val id = request.session.get(MERCHANT_ID).get
+      val merchant = Merchant.findById(id)
+      Ok(html.merchandise.merchantinfo(advMerchantForm.fill(MerchantVo(merchant.get))))
+    }
+  )
 
 
   /*def productInfo = Action {

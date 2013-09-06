@@ -1,10 +1,10 @@
-@(merchantForm:Form[Merchant])(implicit user: Option[Profile])
+@(merchantForm:Form[vo.MerchantVo])(implicit user: Option[Merchant])
 
 @import helper._
-@myAccount(user){
+@merchbase(Messages("myacct.myacct.label"), user){
 
 <div class="o-mt">
-    <h2>????</h2>
+    <h2>@Messages("myacct.myacct.label")</h2>
 </div>
 <div class="m" id="baseinfo">
     <div class="mc">
@@ -35,25 +35,89 @@
                         <div class="clr"></div>
                     </div>
                     <div class="item">
-                        <span class="label">@Messages("myacct.gender.label")</span>
+                        <span class="label"><em>*</em>@Messages("merch.merchnum.label")</span>
                         <div class="fl">
-                            <input type="radio" name="gender" value="M" id="RadioGroup1_0" class="radio" @(if(merchantForm.data.get("gender") == Some("M"))" checked")><label>?</label>
-                            <input type="radio" name="gender" value="F" id="RadioGroup1_1" class="radio" @(if(merchantForm.data.get("gender") == Some("F"))" checked")><label>?</label>
+                            <div>
+                                <input name="merchNum" id="merchNum" type="text" value="@merchantForm.data.get("merchNum")" class="text" ><s></s>
+                                <div class="clr"></div>
+                                @if(merchantForm.error("merchNum").isDefined){
+                                <div class="prompt-error"><span id="petName_msg">@Messages(merchantForm.error("merchNum").get.message)</span></div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <span class="label"><em>*</em>@Messages("merch.artperson.label")</span>
+                        <div class="fl">
+                            <div>
+                                <input name="artificialPerson" id="artificialPerson" type="text" value="@merchantForm.data.get("artificialPerson")" class="text" ><s></s>
+                                <div class="clr"></div>
+                                @if(merchantForm.error("artificialPerson").isDefined){
+                                <div class="prompt-error"><span id="petName_msg">@Messages(merchantForm.error("artificialPerson").get.message)</span></div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <span class="label"><em>*</em>@Messages("merch.artpercert.label")</span>
+                        <div class="fl">
+                            <div>
+
+                                <input name="artPerCert" id="artPerCert" type="text" value="@merchantForm.data.get("artPerCert")" class="text" ><s></s>
+                                <div class="clr"></div>
+                                @if(merchantForm.error("artPerCert").isDefined){
+                                <div class="prompt-error"><span id="petName_msg">@Messages(merchantForm.error("artPerCert").get.message)</span></div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <span class="label"><em>*</em>@Messages("merch.phonenum.label")</span>
+                        <div class="fl">
+                            <div>
+                                <input name="phoneNum" id="phoneNum" type="text" value="@merchantForm.data.get("phoneNum")" class="text" ><s></s>
+                                <div class="clr"></div>
+                                @if(merchantForm.error("phoneNum").isDefined){
+                                <div class="prompt-error"><span id="petName_msg">@Messages(merchantForm.error("phoneNum").get.message)</span></div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <span class="label">@Messages("merch.description.label")</span>
+                        <div class="fl">
+                            <textarea name="description" id="description" cols="" rows="" value="@merchantForm.data.get("description")" class="area" style="color: rgb(140, 140, 140);"></textarea>
+                        </div>
+                        <div class="clr"></div>
+                    </div>
+                </div>
+                <h5>选填信息</h5>
+                <div class="form">
+                    <div class="item">
+                        <span class="label">所在地：</span>
+                        <div class="fl">
+                            <select name="userInfo.province" class="sele" id="province">
+                                <option value="1">北京</option>
+                            </select>
+                            <select name="userInfo.city" class="sele" id="city" style="display: block;">
+                                <option value="1930">成都市</option>
+                            </select>
+                            <select name="userInfo.county" class="sele" id="county">
+                                <option value="6715">蒲江县(老城区、新城区以外)</option>
+                            </select>
+                            <div class="clr"></div><div class="prompt-06"><span id="province_msg"></span></div>
                         </div>
                         <div class="clr"></div>
                     </div>
                     <div class="item">
-                        <span class="label"><em>*</em>@Messages("myacct.birthday.label")</span>
+                        <span class="label">&nbsp;</span>
                         <div class="fl">
-                            <div>
-                                <input name="birthday" id="birthday" type="text" value="@merchantForm.data.get("birthday")" class="text" placeholder="??YYYY-MM-DD"><s></s>
-                                <div class="clr"></div>
-                                @if(merchantForm.error("birthday").isDefined){
-                                <div class="prompt-error"><span id="petName_msg">@Messages(merchantForm.error("birthday").get.message)</span></div>
-                                }
-                            </div>
+                            <input name="addressLine" id="addressLine" type="text" value="@merchantForm.data.get("addressLine")" class="text text1" ><s></s>
+                            <div class="clr"></div>
+                            @if(merchantForm.error("addressLine").isDefined){
+                            <div class="prompt-error"><span id="petName_msg">@Messages(merchantForm.error("addressLine").get.message)</span></div>
+                            }
                         </div>
-
                     </div>
                     <div class="item">
                         <span class="label">&nbsp;</span>

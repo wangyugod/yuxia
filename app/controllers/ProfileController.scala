@@ -24,7 +24,7 @@ trait Users {
   val USER_NAME = "user_name"
   val USER_ID = "user_id"
 
-  implicit def user(implicit session: Session): Option[Profile] = {
+  implicit def toUser(implicit session: Session): Option[Profile] = {
     session.get(LOGIN_KEY) match {
       case Some(login) => Some(Profile(session.get(USER_ID).get, session.get(LOGIN_KEY).get, "", session.get(USER_NAME).get, None, None))
       case None => None

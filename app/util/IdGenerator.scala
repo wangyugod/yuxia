@@ -17,6 +17,7 @@ object IdGenerator {
   val PRODUCT_PREFIX = "pd"
   val CATEGORY_PREFIX = "cat"
   val SKU_PREFIX = "sku"
+  val ADDRESS_PREFIX = "addr"
 
   def generateProfileId() = {
     println("generating ProfileID now")
@@ -42,6 +43,10 @@ object IdGenerator {
 
   def generateSkuId() = {
     SKU_PREFIX + UUID.randomUUID()
+  }
+
+  def generateAddressId() = {
+    ADDRESS_PREFIX + UUID.randomUUID()
   }
 
 }
