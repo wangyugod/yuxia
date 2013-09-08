@@ -35,10 +35,13 @@ object Global extends GlobalSettings {
 //      Products.ddl.create
       //Skus.ddl.drop
 //      Skus.ddl.create
-      MerchantAdvInfos.ddl.create
+      //MerchantAdvInfos.ddl.create
+//      Addresses.ddl.create
+//      UserAddresses.ddl.create
       //ProductCategories.ddl.create
 //      Categories.ddl.create
 //      CategoryCategories.ddl.drop
+      InternalUsers.ddl.create
 
 //      CategoryCategories.ddl.create
 

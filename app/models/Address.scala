@@ -15,7 +15,7 @@ import Database.threadLocalSession
 case class Area(id:String, name: String, description: String, parentAreaId: String)
 
 
-case class Address(id: String, province: String, city: String, district: String, contactPhone: String, addressLine: String, contactPerson: String)
+case class Address(id: String, province: String, city: String, district: String, contactPhone: String, addressLine: String, contactPerson: String, areaId: Option[String])
 
 object Addresses extends Table[Address]("address") {
   def id = column[String]("id", O.PrimaryKey)
@@ -25,9 +25,10 @@ object Addresses extends Table[Address]("address") {
   def phone = column[String]("phone")
   def addressLine = column[String]("address_line")
   def contactPerson = column[String]("receiver_name")
-  def * = id ~ province ~ city ~ district ~ phone ~ addressLine ~ contactPerson <> (
-    (id, province, city, district, phone, addressLine, contactPerson) => Address(id, province, city, district, phone, addressLine, contactPerson),
-    (addr: Address) => Some(addr.id, addr.province, addr.city, addr.district, addr.contactPhone, addr.addressLine, addr.contactPerson)
+  def areaId = column[Option[String]]("area_id")
+  def * = id ~ province ~ city ~ district ~ phone ~ addressLine ~ contactPerson ~ areaId <> (
+    (id, province, city, district, phone, addressLine, contactPerson, areaId) => Address(id, province, city, district, phone, addressLine, contactPerson, areaId),
+    (addr: Address) => Some(addr.id, addr.province, addr.city, addr.district, addr.contactPhone, addr.addressLine, addr.contactPerson, addr.areaId)
     )
 }
 

@@ -17,6 +17,8 @@ POST    /merch/login                controllers.Merchandise.authenticate
 GET     /merch/logout               controllers.Merchandise.logout
 GET     /merch/signup               controllers.Merchandise.signup
 POST    /merch/signup               controllers.Merchandise.create
+GET     /merch/acctinfo             controllers.Merchandise.merchAccount
+POST    /merch/acctinfo             controllers.Merchandise.update
 GET     /merch/prod/newprod         controllers.Products.newProduct
 POST    /merch/prod/create          controllers.Products.create
 GET     /merch/prod/list            controllers.Products.list
@@ -28,7 +30,11 @@ DELETE  /merch/prod/:id             controllers.Products.delete(id)
 GET     /prod/:id                   controllers.Browse.productDetail(id)
 GET     /search                     controllers.Browse.searchByKeyword
 GET     /category/:id               controllers.Browse.categoryLanding(id)
-
+GET     /admin/login                controllers.InternalManagement.login
+POST    /admin/login                controllers.InternalManagement.authenticate
+GET     /admin/home                 controllers.InternalManagement.home
+POST    /admin/home                 controllers.InternalManagement.update
+GET     /admin/logout               controllers.InternalManagement.logout
 
 
 # Map static resources from the /public folder to the /assets URL path

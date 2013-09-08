@@ -78,7 +78,6 @@ object Merchandise extends Controller with Merchants with MerchSecured {
       "merchNum" -> optional(text),
       "artificialPerson" -> nonEmptyText,
       "artPerCert" -> nonEmptyText,
-      "phoneNum" -> nonEmptyText,
       "addressId" -> optional(text),
       "province" -> nonEmptyText,
       "city" -> nonEmptyText,
@@ -86,12 +85,23 @@ object Merchandise extends Controller with Merchants with MerchSecured {
       "contactPhone" -> nonEmptyText,
       "addressLine" -> nonEmptyText,
       "contactPerson" -> nonEmptyText
-    )(MerchantVo.apply)(MerchantVo.unapply)
+    )(MerchantVo.apply)
+      (MerchantVo.unapply)
   )
 
-  def update = Action {
+  def update = isAuthenticated {
     implicit request => {
-      Ok
+      advMerchantForm.bindFromRequest().fold(
+        formWithErrors =>{
+          if(log.isDebugEnabled)
+            log.debug("error form \n" + formWithErrors.error("contactPerson") + "\n" + formWithErrors + "\n" + request.body)
+          BadRequest(html.merchandise.merchantinfo(formWithErrors))
+        } ,
+        merchVo => {
+          Merchant.updateMerchantInfo(merchVo.merchant, merchVo.merchantAdvInfo, merchVo.address)
+          Redirect(routes.Merchandise.merchAccount())
+        }
+      )
     }
   }
 
@@ -100,7 +110,7 @@ object Merchandise extends Controller with Merchants with MerchSecured {
       merchantForm.bindFromRequest().fold(
         formWithErrors => {
           if (log.isDebugEnabled)
-            log.debug("error form is \n" + formWithErrors)
+            log.debug("error form is \n" + formWithErrors + "\n" + request.body)
           BadRequest(html.merchandise.merchreg(formWithErrors))
         },
         merchant => {

@@ -21,8 +21,8 @@ case class Merchant(id: String, login: String, password: String, name: String, d
   }
 }
 
-case class MerchantAdvInfo(id: String, merchNum: Option[String], artificialPerson: String, artPerCert: String, addressId: String, phoneNum: String){
-  lazy val address = DBHelper.database.withSession{
+case class MerchantAdvInfo(id: String, merchNum: Option[String], artificialPerson: String, artPerCert: String, addressId: String) {
+  lazy val address = DBHelper.database.withSession {
     Query(Addresses).where(_.id === this.addressId).first()
   }
 }
@@ -58,11 +58,9 @@ object MerchantAdvInfos extends Table[MerchantAdvInfo]("merchant_adv_info") {
 
   def addressId = column[String]("address_id")
 
-  def phoneNum = column[String]("phone_num")
-
-  def * = id ~ merchNum ~ artificialPerson ~ artPerCert ~ addressId ~ phoneNum <> (
-    (id, merchNum, artificialPerson, artPerCert, addressId, phoneNum) => MerchantAdvInfo(id, merchNum, artificialPerson, artPerCert, addressId, phoneNum),
-    (mai: MerchantAdvInfo) => Some(mai.id, mai.merchNum, mai.artificialPerson, mai.artPerCert, mai.addressId, mai.phoneNum)
+  def * = id ~ merchNum ~ artificialPerson ~ artPerCert ~ addressId <>(
+    (id, merchNum, artificialPerson, artPerCert, addressId) => MerchantAdvInfo(id, merchNum, artificialPerson, artPerCert, addressId),
+    (mai: MerchantAdvInfo) => Some(mai.id, mai.merchNum, mai.artificialPerson, mai.artPerCert, mai.addressId)
     )
 }
 
@@ -80,15 +78,28 @@ object Merchant {
     }
   }
 
-  def findByLogin(login: String): Option[Merchant] = {
-    DBHelper.database.withSession {
+  def findByLogin(login: String): Option[Merchant] = DBHelper.database.withSession {
       Query(Merchants).where(_.login === login).firstOption
-    }
   }
 
-  def findById(id: String): Option[Merchant] = {
-    DBHelper.database.withSession {
+
+  def findById(id: String): Option[Merchant] = DBHelper.database.withSession {
       Query(Merchants).where(_.id === id).firstOption
+  }
+
+
+  def updateMerchantInfo(merchant: Merchant, advMerchInfo: MerchantAdvInfo, address: Address) = DBHelper.database.withTransaction {
+    val existedMerchant = findById(merchant.id).get
+    Query(Merchants).where(_.id === merchant.id).update(merchant)
+    existedMerchant.advancedInfo match {
+      case Some(adv) => {
+        Query(MerchantAdvInfos).where(_.id === advMerchInfo.id).update(advMerchInfo)
+        Query(Addresses).where(_.id === address.id).update(address)
+      }
+      case None => {
+        MerchantAdvInfos.insert(advMerchInfo)
+        Addresses.insert(address)
+      }
     }
   }
 }

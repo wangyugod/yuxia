@@ -92,7 +92,7 @@ object ProfileController extends Controller with Users with Secured {
         user => {
           val foundUser = Profile.authenticateUser(user._1, user._2)
           if (foundUser.isDefined) {
-            Redirect(routes.Application.index()).withSession(LOGIN_KEY -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id)
+            Redirect(routes.Application.index()).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id)
           } else {
             BadRequest(html.login(loginForm.withError("login.failed", Messages("login.failed.msg"))))
           }
@@ -115,7 +115,7 @@ object ProfileController extends Controller with Users with Secured {
       },
       profile => {
         Profile.createUser(profile)
-        Redirect(routes.Application.index()).withSession(LOGIN_KEY -> profile.login, USER_NAME -> profile.name, USER_ID -> profile.id)
+        Redirect(routes.Application.index()).withSession(loginKey -> profile.login, USER_NAME -> profile.name, USER_ID -> profile.id)
       }
     )
   }
@@ -138,7 +138,7 @@ object ProfileController extends Controller with Users with Secured {
 
   def myAccount = isAuthenticated(
     implicit request =>{
-      val profile = Profile.findUserByLogin(request.session.get(LOGIN_KEY).get)
+      val profile = Profile.findUserByLogin(request.session.get(loginKey).get)
       Ok(html.myaccount.baseinfo(profileUpdateForm.fill(profile.get)))
     }
   )

@@ -2,6 +2,7 @@ package vo
 
 import models._
 import util.{DBHelper, IdGenerator}
+import play.api.Logger
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,7 +11,8 @@ import util.{DBHelper, IdGenerator}
  * Time: 9:31 PM
  * To change this template use File | Settings | File Templates.
  */
-case class MerchantVo(id: Option[String], login: String, name: String, description: Option[String], merchNum: Option[String], artificialPerson: String, artPerCert: String, phoneNum: String, addressId:Option[String], province: String, city: String, district: String, contactPhone: String, addressLine: String, contactPerson: String) {
+case class MerchantVo(id: Option[String], login: String, name: String, description: Option[String], merchNum: Option[String], artificialPerson: String, artPerCert: String, addressId:Option[String], province: String, city: String, district: String, contactPhone: String, addressLine: String, contactPerson: String) {
+  private val log = Logger(this.getClass())
   lazy val addrId: String = {
     this.addressId match {
       case Some(aid) => aid
@@ -19,16 +21,18 @@ case class MerchantVo(id: Option[String], login: String, name: String, descripti
   }
 
   lazy val merchant: Merchant = {
-    val persistMerch = Merchant.findByLogin(this.id.get)
+    if(log.isDebugEnabled)
+      log.debug("current merchant id is " + id)
+    val persistMerch = Merchant.findById(this.id.get)
     Merchant(id.get, login, persistMerch.get.password, name, description, persistMerch.get.registeredBy)
   }
 
   lazy val merchantAdvInfo: MerchantAdvInfo = {
-    MerchantAdvInfo(id.get, merchNum, artificialPerson, artPerCert, phoneNum, addrId)
+    MerchantAdvInfo(id.get, merchNum, artificialPerson, artPerCert, addrId)
   }
 
   lazy val address: Address = {
-    Address(addrId, province, city, district, contactPhone, addressLine, contactPerson)
+    Address(addrId, province, city, district, contactPhone, addressLine, contactPerson, None)
   }
 
 }
@@ -39,10 +43,10 @@ object MerchantVo {
     advMerchant match {
       case Some(am) => {
         val address = am.address
-        MerchantVo(Some(merchant.id), merchant.login, merchant.name, merchant.description, am.merchNum, am.artificialPerson, am.artPerCert, am.phoneNum, Some(am.addressId), address.province, address.city, address.district, address.contactPhone, address.addressLine, address.contactPerson)
+        MerchantVo(Some(merchant.id), merchant.login, merchant.name, merchant.description, am.merchNum, am.artificialPerson, am.artPerCert, Some(am.addressId), address.province, address.city, address.district, address.contactPhone, address.addressLine, address.contactPerson)
       }
       case _ =>{
-        MerchantVo(Some(merchant.id), merchant.login, merchant.name, merchant.description, None, "", "", "", None, "", "", "", "", "", "")
+        MerchantVo(Some(merchant.id), merchant.login, merchant.name, merchant.description, None, "", "", None, "", "", "", "", "", "")
       }
     }
   }

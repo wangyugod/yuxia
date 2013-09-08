@@ -11,10 +11,13 @@ import play.api.libs.Files.TemporaryFile
  * To change this template use File | Settings | File Templates.
  */
 trait Secured {
+
+  def loginKey = "user_login"
+
   /**
    * Retrieve the connected user email.
    */
-  protected def username(request: RequestHeader) = request.session.get("user_login")
+  protected def username(request: RequestHeader) = request.session.get(loginKey)
 
   /**
    * Redirect to login if the user in not authorized.
@@ -37,7 +40,12 @@ trait Secured {
 }
 
 trait MerchSecured extends Secured {
-  override def username(request: RequestHeader) = request.session.get("merch_login")
-
+  override def loginKey = "merch_login"
   override def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.Merchandise.login)
+}
+
+
+trait InternalMgtSecured extends Secured {
+  override def loginKey = "internal_login"
+  override def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.InternalManagement.login)
 }

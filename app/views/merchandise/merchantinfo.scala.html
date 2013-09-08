@@ -13,6 +13,7 @@
                 @form(action = routes.Merchandise.update) {
                 <input type="hidden" name="id" value="@merchantForm.data.get("id")"/>
                 <input type="hidden" name="login" value="@merchantForm.data.get("login")"/>
+                <input type="hidden" name="addressId" value="@merchantForm.data.get("addressId")"/>
                 <div class="form">
                     <div class="item">
                         <span class="label">@Messages("myacct.email.label")</span>
@@ -35,7 +36,7 @@
                         <div class="clr"></div>
                     </div>
                     <div class="item">
-                        <span class="label"><em>*</em>@Messages("merch.merchnum.label")</span>
+                        <span class="label">@Messages("merch.merchnum.label")</span>
                         <div class="fl">
                             <div>
                                 <input name="merchNum" id="merchNum" type="text" value="@merchantForm.data.get("merchNum")" class="text" ><s></s>
@@ -72,38 +73,50 @@
                         </div>
                     </div>
                     <div class="item">
-                        <span class="label"><em>*</em>@Messages("merch.phonenum.label")</span>
+                        <span class="label">@Messages("merch.description.label")</span>
+                        <div class="fl">
+                            <textarea name="description" id="description" cols="" rows="" class="area" style="color: rgb(140, 140, 140);">@merchantForm.data.get("description")</textarea>
+                        </div>
+                        <div class="clr"></div>
+                    </div>
+                </div>
+                <h5>联系信息</h5>
+                <div class="form">
+                    <div class="item">
+                        <span class="label"><em>*</em>@Messages("merch.contact.person.label")</span>
                         <div class="fl">
                             <div>
-                                <input name="phoneNum" id="phoneNum" type="text" value="@merchantForm.data.get("phoneNum")" class="text" ><s></s>
+                                <input name="contactPerson" id="contactPerson" type="text" value="@merchantForm.data.get("contactPerson")" class="text" ><s></s>
                                 <div class="clr"></div>
-                                @if(merchantForm.error("phoneNum").isDefined){
-                                <div class="prompt-error"><span id="petName_msg">@Messages(merchantForm.error("phoneNum").get.message)</span></div>
+                                @if(merchantForm.error("contactPerson").isDefined){
+                                <div class="prompt-error"><span id="petName_msg">@Messages(merchantForm.error("contactPerson").get.message)</span></div>
                                 }
                             </div>
                         </div>
                     </div>
                     <div class="item">
-                        <span class="label">@Messages("merch.description.label")</span>
+                        <span class="label"><em>*</em>@Messages("merch.phonenum.label")</span>
                         <div class="fl">
-                            <textarea name="description" id="description" cols="" rows="" value="@merchantForm.data.get("description")" class="area" style="color: rgb(140, 140, 140);"></textarea>
+                            <div>
+                                <input name="contactPhone" id="contactPhone" type="text" value="@merchantForm.data.get("contactPhone")" class="text" ><s></s>
+                                <div class="clr"></div>
+                                @if(merchantForm.error("contactPhone").isDefined){
+                                <div class="prompt-error"><span id="petName_msg">@Messages(merchantForm.error("contactPhone").get.message)</span></div>
+                                }
+                            </div>
                         </div>
-                        <div class="clr"></div>
                     </div>
-                </div>
-                <h5>选填信息</h5>
-                <div class="form">
                     <div class="item">
-                        <span class="label">所在地：</span>
+                        <span class="label"><em>*</em>所在地：</span>
                         <div class="fl">
-                            <select name="userInfo.province" class="sele" id="province">
-                                <option value="1">北京</option>
+                            <select name="province" class="sele" id="province">
+                                <option value="1">四川</option>
                             </select>
-                            <select name="userInfo.city" class="sele" id="city" style="display: block;">
+                            <select name="city" class="sele" id="city" style="display: block;">
                                 <option value="1930">成都市</option>
                             </select>
-                            <select name="userInfo.county" class="sele" id="county">
-                                <option value="6715">蒲江县(老城区、新城区以外)</option>
+                            <select name="district" class="sele" id="county">
+                                <option value="6715">高新区</option>
                             </select>
                             <div class="clr"></div><div class="prompt-06"><span id="province_msg"></span></div>
                         </div>

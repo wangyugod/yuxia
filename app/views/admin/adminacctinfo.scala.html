@@ -1,0 +1,51 @@
+@(iuForm:Form[InternalUser])(implicit user: Option[InternalUser])
+
+@import helper._
+@adminbase(Messages("myacct.myacct.label"), user){
+
+<div class="o-mt">
+    <h2>@Messages("myacct.myacct.label")</h2>
+</div>
+<div class="m" id="baseinfo">
+    <div class="mc">
+        <div class="i-m">
+            <div class="i-mc">
+                @form(action = routes.InternalManagement.update) {
+                <input type="hidden" name="id" value="@iuForm.data.get("id")"/>
+                <input type="hidden" name="login" value="@iuForm.data.get("login")"/>
+                <div class="form">
+                    <div class="item">
+                        <span class="label">@Messages("admin.login.username")</span>
+                        <div class="fl">
+                            <strong class="email">@iuForm.data.get("login")&nbsp;&nbsp;&nbsp;</strong>
+                        </div>
+                        <div class="clr"></div>
+                    </div>
+                    <div class="item">
+                        <span class="label"><em>*</em>@Messages("myacct.name.label")</span>
+                        <div class="fl">
+                            <div>
+                                <input name="name" id="name" type="text" value="@iuForm.data.get("name")" class="text"><s></s>
+                                <div class="clr"></div>
+                                @if(iuForm.error("name").isDefined){
+                                <div class="prompt-error"><span id="petName_msg">@Messages(iuForm.error("name").get.message)</span></div>
+                                }
+                            </div>
+                        </div>
+                        <div class="clr"></div>
+                    </div>
+                    <div class="item">
+                        <span class="label">&nbsp;</span>
+                        <div class="fl">
+                            <a href="javascript:void(0)" onclick="javascript: $('form').submit()" class="btn btn-7"><s></s>@Messages("myacct.submitbtn.label")</a>
+                        </div>
+                        <div class="clr"></div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+}

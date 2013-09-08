@@ -3,7 +3,7 @@
 
 <html>
 <head>
-    <title>@Messages("admin.site.title")</title>
+    <title>@Messages("site.login.title")</title>
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/base.css")">
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/component.css")">
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/layout.css")">
@@ -14,12 +14,12 @@
 <div class="w2">
     <div id="logo"><a href="@routes.Application.index" ><img src="@routes.Assets.at("images/logo.jpg")" alt="@Messages("site.name")" width="170" height="60"></a><b></b></div>
 </div>
-@helper.form(routes.ProfileController.authenticate)      {
+@helper.form(routes.InternalManagement.authenticate)      {
 <div class="w1" id="entry">
     <div class="mc " id="bgDiv">
         <div class="form ">
             <div class="item fore1">
-                <span>@Messages("login.email")</span>
+                <span>@Messages("admin.login.username")</span>
                 <div class="item-ifo">
                     <input type="text" id="login" name="login" value="@form(" login").value" class="text" tabindex="1" autocomplete="off">
                     <label id="loginname_succeed" class="blank invisible"></label>

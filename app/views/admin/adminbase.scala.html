@@ -1,4 +1,4 @@
-@(title: String, user:Option[Merchant])(content: Html)
+@(title: String, user:Option[InternalUser])(content: Html)
 
 <!DOCTYPE html>
 
@@ -19,7 +19,7 @@
 <body class="column_3">
 <div id="wrapper">
     <section id="topSection">
-        @merchtopbar(user)
+        @admintopbar(user)
         <h1 id="store_logo" title="YuXia">
             <a href="@routes.Application.index"></a>
         </h1>
@@ -28,11 +28,11 @@
         <div class="w main">
             <div id="accountMenu" class="left">
                 <div class="mt">
-                    <h2><a href="#">@Messages("my.site.name")</a></h2>
+                    <h2><a href="#">@Messages("admin.menu.label")</a></h2>
                 </div>
                 <div class="mc">
                     <dl tag="1" class="">
-                        <dt tag="1">订单中心<b></b></dt>
+                        <dt tag="1">@Messages("admin.account.label")<b></b></dt>
                         <dd style="display: block;">
                             <div id="_MYJD_tuan" class="item"><a href="@routes.Merchandise.merchAccount" tag="102">@Messages("merch.account.label")</a></div>
                             <div id="_MYJD_tuan" class="item"><a href="http://tuan.jd.com/order/index.php" tag="102">@Messages("merch.pwdmgt.menu")</a></div>

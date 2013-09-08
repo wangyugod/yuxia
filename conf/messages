@@ -33,6 +33,7 @@ myacct.name.label=昵称：
 myacct.gender.label=性别：
 myacct.birthday.label=生日：
 myacct.submitbtn.label=提交
+myacct.myacct.label=账户信息
 error.myacct.birthday=生日的格式应为YYYY-MM-DD
 
 
@@ -44,6 +45,18 @@ merch.free.register=商户注册
 merch.login=登录
 merch.name.label=商户名：
 merch.password.label=请设置密码：
+merch.account.label=帐户信息
+merch.merchnum.label=营业执照编号：
+merch.description.label=商家介绍：
+merch.artperson.label=法人：
+merch.artpercert.label=法人身份证号：
+merch.phonenum.label=联系电话：
+merch.contact.person.label=联系人：
+merch.pwdmgt.menu=密码管理
+merch.shipping.menu=配送管理
+merch.prodlist.menu=商品列表
+merch.orders.menu=我的订单
+
 
 
 product.desc=商品描述
@@ -93,3 +106,10 @@ srp.product.total=共<strong>{0}</strong>个商品
 srp.price.single=￥{0}
 srp.price.range=￥{0}--￥{1}
 srp.not.found=很抱歉，没有找到相关产品
+
+
+#Admin
+admin.login.username=用户名
+admin.site.title=管理员登录
+admin.menu.label=管理菜单
+admin.account.label=帐户中心
