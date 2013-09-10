@@ -824,14 +824,16 @@ h2, h3 {
     display: none;
 }
 
-.validateTips {
-    border: 1px solid transparent; padding: 0.3em;
-}
-
+/*
 table th {
     border: 1px solid #EEEEEE;
     padding: 0.6em 10px;
     text-align: left;
+}*/
+
+
+.validateTips {
+    border: 1px solid transparent; padding: 0.3em;
 }
 
 .breadcrumb {
@@ -1611,3 +1613,219 @@ h4, h5, h6 {
     width: 300px;
 }
 
+/*Admin Management Console*/
+.o-m .o-mb {
+    text-align: right;
+    padding-bottom: 10px;
+    padding-right: 5px;
+}
+
+.o-mt1, .o-mb {
+    overflow: hidden;
+    line-height: 30px;
+    zoom: 1;
+}
+
+h2, h3 {
+    font-size: 14px;
+}
+
+.o-mt1 h3 .btn-6, .o-mb h3 .btn-6 {
+    float: left;
+    margin-right: 10px;
+}
+
+.btn-1, .btn-1 s, .btn-4, .btn-4 s, .btn-5, .btn-5 s, .btn-6, .btn-6 s, .btn-8, .btn-8 s, .btn-11, .btn-11 s, .btn-12, .btn-12 s {
+    background: url(/assets/images/buttons.gif) no-repeat;
+}
+
+.btn-1, .btn-4, .btn-5, .btn-6, .btn-7, .btn-8, .btn-11, .btn-12 {
+    display: inline-block;
+    text-align: center;
+}
+
+a.btn-5:link, a.btn-5:visited, a.btn-5:hover, a.btn-5:active, a.btn-6:link, a.btn-6:visited, a.btn-6:hover, a.btn-6:active, a.btn-7:link, a.btn-7:visited, a.btn-7:hover, a.btn-7:active {
+    color: #333333;
+    font-weight: bold;
+}
+
+.btn-6 {
+    background-position: right -336px;
+    line-height: 30px;
+    padding-right: 15px;
+}
+
+.btn-1, .btn-4, .btn-5, .btn-6, .btn-8, .btn-11, .btn-12 {
+    display: inline-block;
+    text-align: center;
+    padding-right: 15px;
+}
+
+.btn-6 s {
+    background-position: 0 -305px;
+    height: 30px;
+}
+
+.btn-1 s, .btn-4 s, .btn-5 s, .btn-6 s, .btn-8 s, .btn-7 s, .btn-8 s, .btn-11 s, .btn-12 s {
+    float: left;
+    width: 3px;
+    margin-right: 12px;
+}
+
+.o-m .m4 .mt {
+    border-color: #eeeeee;
+}
+
+.o-m .m {
+    overflow: visible;
+}
+
+.m, .sm {
+    margin-bottom: 10px;
+}
+
+.m4 {
+    border: 1px solid #e6e6e6;
+}
+
+.m4 .mt {
+    border-bottom: 1px solid #e6e6e6;
+    height: 34px;
+    line-height: 34px;
+    padding-left: 16px;
+}
+
+.o-m .mt {
+    padding-left: 10px;
+    line-height: 35px;
+    height: 35px;
+    position: relative;
+    overflow: visible;
+}
+
+.mt, .smt {
+    cursor: default;
+}
+
+.o-m .mt .extra {
+    float: right;
+}
+
+.m .mt .extra a:link, .m .mt .extra a:visited {
+    color: #333;
+}
+
+.o-m .mt .extra .btn-8, .o-m .mt .extra .btn-12 {
+    margin-top: 7px;
+    margin-right: 10px;
+}
+
+.btn-12 {
+    background-position: right -673px;
+    line-height: 21px;
+}
+
+.o-m .mt .extra .btn-12 s {
+    margin-right: 11px;
+}
+
+.btn-12 s {
+    background-position: 0 -651px;
+}
+
+.btn-4 s, .btn-8 s, .btn-12 s {
+    height: 21px;
+}
+
+.o-m .mc {
+    padding: 10px;
+    line-height: 20px;
+}
+
+.m4 .mt h3 {
+    float: left;
+    color: #666666;
+}
+
+.btn-8 {
+    background-position: right -441px;
+    line-height: 21px;
+}
+
+.prompt-01 {
+    position: relative;
+    border: 1px solid #EDD28B;
+    background: #FFFDEE;
+    -webkit-box-shadow: 0 0 0 3px rgba(0,0,0,0.15);
+    -moz-box-shadow: 0 0 0 3px rgba(0,0,0,0.15);
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.15);
+    zoom: 1;
+    -moz-border-radius: 1px;
+    -webkit-border-radius: 1px;
+    border-radius: 1px;
+}
+
+table {
+    empty-cells: show;
+}
+
+.o-m .extra .prompt-01 {
+    position: absolute;
+    top: -85px;
+    right: 0;
+    width: 184px;
+    height: 80px;
+    display: none;
+}
+
+.o-m .tb-0 th, .o-mc .tb-0 td {
+    vertical-align: top;
+}
+
+.o-m .tb-0 th {
+    text-align: right;
+    font-weight: normal;
+    color: #999999;
+    width: 65px;
+}
+
+/*area management form*/
+.thicktitle {
+    height: 27px;
+    padding: 0 10px;
+    border: solid #C4C4C4;
+    border-width: 1px 1px 0;
+    background: #F3F3F3;
+    line-height: 27px;
+    font-family: arial,"\5b8b\4f53";
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+.thickbox {
+    position: absolute;
+    z-index: 10000002;
+    overflow: hidden;
+    padding: 0;
+    border: 4px solid rgba(0,0,0,0.1);
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+#areaForm .item {
+    padding-bottom: 10px;
+}
+
+#areaForm .item .label {
+     color: #666666;
+     width: 79px;
+     text-align: right;
+}
+
+#areaForm .form .area {
+    width: 400px;
+    height: 85px;
+    float: none;
+}

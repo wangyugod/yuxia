@@ -35,6 +35,8 @@ POST    /admin/login                controllers.InternalManagement.authenticate
 GET     /admin/home                 controllers.InternalManagement.home
 POST    /admin/home                 controllers.InternalManagement.update
 GET     /admin/logout               controllers.InternalManagement.logout
+GET     /admin/areas                controllers.InternalManagement.areaList
+POST    /admin/areas                controllers.InternalManagement.modifyArea
 
 
 # Map static resources from the /public folder to the /assets URL path

@@ -4,9 +4,12 @@ import play.api.mvc._
 import play.api.data.Form
 import play.api.data.Forms._
 import scala.Some
-import models.InternalUser
+import models.{Area, InternalUser}
 import views.html
 import play.api.i18n.Messages
+import java.sql.Timestamp
+import util.IdGenerator
+import play.api.Logger
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,6 +32,8 @@ trait InternalUsers {
 }
 object InternalManagement extends Controller with InternalUsers with InternalMgtSecured{
 
+  private val log = Logger(this.getClass())
+
   val loginForm: Form[(String, String)] = Form(
     tuple(
       "login" -> nonEmptyText,
@@ -43,6 +48,17 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
       "name" -> nonEmptyText
     )((id, login, name) => InternalUser(id, login, "", name))
       ((iu: InternalUser) => Some(iu.id, iu.login, iu.name))
+  )
+
+  val areaForm: Form[Area] = Form(
+    mapping(
+      "id" -> optional(text),
+      "name" -> nonEmptyText,
+      "detail" -> nonEmptyText,
+      "parentAreaId" -> optional(text)
+    )((id, name, detail, parentAreaId) => Area(id.getOrElse(IdGenerator.generateAreaId()), name, detail, parentAreaId, new Timestamp(new java.util.Date().getTime())))(
+      (area: Area) => Some(Some(area.id), area.name, area.detail, area.parentAreaId))
+
   )
 
   def login = Action{
@@ -80,8 +96,35 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
     }
   }
 
+  def areaList = isAuthenticated{
+    implicit request => {
+      val areaList = Area.all()
+      if(log.isDebugEnabled)
+        log.debug("area list is " + areaList)
+      Ok(html.admin.areamgt(areaList, areaForm))
+    }
+  }
+
   def update = Action{
     Ok
+  }
+
+  def modifyArea = Action{
+    implicit request => {
+      areaForm.bindFromRequest().fold(
+        formWithErrors => {
+          if(log.isDebugEnabled)
+            log.debug("error form is :\n" + formWithErrors)
+          BadRequest(html.admin.areamgt(Area.all(), formWithErrors))
+        },
+        area => {
+          if(log.isDebugEnabled)
+            log.debug("preapare to update/create area : " + area)
+          Area.saveOrUpdate(area)
+          Redirect(routes.InternalManagement.areaList())
+        }
+      )
+    }
   }
 
 }

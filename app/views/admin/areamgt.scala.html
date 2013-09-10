@@ -1,0 +1,111 @@
+@(areaList: List[Area], areaForm: Form[Area])(implicit user: Option[InternalUser])
+
+@import helper._
+@adminbase(Messages("admin.area.menu"), user){
+<script type="text/javascript">
+    function showAreaPopup(){
+        $("#areaForm").dialog({
+            title: "设置区域信息",
+            width: 760,
+            height: 400,
+            modal:true,
+            buttons:{"@Messages("sku.ok.button")": function(){
+                $('form').submit();
+                $(this).dialog("close");
+            }}
+        })
+
+    }
+</script>
+
+<div class="o-mt">
+    <h2>@Messages("admin.area.menu")</h2>
+</div>
+<div id="areaForm" class="thickbox" style="display: none">
+    <div class="thickcon" >
+        <div class="mc">
+            @form(routes.InternalManagement.modifyArea){
+            <input type="hidden" name="id" />
+            <input type="hidden" name="parentAreaId" />
+            <div class="form" id="consigneePanel">
+                <div class="item">
+                    <span class="label"><em>*</em>@Messages("area.name.label")</span>
+                    <div class="fl">
+                        <input id="name" name="name" type="text" class="text" value="" maxlength="20">
+                    </div>
+                    <div class="clr"></div>
+                </div>
+                <div class="item">
+                    <span class="label">@Messages("area.parent.label")</span>
+                    <div class="fl">
+                        <input id="parentAreaName" name="parentAreaName" type="text" value="" class="text text1" maxlength="50"></div>
+                    <div class="clr">
+                    </div>
+                </div>
+                <div class="item">
+                    <span class="label"><em>*</em>@Messages("area.detail.label")</span>
+                    <div class="fl">
+                        <textarea id="detail" name="detail" class="area" maxlength="50"></textarea></div>
+                    <div class="clr">
+                    </div>
+                </div>
+
+            </div>
+            }
+        </div>
+
+    </div>
+</div>
+<div class="o-m">
+    <div class="o-mb">
+        <h3> <a href="#none" class="btn-6" onclick="showAreaPopup()"><s></s>新 增</a></h3>
+    </div>
+    @for(area <- areaList){
+    <div class="o-mc">
+        <div class="m m4" id="divarea@area.id">
+            <div class="mt">
+                <h3>@area.name</h3>
+                <div class="extra">
+                    <a class="btn-12 del" href="#none" id="modarea@area.id"><s></s>修改</a>
+                    <a class="btn-12 del" href="#none" id="delarea@area.id"><s></s>删除</a>
+
+                    <div class="prompt-01" id="divsuredelOrderAddress48896010">
+                        <div class="pc">
+                            <h5>
+                                <s></s>您确定删除吗？</h5>
+                            <div class="btns">
+                                <a class="btn-12" href="#none" id="suredelOrderAddress48896010" name="48896010">
+                                    <s></s>确定</a> <a class="btn-12 closer" href="#none"><s></s>取消</a>
+                            </div>
+                        </div>
+                        <div class="pb pb-b">
+                            <b class="b1"></b><b class="b2"></b><b class="b3"></b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tb-0">
+                <table cellspacing="0" cellpadding="0" border="0" width="100%">
+                    <tbody><tr>
+                        <th>详细说明：</th>
+                        <td width="330">@area.detail</td>
+                        <th>&nbsp;</th>
+                        <td>&nbsp;</td>
+                    </tr>
+                    </tbody>
+                    <tbody><tr>
+                        <th>所属区域：</th>
+                        <td width="330">@(if(area.parentArea.isDefined) area.parentArea.get.name)</td>
+                        <th>&nbsp;</th>
+                        <td>&nbsp;</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="mc">
+        </div>
+    </div>  }
+</div>
+
+}

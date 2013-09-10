@@ -58,7 +58,6 @@ merch.prodlist.menu=商品列表
 merch.orders.menu=我的订单
 
 
-
 product.desc=商品描述
 product.longdesc=商品详情
 product.name=商品标题
@@ -95,7 +94,6 @@ pdp.shipping.scope.label=配送范围
 pdp.rating.label=评分
 pdp.choose.sku.label=选择类型
 
-
 #SRP
 srp.search.order=排序
 srp.order.saleqty=销量
@@ -107,9 +105,14 @@ srp.price.single=￥{0}
 srp.price.range=￥{0}--￥{1}
 srp.not.found=很抱歉，没有找到相关产品
 
-
 #Admin
 admin.login.username=用户名
 admin.site.title=管理员登录
-admin.menu.label=管理菜单
-admin.account.label=帐户中心
+admin.menu.label=管理中心
+admin.account.label=菜单
+admin.area.menu=区域管理
+admin.category.menu=目录管理
+area.name.label=区域名称：
+area.detail.label=区域细节：
+area.parent.label=所属区域：
+

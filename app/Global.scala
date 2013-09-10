@@ -41,7 +41,8 @@ object Global extends GlobalSettings {
       //ProductCategories.ddl.create
 //      Categories.ddl.create
 //      CategoryCategories.ddl.drop
-      InternalUsers.ddl.create
+//      InternalUsers.ddl.create
+      Areas.ddl.create
 
 //      CategoryCategories.ddl.create
 
