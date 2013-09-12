@@ -23,6 +23,7 @@ trait InternalUsers {
   val LOGIN_KEY = "internal_login"
   val ID = "internal_id"
   val NAME = "internal_name"
+
   implicit def toMerchant(implicit session: Session): Option[InternalUser] = {
     session.get(LOGIN_KEY) match {
       case Some(login) => Some(InternalUser(session.get(ID).get, session.get(LOGIN_KEY).get, "", session.get(NAME).get))
@@ -30,7 +31,8 @@ trait InternalUsers {
     }
   }
 }
-object InternalManagement extends Controller with InternalUsers with InternalMgtSecured{
+
+object InternalManagement extends Controller with InternalUsers with InternalMgtSecured {
 
   private val log = Logger(this.getClass())
 
@@ -41,7 +43,7 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
     )
   )
 
-  val interUserUpdateForm:Form[InternalUser] = Form(
+  val interUserUpdateForm: Form[InternalUser] = Form(
     mapping(
       "id" -> nonEmptyText,
       "login" -> nonEmptyText,
@@ -61,13 +63,13 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
 
   )
 
-  def login = Action{
+  def login = Action {
     implicit request => {
       Ok(html.admin.login(loginForm))
     }
   }
 
-  def logout = Action{
+  def logout = Action {
     implicit request =>
       Redirect(routes.InternalManagement.login()).withNewSession
   }
@@ -96,29 +98,36 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
     }
   }
 
-  def areaList = isAuthenticated{
+  def areaList = isAuthenticated {
     implicit request => {
       val areaList = Area.all()
-      if(log.isDebugEnabled)
+      if (log.isDebugEnabled)
         log.debug("area list is " + areaList)
       Ok(html.admin.areamgt(areaList, areaForm))
     }
   }
 
-  def update = Action{
+  def update = Action {
     Ok
   }
 
-  def modifyArea = Action{
+  def deleteArea(id: String) = isAuthenticated {
+    implicit request => {
+      Area.delete(id)
+      Ok
+    }
+  }
+
+  def modifyArea = Action {
     implicit request => {
       areaForm.bindFromRequest().fold(
         formWithErrors => {
-          if(log.isDebugEnabled)
+          if (log.isDebugEnabled)
             log.debug("error form is :\n" + formWithErrors)
           BadRequest(html.admin.areamgt(Area.all(), formWithErrors))
         },
         area => {
-          if(log.isDebugEnabled)
+          if (log.isDebugEnabled)
             log.debug("preapare to update/create area : " + area)
           Area.saveOrUpdate(area)
           Redirect(routes.InternalManagement.areaList())
@@ -126,5 +135,6 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
       )
     }
   }
+
 
 }

@@ -5,16 +5,124 @@
 <script type="text/javascript">
     function showAreaPopup(){
         $("#areaForm").dialog({
-            title: "设置区域信息",
+            title: "@Messages("area.mgt.title")",
             width: 760,
             height: 400,
             modal:true,
-            buttons:{"@Messages("sku.ok.button")": function(){
+            buttons:{"@Messages("ok.button")": function(){
                 $('form').submit();
                 $(this).dialog("close");
+            },
+            "@Messages("cancel.button")": function() {
+                $('#id').val("");
+                $('#parentAreaId').val("");
+                $('#name').val("");
+                $('#parentAreaName').val("");
+                $('#detail').val("");
+                $(this).dialog( "close" );
+            }}
+        })
+    }
+
+
+    $(function(){
+        // --- Initialize sample trees
+        $("#tree").dynatree({
+            title: "Lazy loading sample",
+            checkbox:true,
+            selectMode:1,
+            fx: { height: "toggle", duration: 200 },
+            autoFocus: false,
+
+            onSelect: function(select, node) {
+            // Display list of selected nodes
+            var selNodes = node.tree.getSelectedNodes();
+            // convert to title/key array
+            var selKeys = $.map(selNodes, function(node){
+                return node.data.key;
+            });
+            var selTitle = $.map(selNodes, function(node){
+                return node.data.title;
+            });
+            $("#parentAreaName").val(selTitle.join(","));
+            $("#parentAreaId").val(selKeys.join(";"));
+            },
+
+            initAjax: {
+            url: "@routes.Addresses.initAreaTrees",
+            data: { mode: "funnyMode" }
+            },
+
+            onActivate: function(node) {
+            $("#echoActive").text("" + node + " (" + node.getKeyPath()+ ")");
+            },
+
+            onLazyRead: function(node){
+                node.appendAjax({
+                    url: "/area/child/" + node.data.key,
+                    data: {key: node.data.key, mode: "funnyMode"}
+                });
+            }
+        });
+
+        @if(areaForm.hasErrors){
+            showAreaPopup();
+        }
+    });
+
+    function showAreaTree(){
+        $("#tree").dialog({
+            title: "@Messages("area.pickparent.title")",
+            width: 760,
+            height: 400,
+            modal:true,
+            buttons:{"@Messages("ok.button")": function(){
+                $(this).dialog("close");
+            },
+            "@Messages("cancel.button")": function() {
+                $(this).dialog( "close" );
             }}
         })
 
+    }
+
+    function confirmDeleteArea(element){
+        var areaId = element.attr("id").substr(7);
+        $('#divconfirm'+areaId).dialog({
+            resizable: false,
+            height:140,
+            modal: true,
+            open:function(event, ui){
+                $(".ui-dialog-titlebar-close", $(this).parent()).hide();
+            },
+            closeOnEscape: false,
+            buttons: {
+            "@Messages("ok.button")": function() {
+                $.ajax({
+                    async:false,
+                    url:"/area/delete/" + areaId,
+                    type:"DELETE",
+                    success: function(result){
+                        document.location.href = "@routes.InternalManagement.areaList()";
+                    }
+                });
+                $(this).dialog( "close" );
+            },
+            "@Messages("cancel.button")": function() {
+                $(this).dialog( "close" );
+            }
+            }
+        });
+    }
+
+    function modifyPopup(element){
+        var areaId = element.attr("id").substr(7);
+        $('#id').val(areaId);
+        $('#parentAreaId').val($('#parentId'+areaId).text());
+        $('#name').val($('#name' + areaId).text());
+        $('#parentAreaName').val($('#parent' + areaId).text());
+        $('#detail').val($('#detail' + areaId).text());
+        showAreaPopup();
     }
 </script>
 
@@ -25,27 +133,36 @@
     <div class="thickcon" >
         <div class="mc">
             @form(routes.InternalManagement.modifyArea){
-            <input type="hidden" name="id" />
-            <input type="hidden" name="parentAreaId" />
+            <input type="hidden" name="id" id="id"/>
+            <input type="hidden" name="parentAreaId" id="parentAreaId"/>
             <div class="form" id="consigneePanel">
                 <div class="item">
                     <span class="label"><em>*</em>@Messages("area.name.label")</span>
                     <div class="fl">
-                        <input id="name" name="name" type="text" class="text" value="" maxlength="20">
+                        <input id="name" name="name" type="text" class="text" value="@areaForm.data.get("name")" maxlength="20">
+                        @if(areaForm.error("name").isDefined){
+                            <div class="prompt-error"><span id="petName_msg">@Messages(areaForm.error("name").get.message)</span></div>
+                        }
                     </div>
                     <div class="clr"></div>
                 </div>
                 <div class="item">
                     <span class="label">@Messages("area.parent.label")</span>
                     <div class="fl">
-                        <input id="parentAreaName" name="parentAreaName" type="text" value="" class="text text1" maxlength="50"></div>
+                        <input id="parentAreaName" name="parentAreaName" type="text" value="" readonly class="text text1" maxlength="50">
+                        <a class="btn-12" href="#none" id="choosearea" onclick="showAreaTree()"><s></s>选择区域</a>
+                    </div>
                     <div class="clr">
                     </div>
                 </div>
                 <div class="item">
                     <span class="label"><em>*</em>@Messages("area.detail.label")</span>
                     <div class="fl">
-                        <textarea id="detail" name="detail" class="area" maxlength="50"></textarea></div>
+                        <textarea id="detail" name="detail" class="area" maxlength="50">@areaForm.data.get("detail")</textarea>
+                        @if(areaForm.error("detail").isDefined){
+                            <div class="prompt-error"><span id="petName_msg">@Messages(areaForm.error("detail").get.message)</span></div>
+                        }
+                    </div>
                     <div class="clr">
                     </div>
                 </div>
@@ -53,7 +170,9 @@
             </div>
             }
         </div>
+        <div id="tree" style="display:none;overflow: hidden">
 
+        </div>
     </div>
 </div>
 <div class="o-m">
@@ -64,23 +183,12 @@
     <div class="o-mc">
         <div class="m m4" id="divarea@area.id">
             <div class="mt">
-                <h3>@area.name</h3>
+                <h3 id="name@area.id">@area.name</h3>
                 <div class="extra">
-                    <a class="btn-12 del" href="#none" id="modarea@area.id"><s></s>修改</a>
-                    <a class="btn-12 del" href="#none" id="delarea@area.id"><s></s>删除</a>
-
-                    <div class="prompt-01" id="divsuredelOrderAddress48896010">
-                        <div class="pc">
-                            <h5>
-                                <s></s>您确定删除吗？</h5>
-                            <div class="btns">
-                                <a class="btn-12" href="#none" id="suredelOrderAddress48896010" name="48896010">
-                                    <s></s>确定</a> <a class="btn-12 closer" href="#none"><s></s>取消</a>
-                            </div>
-                        </div>
-                        <div class="pb pb-b">
-                            <b class="b1"></b><b class="b2"></b><b class="b3"></b>
-                        </div>
+                    <a class="btn-12" href="#none" id="modarea@area.id" onclick="modifyPopup($(this))"><s></s>修改</a>
+                    <a class="btn-12 del" href="#none" id="delarea@area.id" onclick="confirmDeleteArea($(this))"><s></s>删除</a>
+                    <div id="divconfirm@area.id" style="display:none">
+                            <span>您确定删除区域@area.name吗？</span>
                     </div>
                 </div>
             </div>
@@ -88,17 +196,18 @@
                 <table cellspacing="0" cellpadding="0" border="0" width="100%">
                     <tbody><tr>
                         <th>详细说明：</th>
-                        <td width="330">@area.detail</td>
+                        <td width="330" id="detail@area.id">@area.detail</td>
                         <th>&nbsp;</th>
                         <td>&nbsp;</td>
                     </tr>
                     </tbody>
                     <tbody><tr>
                         <th>所属区域：</th>
-                        <td width="330">@(if(area.parentArea.isDefined) area.parentArea.get.name)</td>
+                        <td width="330" id="parent@area.id">@(if(area.parentArea.isDefined) area.parentArea.get.name)</td>
                         <th>&nbsp;</th>
                         <td>&nbsp;</td>
                     </tr>
+                    <span style="display:none" id="parentId@area.id">@area.parentAreaId</span>
                     </tbody>
                 </table>
             </div>

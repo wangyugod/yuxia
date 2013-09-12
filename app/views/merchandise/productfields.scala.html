@@ -98,14 +98,6 @@
     },
 
     onLazyRead: function(node){
-    // In real life we would call something like this:
-    // node.appendAjax({
-    // url: "/getChildrenAsJson",
-    // data: {key: node.data.key,
-    // mode: "funnyMode"
-    // }
-    // });
-    // .. but here we use a local file instead:
     node.appendAjax({
     url: "/merch/prod/childCat/" + node.data.key,
     data: {key: node.data.key, mode: "funnyMode"}
@@ -214,7 +206,7 @@
         var btonJson ;
         if(index == undefined) {
             btonJson = {
-                "@Messages("sku.ok.button")": function(){
+                "@Messages("ok.button")": function(){
                     var skuName = $('#childSkus_' + currentIdx + '__skuName');
                     var listPrice = $('#childSkus_' + currentIdx + '__listPrice');
                     var salePrice = $('#childSkus_' + currentIdx + '__salePrice');
@@ -240,14 +232,14 @@
                     $(this).dialog('destroy').appendTo("#skuDialog");
                     <!--$(this).dialog("close");-->
                     },
-                "@Messages("sku.cancel.button")": function(){
+                "@Messages("cancel.button")": function(){
                     clearSku(length - 1);
                     $(this).dialog('destroy').appendTo("#skuDialog");
                 }
             }
         } else {
             btonJson = {
-                "@Messages("sku.ok.button")": function(){
+                "@Messages("ok.button")": function(){
                 var skuName = $('#childSkus_' + currentIdx + '__skuName');
                 var listPrice = $('#childSkus_' + currentIdx + '__listPrice');
                 var salePrice = $('#childSkus_' + currentIdx + '__salePrice');
@@ -390,7 +382,7 @@ productForm("image"),
             </tbody>
         </table>
 </div>
-<div id="tree" style="display:none" title="@Messages("product.category.select")">
+<div id="tree" style="display:none;" title="@Messages("product.category.select")">
 <!-- When using initAjax, it may be nice to put a throbber here, that spins until the initial content is loaded: -->
 </div>
 

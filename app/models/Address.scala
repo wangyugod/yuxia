@@ -21,6 +21,8 @@ case class Area(id: String, name: String, detail: String, parentAreaId: Option[S
       case _ => None
     }
   }
+
+  lazy val isRoot = parentAreaId.isEmpty
 }
 
 object Areas extends Table[Area]("area") {
@@ -83,6 +85,10 @@ object Area {
     Query(Areas).list()
   }
 
+  def rootAreas() = DBHelper.database.withSession{
+    Query(Areas).where(_.parentAreaId isNull).list()
+  }
+
   def findById(id: String) = DBHelper.database.withSession {
     Query(Areas).where(_.id === id).firstOption
   }
@@ -92,6 +98,14 @@ object Area {
       case Some(a) => Query(Areas).where(_.id === area.id).update(area)
       case _ => Areas.insert(area)
     }
+  }
+
+  def childAreas(id: String) = DBHelper.database.withSession{
+    Query(Areas).where(_.parentAreaId === id).list()
+  }
+
+  def delete(id: String) = DBHelper.database.withTransaction{
+    Query(Areas).where(_.id === id).delete
   }
 }
 

@@ -42,26 +42,6 @@ object Products extends Controller with Merchants with MerchSecured {
       )(SkuVo.apply)(SkuVo.unapply)
       )
     )(ProductVo.apply)(ProductVo.unapply _)
-    /*{
-      case (id, merchantId, name, description, longDescription, startDate, endDate, categories, selectedCat) =>{
-        val productId = IdGenerator.generateProductId()
-        (Product(id.getOrElse(productId), name, description, longDescription, AppHelper.convertDateFromText(startDate), AppHelper.convertDateFromText(endDate), merchantId, id.getOrElse(productId) + ".jpg"), categories)
-        }
-      }
-    {
-      case(x: (Product, String)) =>{
-        val catIds = x._2.split(",")
-        val categories = Category.findByIds(catIds)
-        var s = "";
-        for(cat <- categories){
-          s = s + "," + cat.name
-        }
-        if(s != ""){
-          s = s.substring(1)
-        }
-      Some(Some(x._1.id), x._1.merchantId, x._1.name, x._1.description, x._1.longDescription, AppHelper.convertDateToText(x._1.startDate), AppHelper.convertDateToText(x._1.endDate), x._2, s)
-      }
-    }*/
 
   )
 

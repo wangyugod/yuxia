@@ -37,6 +37,9 @@ POST    /admin/home                 controllers.InternalManagement.update
 GET     /admin/logout               controllers.InternalManagement.logout
 GET     /admin/areas                controllers.InternalManagement.areaList
 POST    /admin/areas                controllers.InternalManagement.modifyArea
+GET     /area/root                  controllers.Addresses.initAreaTrees
+GET     /area/child/:id             controllers.Addresses.childAreas(id)
+DELETE  /area/delete/:id            controllers.InternalManagement.deleteArea(id)
 
 
 # Map static resources from the /public folder to the /assets URL path
