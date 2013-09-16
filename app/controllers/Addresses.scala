@@ -1,9 +1,12 @@
 package controllers
 
+import _root_.util.IdGenerator
 import play.api.mvc._
 import play.api.Logger
-import models.Area
+import models.{Address, Area}
 import play.api.libs.json._
+import play.api.data._
+import play.api.data.Forms._
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,22 +21,21 @@ object Addresses extends Controller {
   def initAreaTrees = Action {
     implicit request => {
       val rootAreas = Area.rootAreas()
-      if(log.isDebugEnabled)
+      if (log.isDebugEnabled)
         log.debug("ROOT AREAs: " + rootAreas)
       Ok(JsArray(areaJson(rootAreas)))
     }
   }
 
 
-  def childAreas(id: String) = Action{
+  def childAreas(id: String) = Action {
     implicit request => {
       val childAreas = Area.childAreas(id)
-      if(log.isDebugEnabled)
+      if (log.isDebugEnabled)
         log.debug("CHILD Areas: " + childAreas)
       Ok(JsArray(areaJson(childAreas)))
     }
   }
-
 
 
   private def areaJson(areaList: Seq[Area]) = {

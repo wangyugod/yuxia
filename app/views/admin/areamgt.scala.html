@@ -4,7 +4,7 @@
 @adminbase(Messages("admin.area.menu"), user){
 <script type="text/javascript">
     function showAreaPopup(){
-        $("#areaForm").dialog({
+        $("#popForm").dialog({
             title: "@Messages("area.mgt.title")",
             width: 760,
             height: 400,
@@ -83,7 +83,6 @@
                 $(this).dialog( "close" );
             }}
         })
-
     }
 
     function confirmDeleteArea(element){
@@ -129,7 +128,7 @@
 <div class="o-mt">
     <h2>@Messages("admin.area.menu")</h2>
 </div>
-<div id="areaForm" class="thickbox" style="display: none">
+<div id="popForm" class="thickbox" style="display: none">
     <div class="thickcon" >
         <div class="mc">
             @form(routes.InternalManagement.modifyArea){
@@ -150,7 +149,7 @@
                     <span class="label">@Messages("area.parent.label")</span>
                     <div class="fl">
                         <input id="parentAreaName" name="parentAreaName" type="text" value="" readonly class="text text1" maxlength="50">
-                        <a class="btn-12" href="#none" id="choosearea" onclick="showAreaTree()"><s></s>选择区域</a>
+                        <a class="btn-12" href="#none" id="choosearea" onclick="showAreaTree()"><s></s>@Messages("area.parent.btn")</a>
                     </div>
                     <div class="clr">
                     </div>
@@ -177,7 +176,7 @@
 </div>
 <div class="o-m">
     <div class="o-mb">
-        <h3> <a href="#none" class="btn-6" onclick="showAreaPopup()"><s></s>新 增</a></h3>
+        <h3> <a href="#none" class="btn-6" onclick="showAreaPopup()"><s></s>@Messages("area.new.btn")</a></h3>
     </div>
     @for(area <- areaList){
     <div class="o-mc">
@@ -185,24 +184,24 @@
             <div class="mt">
                 <h3 id="name@area.id">@area.name</h3>
                 <div class="extra">
-                    <a class="btn-12" href="#none" id="modarea@area.id" onclick="modifyPopup($(this))"><s></s>修改</a>
-                    <a class="btn-12 del" href="#none" id="delarea@area.id" onclick="confirmDeleteArea($(this))"><s></s>删除</a>
+                    <a class="btn-12" href="#none" id="modarea@area.id" onclick="modifyPopup($(this))"><s></s>@Messages("area.update.btn")</a>
+                    <a class="btn-12 del" href="#none" id="delarea@area.id" onclick="confirmDeleteArea($(this))"><s></s>@Messages("area.delete.btn")</a>
                     <div id="divconfirm@area.id" style="display:none">
-                            <span>您确定删除区域@area.name吗？</span>
+                            <span>@Messages("area.delete.cfmsg", area.name)</span>
                     </div>
                 </div>
             </div>
             <div class="tb-0">
                 <table cellspacing="0" cellpadding="0" border="0" width="100%">
                     <tbody><tr>
-                        <th>详细说明：</th>
+                        <th>@Messages("area.detail.label")</th>
                         <td width="330" id="detail@area.id">@area.detail</td>
                         <th>&nbsp;</th>
                         <td>&nbsp;</td>
                     </tr>
                     </tbody>
                     <tbody><tr>
-                        <th>所属区域：</th>
+                        <th>@Messages("area.parent.label")</th>
                         <td width="330" id="parent@area.id">@(if(area.parentArea.isDefined) area.parentArea.get.name)</td>
                         <th>&nbsp;</th>
                         <td>&nbsp;</td>

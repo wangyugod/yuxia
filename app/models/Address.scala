@@ -5,6 +5,7 @@ import slick.session.Database
 import Database.threadLocalSession
 import java.sql.Timestamp
 import util.DBHelper
+import play.api.Logger
 
 /**
  * Created with IntelliJ IDEA.
@@ -43,7 +44,14 @@ object Areas extends Table[Area]("area") {
 }
 
 
-case class Address(id: String, province: String, city: String, district: String, contactPhone: String, addressLine: String, contactPerson: String, areaId: Option[String])
+case class Address(id: String, province: String, city: String, district: String, contactPhone: String, addressLine: String, contactPerson: String, areaId: Option[String]) {
+  lazy val area = DBHelper.database.withSession {
+    areaId match {
+      case Some(id) => Area.findById(id)
+      case _ => None
+    }
+  }
+}
 
 object Addresses extends Table[Address]("address") {
   def id = column[String]("id", O.PrimaryKey)
@@ -85,7 +93,7 @@ object Area {
     Query(Areas).list()
   }
 
-  def rootAreas() = DBHelper.database.withSession{
+  def rootAreas() = DBHelper.database.withSession {
     Query(Areas).where(_.parentAreaId isNull).list()
   }
 
@@ -100,12 +108,40 @@ object Area {
     }
   }
 
-  def childAreas(id: String) = DBHelper.database.withSession{
+  def childAreas(id: String) = DBHelper.database.withSession {
     Query(Areas).where(_.parentAreaId === id).list()
   }
 
-  def delete(id: String) = DBHelper.database.withTransaction{
+  def delete(id: String) = DBHelper.database.withTransaction {
     Query(Areas).where(_.id === id).delete
+  }
+}
+
+object Address {
+  private val log = Logger(this.getClass())
+
+  def userAddresses(userId: String) = DBHelper.database.withSession {
+    val addIds = for (ua <- UserAddresses if ua.userId === userId) yield ua.addrId
+    val addressIds = addIds.list()
+    if (log.isDebugEnabled)
+      log.debug("found addressId :" + addressIds)
+    Query(Addresses).where(_.id inSetBind (addressIds)).list()
+  }
+
+  def findById(id: String) = DBHelper.database.withSession{
+    Query(Addresses).where(_.id === id).firstOption
+  }
+
+  def saveOrUpdate(userId:String, address: Address) = DBHelper.database.withTransaction{
+    findById(address.id) match{
+      case Some(addr) =>{
+        Query(Addresses).where(_.id === address.id).update(address)
+      }
+      case _ => {
+        Addresses.insert(address)
+        UserAddresses.insert(UserAddress(userId, address.id))
+      }
+    }
   }
 }
 

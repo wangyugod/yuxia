@@ -78,6 +78,20 @@ object ProfileController extends Controller with Users with Secured {
     )
   )
 
+  val addressForm: Form[Address] = Form(
+    mapping(
+      "id" -> optional(text),
+      "province" -> nonEmptyText,
+      "city" -> nonEmptyText,
+      "district" -> nonEmptyText,
+      "contactPhone" -> nonEmptyText,
+      "addressLine" -> nonEmptyText,
+      "contactPerson" -> nonEmptyText,
+      "areaId" -> optional(text)
+    )((id, province, city, district, contactPhone, addressLine, contactPerson, areaId) => Address(id.getOrElse(IdGenerator.generateAddressId()), province, city, district, contactPhone, addressLine, contactPerson, areaId))
+      ((addr: Address) => Some(Some(addr.id), addr.province, addr.city, addr.district, addr.contactPhone, addr.addressLine, addr.contactPerson, addr.areaId))
+  )
+
   def login = Action {
     implicit request =>
       Ok(html.login(loginForm)).withCookies(Cookie("DG", scala.util.Random.nextString(2)))
@@ -146,6 +160,33 @@ object ProfileController extends Controller with Users with Secured {
   def signout = Action {
     implicit request =>
       Redirect(routes.ProfileController.login()).withNewSession
+  }
+
+  def addressList = isAuthenticated {
+    implicit request =>{
+      val userId = request.session.get(USER_ID).get
+      val addresses = Address.userAddresses(userId)
+      if(log.isDebugEnabled)
+        log.debug("address list: " + addresses)
+      Ok(html.myaccount.addressmgt(addressForm, addresses))
+    }
+  }
+
+  def updateAddress = isAuthenticated{
+    implicit request => {
+      addressForm.bindFromRequest.fold(
+        formWithErrors => {
+          val userId = request.session.get(USER_ID).get
+          val addresses = Address.userAddresses(userId)
+          BadRequest(html.myaccount.addressmgt(formWithErrors, addresses))
+        },
+        address => {
+          val userId = request.session.get(USER_ID).get
+          Address.saveOrUpdate(userId, address)
+          Redirect(routes.ProfileController.addressList())
+        }
+      )
+    }
   }
 
 

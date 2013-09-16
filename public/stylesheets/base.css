@@ -1815,17 +1815,17 @@ table {
     -webkit-border-radius: 5px;
 }
 
-#areaForm .item {
+#popForm .item {
     padding-bottom: 10px;
 }
 
-#areaForm .item .label {
+#popForm .item .label {
      color: #666666;
      width: 79px;
      text-align: right;
 }
 
-#areaForm .form .area {
+#popForm .form .area {
     width: 400px;
     height: 85px;
     float: none;

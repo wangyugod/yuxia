@@ -11,6 +11,8 @@ GET     /signup                     controllers.ProfileController.signup
 POST    /signup                     controllers.ProfileController.create
 GET     /myaccount                  controllers.ProfileController.myAccount
 POST    /myaccount                  controllers.ProfileController.update
+GET     /myaccount/addrlist         controllers.ProfileController.addressList
+POST    /myaccount/address          controllers.ProfileController.updateAddress
 GET     /signout                    controllers.ProfileController.signout
 GET     /merch/login                controllers.Merchandise.login
 POST    /merch/login                controllers.Merchandise.authenticate

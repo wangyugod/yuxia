@@ -1,32 +1,92 @@
-@()(implicit user: Option[InternalUser])
+@(addressForm: Form[Address], addressList: Seq[Address])(implicit user: Option[Profile])
 
 @import helper._
-
+@myAccount(user){
 <script type="text/javascript">
-    function showAreaPopup(){
-        $("#areaForm").dialog({
-            title: "设置区域信息",
+    function showAddressForm(){
+        $("#popForm").dialog({
+            title: "设置地址信息",
+            width: 760,
+            height: 400,
+            modal:true,
+            buttons:{"@Messages("ok.button")": function(){
+                $('form').submit();
+                $(this).dialog("close");
+            }}
+        })
+    }
+
+    $(function(){
+    // --- Initialize sample trees
+    $("#tree").dynatree({
+        title: "Lazy loading sample",
+        checkbox:true,
+        selectMode:1,
+        fx: { height: "toggle", duration: 200 },
+        autoFocus: false,
+
+        onSelect: function(select, node) {
+        // Display list of selected nodes
+        var selNodes = node.tree.getSelectedNodes();
+        // convert to title/key array
+        var selKeys = $.map(selNodes, function(node){
+        return node.data.key;
+        });
+        var selTitle = $.map(selNodes, function(node){
+        return node.data.title;
+        });
+        $("#areaName").val(selTitle.join(","));
+        $("#areaId").val(selKeys.join(";"));
+        },
+
+        initAjax: {
+            url: "@routes.Addresses.initAreaTrees",
+            data: { mode: "funnyMode" }
+        },
+
+        onActivate: function(node) {
+            $("#echoActive").text("" + node + " (" + node.getKeyPath()+ ")");
+        },
+
+        onLazyRead: function(node){
+        node.appendAjax({
+            url: "/area/child/" + node.data.key,
+            data: {key: node.data.key, mode: "funnyMode"}
+        });
+        }
+    });
+    });
+
+    function showAreaTree(){
+        $("#tree").dialog({
+            title: "@Messages("area.pickparent.title")",
             width: 760,
             height: 400,
             modal:true,
             buttons:{"@Messages("ok.button")": function(){
                 $(this).dialog("close");
+            },
+            "@Messages("cancel.button")": function() {
+                $(this).dialog( "close" );
             }}
         })
-
     }
+
 </script>
 
 <div class="o-mt">
-    <h2>@Messages("admin.area.menu")</h2>
+    <h2>@Messages("myacct.address.title")</h2>
 </div>
-<div id="areaForm" class="thickbox" style="display: none">
+<div id="popForm" class="thickbox" style="display: none">
     <div class="thickcon" >
         <div class="mc">
+            @form(routes.ProfileController.updateAddress){
+            <input type="hidden" name="id" id="id"/>
+            <input type="hidden" name="areaId" id="areaId"/>
             <div class="form" id="consigneePanel">    <div class="item">
                 <span class="label"><em>*</em>收&nbsp;货&nbsp;人：</span>
                 <div class="fl">
-                    <input id="consignee_addressName" name="consignee_addressName" type="text" class="text" value="" maxlength="20"></div>
+                    <input id="contactPerson" name="contactPerson" type="text" class="text" value="" maxlength="20"></div>
                 <div class="clr">
                 </div>
             </div>
@@ -35,67 +95,65 @@
                     <div class="fl">
             <span id="consignee_area">
                       <span>
-                       <select id="jdp_Province" class="sele"><option value="-22">请选择</option><option value="1">北京</option><option value="2">上海</option><option value="3">天津</option><option value="4">重庆</option><option value="5">河北</option><option value="6">山西</option><option value="7">河南</option><option value="8">辽宁</option><option value="9">吉林</option><option value="10">黑龙江</option><option value="11">内蒙古</option><option value="12">江苏</option><option value="13">山东</option><option value="14">安徽</option><option value="15">浙江</option><option value="16">福建</option><option value="17">湖北</option><option value="18">湖南</option><option value="19">广东</option><option value="20">广西</option><option value="21">江西</option><option value="22">四川</option><option value="23">海南</option><option value="24">贵州</option><option value="25">云南</option><option value="26">西藏</option><option value="27">陕西</option><option value="28">甘肃</option><option value="29">青海</option><option value="30">宁夏</option><option value="31">新疆</option><option value="32">台湾</option><option value="42">香港</option><option value="43">澳门</option><option value="84">钓鱼岛</option></select>
+                       <select id="province" name="province" class="sele"><option value="sc">@util.AddressInfo.provinceName("sc")</option></select>
                       </span>
                       <span>
-                      <select id="jdp_Citys" class="sele"><option value="-22">请选择</option></select>
+                      <select id="city" name="city" class="sele"><option value="cd">@util.AddressInfo.cityName("cd")</option></select>
                       </span>
                       <span>
-                      <select id="jdp_Countys" class="sele"><option value="-22">请选择</option></select>
+                      <select id="district" name="district" class="sele">
+                          @for(dist <- (util.AddressInfo.cityDistrictMap.get("cd").get)){
+                            <option value="@dist">@util.AddressInfo.distName(dist)</option>
+                          }
+                      </select>
                       </span>
              </span>
-                        <span class="ftx-03">注：“*”的地区支持货到付款，<a href="http://www.360buy.com/help/cod.aspx" target="_blank">查看货到付款地区</a></span></div>
+                        </div>
                     <div class="clr">
                     </div>
                 </div>
                 <div class="item">
-                    <span class="label"><em>*</em>详细地址：</span>
+                    <span class="label">@Messages("addr.area.label")</span>
                     <div class="fl">
-                        <label id="lblAreaName"></label><input id="consignee_address" name="" type="text" value="" class="text text1" maxlength="50"></div>
-                    <div class="clr">
+                        <input id="areaName" name="areaName" type="text" value="" readonly class="text text1" maxlength="50">
+                        <a class="btn-12" href="#none" id="choosearea" onclick="showAreaTree()"><s></s>@Messages("addr.area.btn")</a>
                     </div>
-                </div>
-                <div class="item">
-                    <span class="label">手机号码：</span>
-                    <div class="fl">
-                        <input id="consignee_message" type="text" class="text" value=""><span class="ftx-03">用于接收发货通知短信</span></div>
                     <div class="clr">
                     </div>
                 </div>
                 <div class="item">
                     <span class="label">电话号码：</span>
                     <div class="fl">
-                        <input id="consignee_phone" type="text" class="text" value="" maxlength="20"><span class="ftx-03">用于送货前确认</span></div>
+                        <input id="consignee_message" type="text" name="contactPhone" id="contactPhone" class="text" value=""></div>
                     <div class="clr">
                     </div>
                 </div>
                 <div class="item">
-                    <span class="label">电子邮箱：</span>
+                    <span class="label"><em>*</em>详细地址：</span>
                     <div class="fl">
-                        <input id="consignee_email" value="" type="text" class="text"><span class="ftx-03">用于接收订单执行状态提醒邮件</span></div>
-                    <div class="clr">
-                    </div>
-                </div>
-                <div class="item">
-                    <span class="label">邮政编码：</span>
-                    <div class="fl">
-                        <input id="consignee_postcode" value="" type="text" class="text"></div>
+                        <label id="lblAreaName"></label><textarea id="addressLine" name="addressLine" type="text" value="" class="text area" maxlength="50"></textarea></div>
                     <div class="clr">
                     </div>
                 </div>
             </div>
+            }
+        </div>
+        <div id="tree" style="display:none;overflow: hidden">
+
         </div>
 
     </div>
 </div>
 <div class="o-m">
     <div class="o-mb">
-        <h3> <a href="#none" class="btn-6" onclick="showAreaPopup()"><s></s>新 增</a></h3>
+        <h3> <a href="#none" class="btn-6" onclick="showAddressForm()"><s></s>新 增</a></h3>
     </div>
+
+    @for((address, idx) <- addressList.zipWithIndex){
     <div class="o-mc">
         <div class="m m4" id="divorderaddress48896010">
             <div class="mt">
-                <h3>地址7</h3>
+                <h3>地址@idx</h3>
                 <div class="extra">
                     <a class="btn-12 del" href="#none" id="delOrderAddress48896010"><s></s>删除</a>
 
@@ -165,5 +223,6 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>}
 </div>
+}
