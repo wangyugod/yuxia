@@ -38,6 +38,10 @@ object AddressInfo {
     Messages(PROVINCE_PREFIX + TEXT_SEPARATOR + code)
   }
 
+  def fullName(province: String, city: String, district: String) = {
+    provinceName(province) + cityName(city) + distName(district)
+  }
+
 
 
 }

@@ -9,11 +9,58 @@
             width: 760,
             height: 400,
             modal:true,
+            open:function(event, ui){
+                $(".ui-dialog-titlebar-close", $(this).parent()).hide();
+                $('#lineError').hide();
+                $('#contactPersonError').hide();
+                $('#contactPhoneError').hide();
+            },
             buttons:{"@Messages("ok.button")": function(){
+                var valid = true;
+                if($('#addressLine').val().trim() == ""){
+                    $('#lineError').show();
+                    valid = false;
+                }
+                if($('#contactPerson').val().trim() == ""){
+                    $('#contactPersonError').show();
+                    valid = false;
+                }
+                if($('#contactPhone').val().trim() == ""){
+                    $('#contactPhoneError').show();
+                    valid = false;
+                }
+                if(!valid)
+                    return;
                 $('form').submit();
                 $(this).dialog("close");
+            },
+            "@Messages("cancel.button")": function() {
+                $('#id').val("");
+                $('#areaId').val("");
+                $('#province').val("");
+                $('#city').val("");
+                $('#district').val("");
+                $('#addressLine').val("");
+                $('#contactPhone').val("");
+                $('#contactPerson').val("");
+                $('#areaName').val("");
+                $(this).dialog( "close" );
             }}
         })
+    }
+
+    function modifyPopup(element){
+        var addrId = element.attr("id").substr(7);
+        $('#id').val(addrId);
+        $('#areaId').val($('#areaId'+addrId).text());
+        $('#province').val($('#prov' + addrId).text());
+        $('#city').val($('#city' + addrId).text());
+        $('#district').val($('#dist' + addrId).text());
+        $('#addressLine').val($('#line' + addrId).text());
+        $('#contactPhone').val($('#phone' + addrId).text());
+        $('#contactPerson').val($('#person' + addrId).text());
+        $('#areaName').val($('#areaName' + addrId).text());
+        showAddressForm();
     }
 
     $(function(){
@@ -86,7 +133,9 @@
             <div class="form" id="consigneePanel">    <div class="item">
                 <span class="label"><em>*</em>收&nbsp;货&nbsp;人：</span>
                 <div class="fl">
-                    <input id="contactPerson" name="contactPerson" type="text" class="text" value="" maxlength="20"></div>
+                    <input id="contactPerson" name="contactPerson" type="text" class="text" value="" maxlength="20">
+                    <div class="prompt-error" id="contactPersonError" style="display:none"><span id="petName_msg">@Messages("error.required")</span></div>
+                </div>
                 <div class="clr">
                 </div>
             </div>
@@ -124,7 +173,8 @@
                 <div class="item">
                     <span class="label">电话号码：</span>
                     <div class="fl">
-                        <input id="consignee_message" type="text" name="contactPhone" id="contactPhone" class="text" value=""></div>
+                        <input type="text" name="contactPhone" id="contactPhone" class="text" value=""></div>
+                        <div class="prompt-error" id="contactPhoneError" style="display:none"><span id="petName_msg">@Messages("error.required")</span></div>
                     <div class="clr">
                     </div>
                 </div>
@@ -132,6 +182,7 @@
                     <span class="label"><em>*</em>详细地址：</span>
                     <div class="fl">
                         <label id="lblAreaName"></label><textarea id="addressLine" name="addressLine" type="text" value="" class="text area" maxlength="50"></textarea></div>
+                        <div class="prompt-error" id="lineError" style="display:none"><span id="petName_msg">@Messages("error.required")</span></div>
                     <div class="clr">
                     </div>
                 </div>
@@ -153,71 +204,50 @@
     <div class="o-mc">
         <div class="m m4" id="divorderaddress48896010">
             <div class="mt">
-                <h3>地址@idx</h3>
+                <h3>地址@(idx + 1)</h3>
                 <div class="extra">
-                    <a class="btn-12 del" href="#none" id="delOrderAddress48896010"><s></s>删除</a>
-
-                    <div class="prompt-01" id="divsuredelOrderAddress48896010">
-                        <div class="pc">
-                            <h5>
-                                <s></s>您确定删除吗？</h5>
-                            <div class="btns">
-                                <a class="btn-12" href="#none" id="suredelOrderAddress48896010" name="48896010">
-                                    <s></s>确定</a> <a class="btn-12 closer" href="#none"><s></s>取消</a>
-                            </div>
-                        </div>
-                        <div class="pb pb-b">
-                            <b class="b1"></b><b class="b2"></b><b class="b3"></b>
-                        </div>
+                    <a class="btn-12" href="#none" id="modaddr@address.id" onclick="modifyPopup($(this))"><s></s>@Messages("area.update.btn")</a>
+                    <a class="btn-12 del" href="#none" id="deladdr@address.id" onclick="confirmDeleteAddress($(this))"><s></s>@Messages("area.delete.btn")</a>
+                    <div id="divconfirm@address.id" style="display:none">
+                        <span>@Messages("area.delete.cfmsg", address.addressLine)</span>
                     </div>
                 </div>
             </div>
             <div class="mc">
                 <div class="tb-0">
                     <table cellspacing="0" cellpadding="0" border="0" width="100%">
-                        <tbody><tr>
-                            <th>收货人：</th>
-                            <td width="330">李金峡</td>
+                        <tbody>
+                        <tr>
+                            <th>@Messages("addr.contactperson.label")</th>
+                            <td width="330" id="person@address.id">@address.contactPerson</td>
                             <th>&nbsp;</th>
                             <td>&nbsp;</td>
                         </tr>
                         <tr>
-                            <th>详细地址：</th>
-                            <td><div class="u-adress">四川成都市高新区绕城环线以外天府大道1388号美年广场2栋3单元1203</div></td>
-                            <th>
-                                &nbsp;
-                            </th>
-
+                            <th>@Messages("addr.area.label")</th>
+                            <td width="330" id="areaName@address.id">@(if(address.area.isDefined) address.area.get.name)</td>
+                            <th>&nbsp;</th>
+                            <td>&nbsp;</td>
                         </tr>
                         <tr>
-                            <th>手机号码：</th>
-                            <td>18040306845</td>
-                            <th>
-                                &nbsp;
-                            </th>
-
-                        </tr>
-                        <tr>
-                            <th>固定电话：</th>
-                            <td>81506640</td>
+                            <th>@Messages("addr.addressline.label")</th>
+                            <td><div class="u-adress">@(util.AddressInfo.fullName(address.province, address.city, address.district) + address.addressLine)</div></td>
                             <th>
                                 &nbsp;
                             </th>
                         </tr>
                         <tr>
-                            <th>电子邮件：</th>
-                            <td></td>
+                            <th>@Messages("addr.phone.label")</th>
+                            <td id="phone@address.id">@address.contactPhone</td>
                             <th>
                                 &nbsp;
                             </th>
                         </tr>
-                        <tr>
-                            <th>邮编：</th>
-                            <td></td>
-                            <th>
-                                &nbsp;
-                            </th>
-                        </tr>
+                        <span style="display:none" id="areaId@address.id">@address.areaId</span>
+                        <span style="display:none" id="prov@address.id">@address.province</span>
+                        <span style="display:none" id="city@address.id">@address.city</span>
+                        <span style="display:none" id="dist@address.id">@address.district</span>
+                        <span style="display:none" id="line@address.id">@address.addressLine</span>
                         </tbody>
                     </table>
                 </div>

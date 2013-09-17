@@ -42,6 +42,12 @@ error.myacct.birthday=生日的格式应为YYYY-MM-DD
 myacct.address.title=地址管理
 addr.area.label=所属区域：
 addr.area.btn=选择区域
+addr.contactperson.label=收货人：
+addr.addressline.label=详细地址：
+addr.phone.label=电话号码：
+
+
+
 
 
 
@@ -130,10 +136,10 @@ area.delete.cfmsg=您确定删除区域{0}吗？
 
 
 #Address Province
-prov.sc=四川
+prov.sc=四川省
 
 #Address City
-city.cd=成都
+city.cd=成都市
 
 #Address District
 dist.gx=高新区
