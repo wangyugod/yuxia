@@ -14,6 +14,7 @@
                 $('#lineError').hide();
                 $('#contactPersonError').hide();
                 $('#contactPhoneError').hide();
+                $('#areaNameError').hide();
             },
             buttons:{"@Messages("ok.button")": function(){
                 var valid = true;
@@ -29,6 +30,11 @@
                     $('#contactPhoneError').show();
                     valid = false;
                 }
+                if($('#areaId').val().trim() == "" || $('#areaName').val().trim() == ""){
+                    $('#areaNameError').show();
+                    valid = false;
+                }
+
                 if(!valid)
                     return;
                 $('form').submit();
@@ -102,6 +108,21 @@
         });
         }
     });
+
+    $( "#areaName" ).autocomplete({
+        source:"/area/search",
+        minLength: 1,
+        appendTo: "#popForm",
+        select: function(event, ui){
+            event.preventDefault();
+            $('#areaId').val(ui.item.value)
+            $('#areaName').val(ui.item.label);
+        },
+        focus: function(event, ui) {
+            event.preventDefault();
+            $("#areaName").val(ui.item.label);
+        }
+        });
     });
 
     function showAreaTree(){
@@ -119,6 +140,34 @@
         })
     }
 
+    function confirmDeleteAddress(element){
+        var addrId = element.attr("id").substr(7);
+        $('#divconfirm'+addrId).dialog({
+            resizable: false,
+            height:140,
+            modal: true,
+            open:function(event, ui){
+                $(".ui-dialog-titlebar-close", $(this).parent()).hide();
+            },
+            closeOnEscape: false,
+            buttons: {
+            "@Messages("ok.button")": function() {
+                $.ajax({
+                async:false,
+                url:"/myaccount/address/" + addrId,
+                type:"DELETE",
+                success: function(result){
+                document.location.href = "@routes.ProfileController.addressList()";
+                }
+            });
+            $(this).dialog( "close" );
+            },
+            "@Messages("cancel.button")": function() {
+                $(this).dialog( "close" );
+            }
+            }
+        });
+    }
 </script>
 
 <div class="o-mt">
@@ -162,16 +211,17 @@
                     </div>
                 </div>
                 <div class="item">
-                    <span class="label">@Messages("addr.area.label")</span>
+                    <span class="label"><em>*</em>@Messages("addr.area.label")</span>
                     <div class="fl">
-                        <input id="areaName" name="areaName" type="text" value="" readonly class="text text1" maxlength="50">
+                        <input id="areaName" name="areaName" class="text" type="text">
                         <a class="btn-12" href="#none" id="choosearea" onclick="showAreaTree()"><s></s>@Messages("addr.area.btn")</a>
+                        <div class="prompt-error" id="areaNameError" style="display:none"><span id="petName_msg">@Messages("addr.area.error")</span></div>
                     </div>
                     <div class="clr">
                     </div>
                 </div>
                 <div class="item">
-                    <span class="label">电话号码：</span>
+                    <span class="label"><em>*</em>电话号码：</span>
                     <div class="fl">
                         <input type="text" name="contactPhone" id="contactPhone" class="text" value=""></div>
                         <div class="prompt-error" id="contactPhoneError" style="display:none"><span id="petName_msg">@Messages("error.required")</span></div>
@@ -209,7 +259,7 @@
                     <a class="btn-12" href="#none" id="modaddr@address.id" onclick="modifyPopup($(this))"><s></s>@Messages("area.update.btn")</a>
                     <a class="btn-12 del" href="#none" id="deladdr@address.id" onclick="confirmDeleteAddress($(this))"><s></s>@Messages("area.delete.btn")</a>
                     <div id="divconfirm@address.id" style="display:none">
-                        <span>@Messages("area.delete.cfmsg", address.addressLine)</span>
+                        <span>@Messages("addr.delete.cfmsg", idx + 1)</span>
                     </div>
                 </div>
             </div>

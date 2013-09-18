@@ -19,15 +19,22 @@ import vo.SearchResult
 object SearchHelper {
 
   private val log = Logger(this.getClass)
-  lazy val searchEngineUrl = Play.current.configuration.getString("solr.url").get
+  val PRODUCT_SEARCH = 0
+  val ADDRESS_SEARCH = 1
+  lazy val productSearchEngineUrl = Play.current.configuration.getString("solr.product.url").get
+  lazy val addressSearchEngineUrl = Play.current.configuration.getString("solr.address.url").get
 
-  def doQuery(parameters: Map[String, String]) = {
+  def doQuery(parameters: Map[String, String], searchType: Int) = {
     if(log.isDebugEnabled)
       log.debug("query started with parameters " + parameters)
 
     val client = new DefaultHttpClient()
+    val url = searchType match {
+      case PRODUCT_SEARCH => productSearchEngineUrl
+      case ADDRESS_SEARCH => addressSearchEngineUrl
+    }
     try{
-      val httpGet = new HttpGet(searchEngineUrl)
+      val httpGet = new HttpGet(url)
       val builder = new URIBuilder(httpGet.getURI)
 
       for(key <- parameters.keySet){
@@ -48,7 +55,7 @@ object SearchHelper {
     }
   }
 
-  def query(fieldName: String, fieldValue: String, request: Request[AnyContent]) = {
+  def query(searchType:Int, fieldName: String, fieldValue: String, request: Request[AnyContent]) = {
     val pageParameter = request.queryString.get("page")
     val pageNum: Int = pageParameter match {
       case Some(x) => x.head.toInt - 1
@@ -59,10 +66,9 @@ object SearchHelper {
     val rows = Play.current.configuration.getInt("pagination.quantity").get
     val start = pageNum * rows
     val params = Map("q" -> (fieldName + ":" + fieldValue), "wt" -> "json", "indent" -> "true", "rows" -> rows.toString, "start" -> start.toString)
-    val result = doQuery(params)
-    val searchResult = SearchResult(result)
+    val result = doQuery(params, searchType)
     if (log.isDebugEnabled)
-      log.debug("search result is " + searchResult)
-    searchResult
+      log.debug("search result is " + result)
+    result
   }
 }

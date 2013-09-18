@@ -45,7 +45,8 @@ addr.area.btn=选择区域
 addr.contactperson.label=收货人：
 addr.addressline.label=详细地址：
 addr.phone.label=电话号码：
-
+addr.area.error=请选择合法的区域
+addr.delete.cfmsg=您确定删除地址{0}吗？
 
 
 

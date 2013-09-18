@@ -87,9 +87,9 @@ object ProfileController extends Controller with Users with Secured {
       "contactPhone" -> nonEmptyText,
       "addressLine" -> nonEmptyText,
       "contactPerson" -> nonEmptyText,
-      "areaId" -> optional(text)
-    )((id, province, city, district, contactPhone, addressLine, contactPerson, areaId) => Address(id.getOrElse(IdGenerator.generateAddressId()), province, city, district, contactPhone, addressLine, contactPerson, areaId))
-      ((addr: Address) => Some(Some(addr.id), addr.province, addr.city, addr.district, addr.contactPhone, addr.addressLine, addr.contactPerson, addr.areaId))
+      "areaId" -> nonEmptyText
+    )((id, province, city, district, contactPhone, addressLine, contactPerson, areaId) => Address(id.getOrElse(IdGenerator.generateAddressId()), province, city, district, contactPhone, addressLine, contactPerson, Some(areaId)))
+      ((addr: Address) => Some(Some(addr.id), addr.province, addr.city, addr.district, addr.contactPhone, addr.addressLine, addr.contactPerson, addr.areaId.get))
   )
 
   def login = Action {
@@ -186,6 +186,14 @@ object ProfileController extends Controller with Users with Secured {
           Redirect(routes.ProfileController.addressList())
         }
       )
+    }
+  }
+
+  def deleteAddress(id: String) = isAuthenticated{
+    implicit request => {
+      val userId = request.session.get(USER_ID).get
+      Address.deleteUserAddress(userId, id)
+      Ok
     }
   }
 

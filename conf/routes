@@ -13,6 +13,7 @@ GET     /myaccount                  controllers.ProfileController.myAccount
 POST    /myaccount                  controllers.ProfileController.update
 GET     /myaccount/addrlist         controllers.ProfileController.addressList
 POST    /myaccount/address          controllers.ProfileController.updateAddress
+DELETE  /myaccount/address/:id      controllers.ProfileController.deleteAddress(id)
 GET     /signout                    controllers.ProfileController.signout
 GET     /merch/login                controllers.Merchandise.login
 POST    /merch/login                controllers.Merchandise.authenticate
@@ -42,6 +43,7 @@ POST    /admin/areas                controllers.InternalManagement.modifyArea
 GET     /area/root                  controllers.Addresses.initAreaTrees
 GET     /area/child/:id             controllers.Addresses.childAreas(id)
 DELETE  /area/delete/:id            controllers.InternalManagement.deleteArea(id)
+GET     /area/search                controllers.Addresses.searchArea(term: String)
 
 
 # Map static resources from the /public folder to the /assets URL path

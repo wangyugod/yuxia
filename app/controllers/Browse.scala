@@ -31,14 +31,14 @@ object Browse extends Controller with Users {
   def searchByKeyword = Action {
     implicit request => {
       val keywords = request.queryString.get("q").get.head
-      val searchResult = SearchHelper.query("text", keywords, request)
+      val searchResult = SearchResult(SearchHelper.query(SearchHelper.PRODUCT_SEARCH, "text", keywords, request))
       Ok(html.browse.srp("Search Result Page", searchResult))
     }
   }
 
   def categoryLanding(id: String) = Action{
     implicit request => {
-      val searchResult = SearchHelper.query("cat.id", id, request)
+      val searchResult = SearchResult(SearchHelper.query(SearchHelper.PRODUCT_SEARCH, "cat.id", id, request))
       Ok(html.browse.category("Search Result Page", searchResult))
     }
   }

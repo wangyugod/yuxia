@@ -128,13 +128,13 @@ object Address {
     Query(Addresses).where(_.id inSetBind (addressIds)).list()
   }
 
-  def findById(id: String) = DBHelper.database.withSession{
+  def findById(id: String) = DBHelper.database.withSession {
     Query(Addresses).where(_.id === id).firstOption
   }
 
-  def saveOrUpdate(userId:String, address: Address) = DBHelper.database.withTransaction{
-    findById(address.id) match{
-      case Some(addr) =>{
+  def saveOrUpdate(userId: String, address: Address) = DBHelper.database.withTransaction {
+    findById(address.id) match {
+      case Some(addr) => {
         Query(Addresses).where(_.id === address.id).update(address)
       }
       case _ => {
@@ -142,6 +142,11 @@ object Address {
         UserAddresses.insert(UserAddress(userId, address.id))
       }
     }
+  }
+
+  def deleteUserAddress(userId: String, addressId: String) = DBHelper.database.withTransaction {
+    Query(UserAddresses).where(_.userId === userId).where(_.addrId === addressId).delete
+    Query(Addresses).where(_.id === addressId).delete
   }
 }
 

@@ -1,12 +1,13 @@
 package controllers
 
-import _root_.util.IdGenerator
+import _root_.util.{SearchHelper, IdGenerator}
 import play.api.mvc._
 import play.api.Logger
 import models.{Address, Area}
 import play.api.libs.json._
 import play.api.data._
 import play.api.data.Forms._
+import vo.{AreaSearchResult, SearchResult}
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,6 +35,16 @@ object Addresses extends Controller {
       if (log.isDebugEnabled)
         log.debug("CHILD Areas: " + childAreas)
       Ok(JsArray(areaJson(childAreas)))
+    }
+  }
+
+  def searchArea(keyword: String) = Action{
+    implicit request => {
+      val searchResult = AreaSearchResult(SearchHelper.query(SearchHelper.ADDRESS_SEARCH, "text", keyword, request))
+      val results = searchResult.areas.map(area =>
+          JsObject(List("label" -> JsString(area.name), "value" -> JsString(area.id)))
+      )
+      Ok(JsArray(results))
     }
   }
 
