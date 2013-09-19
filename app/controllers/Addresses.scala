@@ -42,7 +42,7 @@ object Addresses extends Controller {
     implicit request => {
       val searchResult = AreaSearchResult(SearchHelper.query(SearchHelper.ADDRESS_SEARCH, "text", keyword, request))
       val results = searchResult.areas.map(area =>
-          JsObject(List("label" -> JsString(area.name), "value" -> JsString(area.id)))
+          JsObject(List("label" -> JsString(area.name), "value" -> JsString(area.id), "detail" -> JsString(area.detail)))
       )
       Ok(JsArray(results))
     }

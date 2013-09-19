@@ -108,7 +108,7 @@
         });
         }
     });
-
+    //auto complete part
     $( "#areaName" ).autocomplete({
         source:"/area/search",
         minLength: 1,
@@ -120,9 +120,14 @@
         },
         focus: function(event, ui) {
             event.preventDefault();
-            $("#areaName").val(ui.item.label);
+            var menu = $(this).data("uiAutocomplete").menu.element,
+            focused = menu.find("li:has(a.ui-state-focus)");
+            focused.attr("title", ui.item.detail);
         }
         });
+
+    //----tooltip
+    $( document ).tooltip();
     });
 
     function showAreaTree(){
