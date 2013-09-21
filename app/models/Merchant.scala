@@ -19,6 +19,10 @@ case class Merchant(id: String, login: String, password: String, name: String, d
   lazy val advancedInfo = DBHelper.database.withSession {
     Query(MerchantAdvInfos).where(_.id === this.id).firstOption
   }
+
+  lazy val serviceInfo = DBHelper.database.withSession{
+    Query(MerchantServiceInfos).where(_.id === id).firstOption
+  }
 }
 
 case class MerchantAdvInfo(id: String, merchNum: Option[String], artificialPerson: String, artPerCert: String, addressId: String) {
@@ -26,6 +30,21 @@ case class MerchantAdvInfo(id: String, merchNum: Option[String], artificialPerso
     Query(Addresses).where(_.id === this.addressId).first()
   }
 }
+
+case class MerchantServiceInfo(id: String, startTime: String, endTime: String) {
+  lazy val areas: List[Area] = DBHelper.database.withSession {
+    val scopeList = Query(MerchantShippingScopes).where(_.merchantId === id).list()
+    scopeList match {
+      case Nil => Nil
+      case list => {
+        val areaIds = for (scope <- list) yield scope.areaId
+        Query(Areas).where(_.id inSetBind(areaIds)).list()
+      }
+    }
+  }
+}
+
+case class MerchantShippingScope(merchantId: String, areaId: String)
 
 
 object Merchants extends Table[Merchant]("merchant") {
@@ -64,6 +83,29 @@ object MerchantAdvInfos extends Table[MerchantAdvInfo]("merchant_adv_info") {
     )
 }
 
+object MerchantServiceInfos extends Table[MerchantServiceInfo]("merchant_serv_info") {
+  def id = column[String]("id", O.PrimaryKey)
+
+  def startTime = column[String]("start_time")
+
+  def endTime = column[String]("end_time")
+
+  def * = id ~ startTime ~ endTime <>(
+    (id, startTime, endTime) => MerchantServiceInfo(id, startTime, endTime),
+    (msi: MerchantServiceInfo) => Some(msi.id, msi.startTime, msi.endTime)
+    )
+}
+
+object MerchantShippingScopes extends Table[MerchantShippingScope]("merchant_ship_scope") {
+  def merchantId = column[String]("merch_id")
+
+  def areaId = column[String]("area_id")
+
+  def * = merchantId ~ areaId <>(MerchantShippingScope, MerchantShippingScope.unapply(_))
+
+  def pk = primaryKey("merch_ship_scope_pk", (merchantId, areaId))
+}
+
 object Merchant {
   def authenticateUser(login: String, password: String): Option[Merchant] = {
     DBHelper.database.withSession {
@@ -79,12 +121,12 @@ object Merchant {
   }
 
   def findByLogin(login: String): Option[Merchant] = DBHelper.database.withSession {
-      Query(Merchants).where(_.login === login).firstOption
+    Query(Merchants).where(_.login === login).firstOption
   }
 
 
   def findById(id: String): Option[Merchant] = DBHelper.database.withSession {
-      Query(Merchants).where(_.id === id).firstOption
+    Query(Merchants).where(_.id === id).firstOption
   }
 
 
