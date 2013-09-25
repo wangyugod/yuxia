@@ -1,6 +1,149 @@
-@()(implicit user: Option[Merchant])
+@(serviceForm: Form[vo.MerchantServiceVo])(implicit user: Option[Merchant])
 
 @import helper._
-@merchbase(Messages("myacct.myacct.label"), user){
-    <p>hello world</p>
+@merchbase(Messages("merch.shipping.menu"), user){
+<div class="o-mt">
+    <h2>@Messages("merch.shipping.menu")</h2>
+</div>
+<script type="text/javascript">
+$(function(){
+    // --- Initialize Area trees
+    $("#tree").dynatree({
+    title: "Area Trees",
+    checkbox:true,
+    selectMode:1,
+    fx: { height: "toggle", duration: 200 },
+    autoFocus: false,
+
+    onSelect: function(select, node) {
+    // Display list of selected nodes
+    var selNodes = node.tree.getSelectedNodes();
+    // convert to title/key array
+    var selKeys = $.map(selNodes, function(node){
+    return node.data.key;
+    });
+    var selTitle = $.map(selNodes, function(node){
+    return node.data.title;
+    });
+    $("#areaName").val(selTitle.join(","));
+    $("#areaIds").val(selKeys.join(";"));
+    },
+
+    initAjax: {
+    url: "@routes.Addresses.initAreaTrees",
+    data: { mode: "funnyMode" }
+    },
+
+    onActivate: function(node) {
+    $("#echoActive").text("" + node + " (" + node.getKeyPath()+ ")");
+    },
+
+    onLazyRead: function(node){
+    node.appendAjax({
+    url: "/area/child/" + node.data.key,
+    data: {key: node.data.key, mode: "funnyMode"}
+    });
+    }
+    });
+})
+
+    function showAreaTree(){
+        $("#tree").dialog({
+            title: "@Messages("area.pickparent.title")",
+            width: 760,
+            height: 400,
+            modal:true,
+            buttons:{"@Messages("ok.button")": function(){
+                $(this).dialog("close");
+            },
+            "@Messages("cancel.button")": function() {
+                $(this).dialog( "close" );
+            }}
+        })
+    }
+</script>
+<div class="m" id="serviceinfo">
+    <div class="mc">
+        <div class="i-m">
+            <div class="i-mc">
+                @form(action = routes.Merchandise.update) {
+                <input type="hidden" name="id" value="@serviceForm.data.get("merchId")"/>
+                <input type="hidden" name="areaIds" id="areaIds" value="@serviceForm.data.get("areaIds")"/>
+                <div class="form">
+                    <div class="item">
+                        <span class="label"><em>*</em>@Messages("merch.starttime.label")</span>
+                        <div class="fl">
+                            <div>
+                                <input name="name" id="startTime" type="text" value="@serviceForm.data.get("startTime")" class="text"><s></s>
+                                <div class="clr"></div>
+                                @if(serviceForm.error("startTime").isDefined){
+                                <div class="prompt-error"><span id="petName_msg">@Messages(serviceForm.error("startTime").get.message)</span></div>
+                                }
+                            </div>
+                        </div>
+                        <div class="clr"></div>
+                    </div>
+                    <div class="item">
+                        <span class="label"><em>*</em>@Messages("merch.endtime.label")</span>
+                        <div class="fl">
+                            <div>
+                                <input name="endTime" id="endTime" type="text" value="@serviceForm.data.get("endTime")" class="text"><s></s>
+                                <div class="clr"></div>
+                                @if(serviceForm.error("endTime").isDefined){
+                                <div class="prompt-error"><span id="petName_msg">@Messages(serviceForm.error("endTime").get.message)</span></div>
+                                }
+                            </div>
+                        </div>
+                        <div class="clr"></div>
+                    </div>
+                    <div class="item">
+                        <span class="label"><em>*</em>@Messages("merch.scope.label")</span>
+                        <div class="fl">
+                            <div>
+                                <input name="" type="button" value="选择区域" class="bti" onclick="showAreaTree()" >
+                                <div class="clr"></div>
+                                @if(serviceForm.error("areaIds").isDefined){
+                                <div class="prompt-error"><span id="petName_msg">@Messages(serviceForm.error("areaIds").get.message)</span></div>
+                                }
+                            </div>
+                        </div>
+                        <div class="clr"></div>
+                    </div>
+                    <div class="tb-void">
+                        <div>
+                            <table width="80%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr>
+                                    <th width="10%">序号</th>
+                                    <th width="20%">区域名称</th>
+                                    <th width="60%">详细描述</th>
+                                    <th width="10%">操作</th>
+                                </tr>
+                                @for((area,idx) <- serviceForm.get.areas.zipWithIndex) {
+                                <tr><td>@(idx + 1)</td>
+                                    <td>@area.name</td>
+                                    <td>@area.detail</td>
+                                    <td style="text-align:center"><a href="">删除</a></td>
+                                </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <span class="label">&nbsp;</span>
+                        <div class="fl">
+                            <a href="javascript:void(0)" onclick="javascript: $('form').submit()" class="btn btn-7"><s></s>@Messages("myacct.submitbtn.label")</a>
+                        </div>
+                        <div class="clr"></div>
+                    </div>
+                    <div id="tree" style="display:none;overflow: hidden">
+
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
 }

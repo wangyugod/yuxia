@@ -146,4 +146,12 @@ object Merchant {
   }
 }
 
+object MerchantServiceInfo{
+  def findById(id: String) = DBHelper.database.withSession{
+    Query(MerchantServiceInfos).where(_.id === id).firstOption
+  }
+
+
+}
+
 

@@ -1614,6 +1614,49 @@ h4, h5, h6 {
     width: 300px;
 }
 
+.tb-void {
+    overflow: hidden;
+    margin-right: -1px;
+    margin-left: -1px;
+    margin-bottom: -1px;
+}
+
+.tb-void table {
+    border-collapse: collapse;
+    border: solid #E6E6E6;
+    border-width: 0 1px 1px 1px;
+}
+
+#serviceinfo .tb-void{
+    padding-bottom: 20px;
+}
+
+.bti {
+    background: url(/assets/images/use.gif) 0 -67px;
+    width: 60px;
+    height: 25px;
+    border: none;
+    margin-left: 1px;
+    text-align: center;
+}
+
+tbody {
+    display: table-row-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+.tb-void th {
+    background: #f7f7f7 url(/assets/images/tb-th.2011.gif) repeat-x;
+    height: 31px;
+    color: #666666;
+    font-weight: normal;
+}
+
+#serviceinfo .i-m .item {
+    padding-bottom: 20px;
+}
+
 /*Admin Management Console*/
 .o-m .o-mb {
     text-align: right;
@@ -1830,3 +1873,4 @@ table {
     height: 85px;
     float: none;
 }
+

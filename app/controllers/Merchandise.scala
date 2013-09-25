@@ -10,7 +10,7 @@ import models._
 import util._
 import play.api.Logger
 import play.api.i18n.Messages
-import vo.MerchantVo
+import vo.{MerchantServiceVo, MerchantVo}
 
 /**
  * Created with IntelliJ IDEA.
@@ -54,7 +54,8 @@ object Merchandise extends Controller with Merchants with MerchSecured {
       "description" -> optional(text),
       "password" -> tuple(
         "main" -> text.verifying(Messages("error.password.minlength"), {
-          _.length >= 6}),
+          _.length >= 6
+        }),
         "confirm" -> text
       ).verifying(
         // Add an additional constraint: both passwords must match
@@ -92,11 +93,11 @@ object Merchandise extends Controller with Merchants with MerchSecured {
   def update = isAuthenticated {
     implicit request => {
       advMerchantForm.bindFromRequest().fold(
-        formWithErrors =>{
-          if(log.isDebugEnabled)
+        formWithErrors => {
+          if (log.isDebugEnabled)
             log.debug("error form \n" + formWithErrors.error("contactPerson") + "\n" + formWithErrors + "\n" + request.body)
           BadRequest(html.merchandise.merchantinfo(formWithErrors))
-        } ,
+        },
         merchVo => {
           Merchant.updateMerchantInfo(merchVo.merchant, merchVo.merchantAdvInfo, merchVo.address)
           Redirect(routes.Merchandise.merchAccount())
@@ -167,9 +168,34 @@ object Merchandise extends Controller with Merchants with MerchSecured {
     }
   )
 
+
+  val serviceForm: Form[MerchantServiceVo] = Form(
+    mapping(
+      "merchId" -> nonEmptyText,
+      "startTime" -> nonEmptyText,
+      "endTime" -> nonEmptyText,
+      "areaIds" -> nonEmptyText
+    )
+      ((merchid, startTime, endTime, areaIds) => MerchantServiceVo(merchid, startTime, endTime, areaIds.split(";").toList, Nil))
+      ((ms: MerchantServiceVo) => Some(ms.id, ms.startTime, ms.endTime, ms.areaIds.mkString(";")))
+  )
+
   def serviceInfo = isAuthenticated(
     implicit request => {
-      Ok(html.merchandise.serviceinfo())
+      val merchId = request.session.get(MERCHANT_ID).get
+      val serviceInfo = MerchantServiceInfo.findById(merchId)
+      val form: Form[MerchantServiceVo] = serviceInfo match {
+        case Some(sio) => serviceForm.fill(MerchantServiceVo(sio))
+        case _ => serviceForm.fill(MerchantServiceVo(merchId, "", "", Nil, Nil))
+      }
+      Ok(html.merchandise.serviceinfo(form))
+    }
+  )
+
+
+  def updateServiceInfo = isAuthenticated(
+    implicit request => {
+      Ok
     }
   )
 
