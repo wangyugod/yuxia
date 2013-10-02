@@ -1625,6 +1625,7 @@ h4, h5, h6 {
     border-collapse: collapse;
     border: solid #E6E6E6;
     border-width: 0 1px 1px 1px;
+    margin-left: 1px;
 }
 
 #serviceinfo .tb-void{
@@ -1651,6 +1652,13 @@ tbody {
     height: 31px;
     color: #666666;
     font-weight: normal;
+}
+
+.tb-void td {
+    border: solid #E6E6E6;
+    border-width: 1px 0 0 1px;
+    padding: 5px 4px;
+    text-align: center;
 }
 
 #serviceinfo .i-m .item {

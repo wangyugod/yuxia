@@ -53,7 +53,7 @@ object MerchantVo {
 }
 
 
-case class MerchantServiceVo(id: String, startTime: String, endTime: String, areaIds: Seq[String], areas: Seq[Area]) {
+case class MerchantServiceVo(id: String, startTime: String, endTime: String, areaIds: Seq[String]) {
 
   def merchantServiceInfo =
     MerchantServiceInfo(id, startTime, endTime)
@@ -63,6 +63,6 @@ case class MerchantServiceVo(id: String, startTime: String, endTime: String, are
 
 object MerchantServiceVo {
   def apply(serviceInfo: MerchantServiceInfo): MerchantServiceVo = {
-    MerchantServiceVo(serviceInfo.id, serviceInfo.startTime, serviceInfo.endTime, serviceInfo.areas.map(_.id), serviceInfo.areas)
+    MerchantServiceVo(serviceInfo.id, serviceInfo.startTime, serviceInfo.endTime, serviceInfo.areas.map(_.id))
   }
 }

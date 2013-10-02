@@ -1,4 +1,4 @@
-@(serviceForm: Form[vo.MerchantServiceVo])(implicit user: Option[Merchant])
+@(serviceForm: Form[vo.MerchantServiceVo], areaList: Seq[Area])(implicit user: Option[Merchant])
 
 @import helper._
 @merchbase(Messages("merch.shipping.menu"), user){
@@ -11,22 +11,26 @@ $(function(){
     $("#tree").dynatree({
     title: "Area Trees",
     checkbox:true,
-    selectMode:1,
+    selectMode:3,
     fx: { height: "toggle", duration: 200 },
     autoFocus: false,
 
     onSelect: function(select, node) {
-    // Display list of selected nodes
-    var selNodes = node.tree.getSelectedNodes();
-    // convert to title/key array
-    var selKeys = $.map(selNodes, function(node){
-    return node.data.key;
-    });
-    var selTitle = $.map(selNodes, function(node){
-    return node.data.title;
-    });
-    $("#areaName").val(selTitle.join(","));
-    $("#areaIds").val(selKeys.join(";"));
+        // Display list of selected nodes
+        var selNodes = node.tree.getSelectedNodes();
+        // convert to title/key array
+        var selKeys = $.map(selNodes, function(node){
+            return node.data.key;
+        });
+        var selTitle = $.map(selNodes, function(node){
+            return node.data.title;
+        });
+        var selDetail = $.map(selNodes, function(node){
+            return node.data.tooltip;
+        });
+        $("#selectedAreaNames").val(selTitle.join(";"));
+        $("#selectedAreaIds").val(selKeys.join(";"));
+        $("#selectedAreaDetails").val(selDetail.join(";"));
     },
 
     initAjax: {
@@ -47,12 +51,62 @@ $(function(){
     });
 })
 
+    function insertArea(id, name, detail){
+        $("#areaListTable > tbody:last").append("<tr><td>" + name + "</td><td>" + detail + "</td><td style='text-align:center'><a id='" + id + "' href='#' onclick='deleteArea($(this))'>删除</a></td></tr>");
+    }
+
+    function deleteArea(element){
+        element.parent().parent().remove();
+        var areaId = element.attr("id");
+        var currentAreaIds = $("#areaIds").val();
+        var result = currentAreaIds.replace(areaId + ";", "");
+        if(result.indexOf(areaId) > -1){
+            result = result.replace(areaId, "");
+            if(result.indexOf(";") > -1){
+                result = result.substr(0, result.length -1);
+            }
+        }
+        $("#areaIds").val(result);
+    }
+
     function showAreaTree(){
         $("#tree").dialog({
             title: "@Messages("area.pickparent.title")",
             width: 760,
             height: 400,
             modal:true,
+            beforeClose: function( event, ui ) {
+                var ids = $("#selectedAreaIds").val();
+                if(ids.length == 0){
+                    return;
+                }
+                var names = $("#selectedAreaNames").val().split(";");
+                var details = $("#selectedAreaDetails").val().split(";");
+                var areaIds = ids.split(";");
+                var i = 0;
+                var result = "";
+                for(var i = 0; i < areaIds.length; i++){
+                    var currentAreaIds = $("#areaIds").val();
+                    var areaId = areaIds[i];
+                    if(currentAreaIds.indexOf(areaId) == -1){
+                        result = result + ";" + areaId;
+                        insertArea(areaId, names[i], details[i]);
+                    }
+                }
+                if($("#areaIds").val().length == 0){
+                    $("#areaIds").val(result.substr(1));
+                } else {
+                    $("#areaIds").val($("#areaIds").val() + result);
+                }
+
+                //clear selected nodes
+                $("#tree").dynatree("getRoot").visit(function(node){
+                    node.select(false);
+                });
+                $("#selectedAreaNames").val("");
+                $("#selectedAreaDetails").val("");
+                $("#selectedAreaIds").val("");
+            },
             buttons:{"@Messages("ok.button")": function(){
                 $(this).dialog("close");
             },
@@ -66,15 +120,18 @@ $(function(){
     <div class="mc">
         <div class="i-m">
             <div class="i-mc">
-                @form(action = routes.Merchandise.update) {
-                <input type="hidden" name="id" value="@serviceForm.data.get("merchId")"/>
+                @form(action = routes.Merchandise.updateServiceInfo) {
+                <input type="hidden" name="selectedAreaIds" id="selectedAreaIds"/>
+                <input type="hidden" name="selectedAreaNames" id="selectedAreaNames"/>
+                <input type="hidden" name="selectedAreaDetails" id="selectedAreaDetails"/>
+                <input type="hidden" name="merchId" value="@serviceForm.data.get("merchId")"/>
                 <input type="hidden" name="areaIds" id="areaIds" value="@serviceForm.data.get("areaIds")"/>
                 <div class="form">
                     <div class="item">
                         <span class="label"><em>*</em>@Messages("merch.starttime.label")</span>
                         <div class="fl">
                             <div>
-                                <input name="name" id="startTime" type="text" value="@serviceForm.data.get("startTime")" class="text"><s></s>
+                                <input name="startTime" id="startTime" type="text" value="@serviceForm.data.get("startTime")" class="text"><s></s>
                                 <div class="clr"></div>
                                 @if(serviceForm.error("startTime").isDefined){
                                 <div class="prompt-error"><span id="petName_msg">@Messages(serviceForm.error("startTime").get.message)</span></div>
@@ -111,18 +168,17 @@ $(function(){
                     </div>
                     <div class="tb-void">
                         <div>
-                            <table width="80%" border="0" cellspacing="0" cellpadding="0">
+                            <table id="areaListTable" width="80%" border="0" cellspacing="0" cellpadding="0">
                                 <tbody><tr>
-                                    <th width="10%">序号</th>
-                                    <th width="20%">区域名称</th>
+                                    <th width="25%">区域名称</th>
                                     <th width="60%">详细描述</th>
-                                    <th width="10%">操作</th>
+                                    <th width="15%">操作</th>
                                 </tr>
-                                @for((area,idx) <- serviceForm.get.areas.zipWithIndex) {
-                                <tr><td>@(idx + 1)</td>
+                                @for((area,idx) <- areaList.zipWithIndex) {
+                                <tr>
                                     <td>@area.name</td>
                                     <td>@area.detail</td>
-                                    <td style="text-align:center"><a href="">删除</a></td>
+                                    <td style="text-align:center"><a id="@area.id" href="#" onclick="deleteArea($(this))">删除</a></td>
                                 </tr>
                                 }
                                 </tbody>

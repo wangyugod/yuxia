@@ -7,6 +7,7 @@ import play.api.Play.current
 import slick.session.Database
 import Database.threadLocalSession
 import scala.slick.driver.MySQLDriver.simple._
+import play.api.Logger
 
 /**
  * Created with IntelliJ IDEA.
@@ -147,8 +148,34 @@ object Merchant {
 }
 
 object MerchantServiceInfo{
+  private val log = Logger(this.getClass)
+
   def findById(id: String) = DBHelper.database.withSession{
     Query(MerchantServiceInfos).where(_.id === id).firstOption
+  }
+
+  def updateMerchantServiceInfo(serviceInfo: MerchantServiceInfo, areaIds: Seq[String]) = DBHelper.database.withTransaction{
+    Query(MerchantServiceInfos).where(_.id === serviceInfo.id).firstOption match {
+      case Some(si) => {
+        Query(MerchantServiceInfos).where(_.id === serviceInfo.id).update(serviceInfo)
+        val existedAreaIds: List[String] = si.areas.map(_.id)
+        if(existedAreaIds != areaIds.toList){
+          if(log.isDebugEnabled){
+            log.debug("Scope changed, needs to update")
+          }
+          Query(MerchantShippingScopes).where(_.merchantId === serviceInfo.id).delete
+          for(areaId <- areaIds){
+            MerchantShippingScopes.insert(MerchantShippingScope(serviceInfo.id, areaId))
+          }
+        }
+      }
+      case _ => {
+        MerchantServiceInfos.insert(serviceInfo)
+        for(areaId <- areaIds){
+          MerchantShippingScopes.insert(MerchantShippingScope(serviceInfo.id, areaId))
+        }
+      }
+    }
   }
 
 

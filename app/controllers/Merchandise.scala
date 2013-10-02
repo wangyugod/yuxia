@@ -176,7 +176,7 @@ object Merchandise extends Controller with Merchants with MerchSecured {
       "endTime" -> nonEmptyText,
       "areaIds" -> nonEmptyText
     )
-      ((merchid, startTime, endTime, areaIds) => MerchantServiceVo(merchid, startTime, endTime, areaIds.split(";").toList, Nil))
+      ((merchid, startTime, endTime, areaIds) => MerchantServiceVo(merchid, startTime, endTime, areaIds.split(";").toList))
       ((ms: MerchantServiceVo) => Some(ms.id, ms.startTime, ms.endTime, ms.areaIds.mkString(";")))
   )
 
@@ -186,16 +186,38 @@ object Merchandise extends Controller with Merchants with MerchSecured {
       val serviceInfo = MerchantServiceInfo.findById(merchId)
       val form: Form[MerchantServiceVo] = serviceInfo match {
         case Some(sio) => serviceForm.fill(MerchantServiceVo(sio))
-        case _ => serviceForm.fill(MerchantServiceVo(merchId, "", "", Nil, Nil))
+        case _ => serviceForm.fill(MerchantServiceVo(merchId, "", "", Nil))
       }
-      Ok(html.merchandise.serviceinfo(form))
+     val areas = serviceInfo match {
+       case Some(sio) => sio.areas
+       case _ => Nil
+     }
+      Ok(html.merchandise.serviceinfo(form, areas))
     }
   )
 
 
   def updateServiceInfo = isAuthenticated(
     implicit request => {
-      Ok
+      serviceForm.bindFromRequest().fold(
+        formWithErrors => {
+          if(log.isDebugEnabled){
+            log.debug("error form: " + formWithErrors)
+          }
+          val areas = formWithErrors.data.get("areaIds") match {
+            case Some(idStr) => Area.findByIds(idStr.split(";"))
+            case _ => Nil
+          }
+          BadRequest(html.merchandise.serviceinfo(formWithErrors, areas))
+        },
+        serviceInfo => {
+          if(log.isDebugEnabled){
+            log.debug("serviceInfo::" + serviceInfo)
+          }
+          MerchantServiceInfo.updateMerchantServiceInfo(serviceInfo.merchantServiceInfo, serviceInfo.areaIds)
+          Redirect(routes.Merchandise.serviceInfo)
+        }
+      )
     }
   )
 

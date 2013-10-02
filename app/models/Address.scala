@@ -101,6 +101,10 @@ object Area {
     Query(Areas).where(_.id === id).firstOption
   }
 
+  def findByIds(ids: Seq[String]) = DBHelper.database.withSession{
+    Query(Areas).where(_.id inSetBind(ids)).list()
+  }
+
   def saveOrUpdate(area: Area) = DBHelper.database.withTransaction {
     findById(area.id) match {
       case Some(a) => Query(Areas).where(_.id === area.id).update(area)

@@ -50,7 +50,7 @@ object Addresses extends Controller {
 
 
   private def areaJson(areaList: Seq[Area]) = {
-    areaList.map(area => JsObject(List("title" -> JsString(area.name), "key" -> JsString(area.id), "isLazy" -> JsString("true"), (if (area.isRoot) "isFolder" -> JsString("true") else "isFolder" -> JsString("false")))))
+    areaList.map(area => JsObject(List("title" -> JsString(area.name), "key" -> JsString(area.id), "tooltip" -> JsString(area.detail), "isLazy" -> JsString("true"), (if (area.isRoot) "isFolder" -> JsString("true") else "isFolder" -> JsString("false")))))
   }
 
 }
