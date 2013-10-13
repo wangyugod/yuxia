@@ -128,7 +128,14 @@ $(function(){
                         <span class="label"><em>*</em>@Messages("merch.starttime.label")</span>
                         <div class="fl">
                             <div>
-                                <input name="startTime" id="startTime" type="text" value="@serviceForm.data.get("startTime")" class="text"><s></s>
+                                <select name="startTime" id="startTime" value="@serviceForm.data.get("startTime")" class="text">
+                                @for(i <- 0 to 23){
+                                     @(serviceForm.data.get("startTime").get.toDouble == (i + 0.5))
+                                    <option value="@i" @(if(i == serviceForm.data.get("startTime").get.toDouble) "selected")>@(i + ":00")</option>
+                                    <option value="@(i + 0.5)" @(if((i + 0.5) == serviceForm.data.get("startTime").get.toDouble) "selected")>@(i + ":30")</option>
+                                }
+                                </select>
+
                                 <div class="clr"></div>
                                 @if(serviceForm.error("startTime").isDefined){
                                 <div class="prompt-error"><span id="petName_msg">@Messages(serviceForm.error("startTime").get.message)</span></div>
@@ -141,7 +148,12 @@ $(function(){
                         <span class="label"><em>*</em>@Messages("merch.endtime.label")</span>
                         <div class="fl">
                             <div>
-                                <input name="endTime" id="endTime" type="text" value="@serviceForm.data.get("endTime")" class="text"><s></s>
+                                <select name="endTime" id="endTime" value="@serviceForm.data.get("endTime")" class="text">
+                                @for(i <- 0 to 23){
+                                <option value="@i"  @(if(i == serviceForm.data.get("endTime").get.toDouble) "selected")>@(i + ":00")</option>
+                                <option value="@(i + 0.5)" @(if((i + 0.5) == serviceForm.data.get("endTime").get.toDouble) "selected")>@(i + ":30")</option>
+                                }
+                                </select>
                                 <div class="clr"></div>
                                 @if(serviceForm.error("endTime").isDefined){
                                 <div class="prompt-error"><span id="petName_msg">@Messages(serviceForm.error("endTime").get.message)</span></div>

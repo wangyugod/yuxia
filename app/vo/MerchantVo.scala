@@ -53,7 +53,7 @@ object MerchantVo {
 }
 
 
-case class MerchantServiceVo(id: String, startTime: String, endTime: String, areaIds: Seq[String]) {
+case class MerchantServiceVo(id: String, startTime: Double, endTime: Double, areaIds: Seq[String]) {
 
   def merchantServiceInfo =
     MerchantServiceInfo(id, startTime, endTime)

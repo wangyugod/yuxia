@@ -176,8 +176,8 @@ object Merchandise extends Controller with Merchants with MerchSecured {
       "endTime" -> nonEmptyText,
       "areaIds" -> nonEmptyText
     )
-      ((merchid, startTime, endTime, areaIds) => MerchantServiceVo(merchid, startTime, endTime, areaIds.split(";").toList))
-      ((ms: MerchantServiceVo) => Some(ms.id, ms.startTime, ms.endTime, ms.areaIds.mkString(";")))
+      ((merchid, startTime, endTime, areaIds) => MerchantServiceVo(merchid, startTime.toDouble, endTime.toDouble, areaIds.split(";").toList))
+      ((ms: MerchantServiceVo) => Some(ms.id, ms.startTime.toString, ms.endTime.toString, ms.areaIds.mkString(";")))
   )
 
   def serviceInfo = isAuthenticated(
@@ -186,13 +186,16 @@ object Merchandise extends Controller with Merchants with MerchSecured {
       val serviceInfo = MerchantServiceInfo.findById(merchId)
       val form: Form[MerchantServiceVo] = serviceInfo match {
         case Some(sio) => serviceForm.fill(MerchantServiceVo(sio))
-        case _ => serviceForm.fill(MerchantServiceVo(merchId, "", "", Nil))
+        case _ => serviceForm.fill(MerchantServiceVo(merchId, 0, 0, Nil))
       }
      val areas = serviceInfo match {
        case Some(sio) => sio.areas
        case _ => Nil
      }
-      Ok(html.merchandise.serviceinfo(form, areas))
+     if(log.isDebugEnabled){
+       log.debug("service form is :" + form)
+     }
+     Ok(html.merchandise.serviceinfo(form, areas))
     }
   )
 

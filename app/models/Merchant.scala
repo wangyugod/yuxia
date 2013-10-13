@@ -32,7 +32,7 @@ case class MerchantAdvInfo(id: String, merchNum: Option[String], artificialPerso
   }
 }
 
-case class MerchantServiceInfo(id: String, startTime: String, endTime: String) {
+case class MerchantServiceInfo(id: String, startTime: Double, endTime: Double) {
   lazy val areas: List[Area] = DBHelper.database.withSession {
     val scopeList = Query(MerchantShippingScopes).where(_.merchantId === id).list()
     scopeList match {
@@ -87,9 +87,9 @@ object MerchantAdvInfos extends Table[MerchantAdvInfo]("merchant_adv_info") {
 object MerchantServiceInfos extends Table[MerchantServiceInfo]("merchant_serv_info") {
   def id = column[String]("id", O.PrimaryKey)
 
-  def startTime = column[String]("start_time")
+  def startTime = column[Double]("start_time")
 
-  def endTime = column[String]("end_time")
+  def endTime = column[Double]("end_time")
 
   def * = id ~ startTime ~ endTime <>(
     (id, startTime, endTime) => MerchantServiceInfo(id, startTime, endTime),

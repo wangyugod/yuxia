@@ -1,8 +1,87 @@
 @(products: Seq[Product])(implicit merchant:Option[Merchant])
 
 @import helper._
-@merchbase(Messages("merch.product.title"),merchant){
-        @for(product <- products) {
-            <li><a href="@routes.Products.get(product.id)" >@product.id </a>, @product.name, @product.description, @product.imageUrl, @product.childSkus </li>
-        }
+@merchbase(Messages("merch.prodlist.menu"),merchant){
+<div class="o-mt">
+    <h2>@Messages("merch.prodlist.menu")</h2>
+</div>
+<script type="text/javascript">
+    function addProduct(){
+        location.href="@routes.Products.newProduct";
+    }
+
+    function deleteProduct(id){
+        $('#divconfirm'+id).dialog({
+            resizable: false,
+            height:140,
+            modal: true,
+            open:function(event, ui){
+                $(".ui-dialog-titlebar-close", $(this).parent()).hide();
+            },
+            closeOnEscape: false,
+            buttons: {
+                "@Messages("ok.button")": function() {
+                    $.ajax({
+                        async:false,
+                        url:"/merch/prod/" + id,
+                        type:"DELETE",
+                        success: function(result){
+                            document.location.href = "@routes.Products.list()";
+                        }
+                    });
+                $(this).dialog( "close" );
+                },
+                "@Messages("cancel.button")": function() {
+                    $(this).dialog( "close" );
+                }
+            }
+        });
+    }
+</script>
+<div class="m" id="serviceinfo">
+<div class="mc">
+    <div class="i-m">
+        <div class="i-mc">
+            <div>
+                <input name="" type="button" value="添加商品" class="bti" onclick="addProduct()" >
+                <div class="clr"></div>
+            </div>
+            <div class="tb-void">
+                <div>
+                    <table id="prodListTable" width="99%" border="0" cellspacing="0" cellpadding="0">
+                        <tbody>
+                        <tr>
+                            <th width="15%">图片</th>
+                            <th width="10%">名称</th>
+                            <th width="15%">价格</th>
+                            <th width="50%">描述</th>
+                            <th width="10%">操作</th>
+                        </tr>
+                        @for(product <- products) {
+                        <div id="divconfirm@product.id" style="display:none">
+                            <span>@Messages("product.delete.cfmsg", product.name)</span>
+                        </div>
+                        <tr id="@product.id">
+                            <td><a href="@routes.Products.get(product.id)"><image src="@routes.Assets.at("images/product/" + product.imageUrl)" width="127" height="75"/></a></td>
+                            <td><a href="@routes.Products.get(product.id)">@product.name</a></td>
+                            <td>
+                                <ul>
+                                @for(sku <- product.childSkus){
+                                   <li>@(sku.name + ":" + sku.price)</li>
+                                }
+                                </ul>
+
+                            </td>
+                            <td>@product.description</td>
+                            <td style="text-align:center"><a id="@product.id" href="#" onclick="deleteProduct('@product.id')">删除</a></td>
+
+                        </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 }
