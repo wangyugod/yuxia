@@ -17,18 +17,29 @@
     }
  }
 </SCRIPT>
-@productForm.errors.map { error =>
+<div class="o-mt">
+    <h2>@Messages("merch.product.title")</h2>
+</div>
+
+<!--@productForm.errors.map { error =>
 <p class="error">
     @error.message
 </p>
-}
-
+}-->
+<div class="m" id="serviceinfo">
+    <div class="mc">
+        <div class="i-m">
+            <div class="i-mc">
 @form(action = routes.Products.update, 'enctype -> "multipart/form-data") {
+                <div class="form">
     @productfields(productForm, merchant)
-    <image src="@routes.Assets.at("images/product/" + productForm.get.imageUrl)" width="127" height="56"/>
 <div class="submit-action">
     <input type="submit" class="btn primary" value="@Messages("product.update")">
     <input type="button" id="deleteBtn" class="btn primary" value="@Messages("product.delete")" onclick="del()">
+</div>
+                </div>
+            </div>
+        </div>
 </div>
 }
 }

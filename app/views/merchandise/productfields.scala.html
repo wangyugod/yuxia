@@ -287,69 +287,99 @@
     });
 
 </script>
-<fieldset>
-@defining(productForm("merchantId")) { uidField =>
-    <input type="hidden" name="@uidField.name" id="@uidField.id" value="@merchant.get.id">
+
+<input type="hidden" name="merchantId" id="merchantId" value="@merchant.get.id">
+<input type="hidden" name="id" id="id" value="@productForm.data.get("id")">
+<input type="hidden" name="categories" id="categories" value="@productForm.data.get("categories")">
+<div class="item">
+    <span class="label"><em>*</em>@Messages("product.name")</span>
+    <div class="fl">
+        <input id="name" name="name" type="text" class="text" value="@productForm.data.get("name")" maxlength="20">
+        @if(productForm.error("name").isDefined){
+        <div class="prompt-error"><span id="petName_msg">@Messages(productForm.error("name").get.message)</span></div>
+        }
+    </div>
+    <div class="clr"></div>
+</div>
+
+<div class="item">
+    <span class="label"><em>*</em>@Messages("product.desc")</span>
+    <div class="fl">
+        <input id="description" name="description" type="text" class="text" value="@productForm.data.get("description")" maxlength="20">
+        @if(productForm.error("description").isDefined){
+        <div class="prompt-error"><span id="petName_msg">@Messages(productForm.error("description").get.message)</span></div>
+        }
+    </div>
+    <div class="clr"></div>
+</div>
+
+<div class="item">
+    <span class="label"><em>*</em>@Messages("product.longdesc")</span>
+    <div class="fl">
+        <input id="longDescription" name="longDescription" type="text" class="text" value="@productForm.data.get("longDescription")" maxlength="20">
+        @if(productForm.error("longDescription").isDefined){
+        <div class="prompt-error"><span id="petName_msg">@Messages(productForm.error("longDescription").get.message)</span></div>
+        }
+    </div>
+    <div class="clr"></div>
+</div>
+
+<div class="item">
+    <span class="label"><em>*</em>@Messages("product.startDate")</span>
+    <div class="fl">
+        <input id="startDate" name="startDate" type="text" class="text" value="@productForm.data.get("startDate")" maxlength="20">
+        @if(productForm.error("startDate").isDefined){
+        <div class="prompt-error"><span id="petName_msg">@Messages(productForm.error("startDate").get.message)</span></div>
+        }
+    </div>
+    <div class="clr"></div>
+</div>
+
+<div class="item">
+    <span class="label"><em>*</em>@Messages("product.endDate")</span>
+    <div class="fl">
+        <input id="endDate" name="endDate" type="text" class="text" value="@productForm.data.get("endDate")" maxlength="20">
+        @if(productForm.error("endDate").isDefined){
+        <div class="prompt-error"><span id="petName_msg">@Messages(productForm.error("endDate").get.message)</span></div>
+        }
+    </div>
+    <div class="clr"></div>
+</div>
+
+<div class="item">
+    <span class="label"><em>*</em>@Messages("product.category")</span>
+    <div class="fl">
+        <input id="selectedCat" name="selectedCat" type="text" class="text" value="@productForm.data.get("selectedCat")" maxlength="20" readonly>
+        <input type="button" id="selCategory" onclick="showCategoryTree()" value="@Messages("product.category.selbtn")"/>
+        @if(productForm.error("selectedCat").isDefined){
+        <div class="prompt-error"><span id="petName_msg">@Messages(productForm.error("selectedCat").get.message)</span></div>
+        }
+    </div>
+    <div class="clr"></div>
+</div>
+
+<div class="item">
+    <span class="label"><em>*</em>@Messages("product.image")</span>
+    <div class="fl">
+        <input type="file" id="selImage" />
+        @if(productForm.error("image").isDefined){
+        <div class="prompt-error"><span id="petName_msg">@Messages(productForm.error("image").get.message)</span></div>
+        }
+    </div>
+    <div class="clr"></div>
+</div>
+
+@if(productForm.value.isDefined){
+<div class="item">
+    <span class="label">&nbsp;</span>
+    <div class="fl">
+        <image style="float:left" src="@routes.Assets.at("images/product/" + productForm.get.imageUrl)" width="127" height="56"/>
+    </div>
+    <div class="clr"></div>
+</div>
 }
-@defining(productForm("id")) {uidField =>
-    <input type="hidden" name="@uidField.name" id="@uidField.id" value="@productForm.data.get("id")">
-}
-@defining(productForm("categories")) {uidField =>
-    <input type="hidden" name="@uidField.name" id="@uidField.id" value="@productForm.data.get("categories")">
-}
-
-
-
-
-@inputText(
-productForm("name"),
-'_label -> Messages("product.name"),
-'_error -> productForm.globalError
-)
-
-@inputText(
-productForm("description"),
-'_label -> Messages("product.desc"),
-'_error -> productForm.globalError
-)
-
-@inputText(
-productForm("longDescription"),
-'_label -> Messages("product.longdesc"),
-'_error -> productForm.globalError
-)
-
-@inputText(
-productForm("startDate"),
-'_label -> Messages("product.startDate"),
-'_error -> productForm.globalError
-)
-
-@inputText(
-productForm("endDate"),
-'_label -> Messages("product.endDate"),
-'_error -> productForm.globalError
-)
-
 
 <input type="button" onclick="showSkuMgtForm()" value="@Messages("product.sku.mgt.label")" />
-
-<dl class=" " id="catIds_field">
-    <dt><label for="selectedCat">@Messages("product.category")</label></dt>
-    <dd>
-        @defining(productForm("selectedCat")) { uidField =>
-            <input type="text" name="@uidField.name" id="@uidField.id" value="@productForm.data.get("selectedCat")" readonly>
-        }
-        <input type="button" id="selCategory" onclick="showCategoryTree()" value="@Messages("product.category.selbtn")"/>
-    </dd>
-</dl>
-
-@inputFile(
-productForm("image"),
-'_label -> Messages("product.image"),
-'_error -> productForm.globalError
-)
-</fieldset>
 
 <fieldset>
 <div id="skuDialog"></div>
