@@ -53,10 +53,13 @@
 <script type="text/javascript">
     function showCategoryTree() {
     $("#tree").dialog({
-         height: 300,
-         modal:true
-    }
-    );
+        width: 600,
+        height: 300,
+        modal:true,
+        buttons:{"@Messages("ok.button")": function(){
+            $(this).dialog("close");
+        }}
+    });
     }
 
     $(function(){
@@ -265,7 +268,8 @@
             }
         }
         $("#skuInfo").dialog({
-            height: 300,
+            height: 380,
+            width: 600,
             modal:true,
             open:function(event, ui){
                 $(".ui-dialog-titlebar-close", $(this).parent()).hide();
@@ -379,11 +383,44 @@
 </div>
 }
 
-<input type="button" onclick="showSkuMgtForm()" value="@Messages("product.sku.mgt.label")" />
+<div class="item">
+    <span class="label"><em>*</em>@Messages("product.sku.mgt")</span>
+    <div class="fl">
+        <div>
+            <input name="" type="button" value="价格管理" class="bti" onclick="showSkuMgtForm()" >
+            <div class="clr"></div>
+        </div>
+    </div>
+    <div class="clr"></div>
+</div>
 
-<fieldset>
+<div class="tb-void">
+    <div>
+        <table id="skuTable" width="80%" border="0" cellspacing="0" cellpadding="0">
+            <thead><tr>
+                <th width="25%">价格分类</th>
+                <th width="25%">标价</th>
+                <th width="25%">促销价格</th>
+                <th width="25%">操作</th>
+            </tr>
+            </thead>
+            <tbody id="skuTbody">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="item">
+    <span class="label">&nbsp;</span>
+    <div class="fl">
+        <a href="javascript:void(0)" onclick="javascript: $('form').submit()" class="btn btn-7"><s></s>@Messages("myacct.submitbtn.label")</a>
+    </div>
+    <div class="clr"></div>
+</div>
+
+
 <div id="skuDialog"></div>
-<div id="skuInfo" title="@Messages("product.price.mgt")" style="display:none" >
+<div id="skuInfo" title="@Messages("product.price.mgt")" style="display:none;width: auto; min-height: 0px; max-height: none; height: 250px;" >
 <p class="validateTips" id="skuValidateTips"></p>
 @repeat(productForm("childSkus")) { skuField =>
     @skuGroup(skuField)
@@ -397,8 +434,8 @@
     className = "sku_template"
 )
 </div>
-</fieldset>
-<div id="skuGroupTable" class="ui-widget">
+
+<!--<div id="skuGroupTable" class="ui-widget">
         <table id="skuTable" class="ui-widget ui-widget-content">
             <thead>
             <tr class="ui-widget-header ">
@@ -411,7 +448,7 @@
             <tbody id="skuTbody">
             </tbody>
         </table>
-</div>
+</div>-->
 <div id="tree" style="display:none;" title="@Messages("product.category.select")">
 <!-- When using initAjax, it may be nice to put a throbber here, that spins until the initial content is loaded: -->
 </div>

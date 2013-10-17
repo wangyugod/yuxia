@@ -184,19 +184,20 @@
             @form(routes.ProfileController.updateAddress){
             <input type="hidden" name="id" id="id"/>
             <input type="hidden" name="areaId" id="areaId"/>
-            <div class="form" id="consigneePanel">    <div class="item">
-                <span class="label"><em>*</em>收&nbsp;货&nbsp;人：</span>
-                <div class="fl">
-                    <input id="contactPerson" name="contactPerson" type="text" class="text" value="" maxlength="20">
-                    <div class="prompt-error" id="contactPersonError" style="display:none"><span id="petName_msg">@Messages("error.required")</span></div>
+            <div class="form" id="consigneePanel">
+                <div class="item">
+                    <span class="label"><em>*</em>收&nbsp;货&nbsp;人：</span>
+                    <div class="fl">
+                        <input id="contactPerson" name="contactPerson" type="text" class="text" value="" maxlength="20">
+                        <div class="prompt-error" id="contactPersonError" style="display:none"><span id="petName_msg">@Messages("error.required")</span></div>
+                    </div>
+                    <div class="clr">
+                    </div>
                 </div>
-                <div class="clr">
-                </div>
-            </div>
                 <div class="item">
                     <span class="label"><em>*</em>所在地区：</span>
                     <div class="fl">
-            <span id="consignee_area">
+                    <span id="consignee_area">
                       <span>
                        <select id="province" name="province" class="sele"><option value="sc">@util.AddressInfo.provinceName("sc")</option></select>
                       </span>
