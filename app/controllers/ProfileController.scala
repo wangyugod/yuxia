@@ -10,6 +10,7 @@ import models._
 import util._
 import play.api.i18n.Messages
 import play.api.Logger
+import vo.AddressVo
 
 /**
  * Created with IntelliJ IDEA.
@@ -78,7 +79,7 @@ object ProfileController extends Controller with Users with Secured {
     )
   )
 
-  val addressForm: Form[Address] = Form(
+  val addressForm: Form[AddressVo] = Form(
     mapping(
       "id" -> optional(text),
       "province" -> nonEmptyText,
@@ -87,9 +88,10 @@ object ProfileController extends Controller with Users with Secured {
       "contactPhone" -> nonEmptyText,
       "addressLine" -> nonEmptyText,
       "contactPerson" -> nonEmptyText,
-      "areaId" -> nonEmptyText
-    )((id, province, city, district, contactPhone, addressLine, contactPerson, areaId) => Address(id.getOrElse(IdGenerator.generateAddressId()), province, city, district, contactPhone, addressLine, contactPerson, Some(areaId)))
-      ((addr: Address) => Some(Some(addr.id), addr.province, addr.city, addr.district, addr.contactPhone, addr.addressLine, addr.contactPerson, addr.areaId.get))
+      "areaId" -> nonEmptyText,
+      "isDefaultAddress" -> optional(boolean)
+    )((id, province, city, district, contactPhone, addressLine, contactPerson, areaId, isDefaultAddress) => AddressVo(id.getOrElse(IdGenerator.generateAddressId()), province, city, district, contactPhone, addressLine, contactPerson, Some(areaId), isDefaultAddress))
+      ((addr: AddressVo) => Some(Some(addr.id), addr.province, addr.city, addr.district, addr.contactPhone, addr.addressLine, addr.contactPerson, addr.areaId.get, addr.isDefaultAddress))
   )
 
   def login = Action {
@@ -182,7 +184,9 @@ object ProfileController extends Controller with Users with Secured {
         },
         address => {
           val userId = request.session.get(USER_ID).get
-          Address.saveOrUpdate(userId, address)
+          if(log.isDebugEnabled)
+            log.debug("is default address:" + address.isDefaultAddress)
+          Address.saveOrUpdate(userId, address.address, address.isDefaultAddress.getOrElse(false))
           Redirect(routes.ProfileController.addressList())
         }
       )

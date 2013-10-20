@@ -18,7 +18,11 @@ import util.DBHelper
  * To change this template use File | Settings | File Templates.
  */
 
-case class Profile(id: String, login: String, password: String, name: String, gender: Option[String], birthDay: Option[Date])
+case class Profile(id: String, login: String, password: String, name: String, gender: Option[String], birthDay: Option[Date]){
+  def defaultAddress() = DBHelper.database.withSession{
+    Query(UserAddresses).where(_.userId === id).where(_.isDefault === true).firstOption
+  }
+}
 
 object Profiles extends Table[Profile]("user") {
   def id = column[String]("id", O.PrimaryKey)

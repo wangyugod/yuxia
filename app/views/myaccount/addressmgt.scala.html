@@ -1,4 +1,4 @@
-@(addressForm: Form[Address], addressList: Seq[Address])(implicit user: Option[Profile])
+@(addressForm: Form[vo.AddressVo], addressList: Seq[Address])(implicit user: Option[Profile])
 
 @import helper._
 @myAccount(user){
@@ -242,6 +242,16 @@
                     <div class="clr">
                     </div>
                 </div>
+                <div class="item">
+                    <span class="label"><em>*</em>默认地址：</span>
+                    <div class="fl">
+                        <input type="radio" name="isDefaultAddress" id="isDefaultAddress0" value="true" ><label for="isDefaultAddress0">&nbsp;是&nbsp;</label>
+                        <input type="radio" name="isDefaultAddress" id="isDefaultAddress1" value="false"><label for="isDefaultAddress1">&nbsp;否&nbsp;</label>
+                    </div>
+                    <div class="prompt-error" id="lineError" style="display:none"><span id="petName_msg">@Messages("error.required")</span></div>
+                    <div class="clr">
+                    </div>
+                </div>
             </div>
             }
         </div>
@@ -295,6 +305,13 @@
                         <tr>
                             <th>@Messages("addr.phone.label")</th>
                             <td id="phone@address.id">@address.contactPhone</td>
+                            <th>
+                                &nbsp;
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>@Messages("addr.default.label")</th>
+                            <td id="phone@address.id">@(if(address.isDefault.get) "是" else "否")</td>
                             <th>
                                 &nbsp;
                             </th>

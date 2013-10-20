@@ -1100,6 +1100,10 @@ list-style: none;
     display: block;
 }
 
+.list-h li, .list-h dl {
+    float: left;
+}
+
 #plist li {
     width: 221px;
     padding: 0 13px 10px;

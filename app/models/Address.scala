@@ -6,6 +6,7 @@ import Database.threadLocalSession
 import java.sql.Timestamp
 import util.DBHelper
 import play.api.Logger
+import scala.slick.lifted
 
 /**
  * Created with IntelliJ IDEA.
@@ -51,6 +52,13 @@ case class Address(id: String, province: String, city: String, district: String,
       case _ => None
     }
   }
+
+  lazy val isDefault = DBHelper.database.withSession {
+    Query(UserAddresses).where(_.addrId === id).firstOption match {
+      case Some(ua) => ua.isDefault
+      case _ => None
+    }
+  }
 }
 
 object Addresses extends Table[Address]("address") {
@@ -76,16 +84,18 @@ object Addresses extends Table[Address]("address") {
     )
 }
 
-case class UserAddress(userId: String, addressId: String)
+case class UserAddress(userId: String, addressId: String, isDefault: Option[Boolean])
 
 object UserAddresses extends Table[UserAddress]("user_addr") {
   def userId = column[String]("user_id")
 
   def addrId = column[String]("address_id")
 
+  def isDefault = column[Option[Boolean]]("is_default")
+
   def pk = primaryKey("user_addr_pk", (userId, addrId))
 
-  def * = userId ~ addrId <>(UserAddress, UserAddress.unapply(_))
+  def * = userId ~ addrId ~ isDefault <>(UserAddress, UserAddress.unapply(_))
 }
 
 object Area {
@@ -101,8 +111,8 @@ object Area {
     Query(Areas).where(_.id === id).firstOption
   }
 
-  def findByIds(ids: Seq[String]) = DBHelper.database.withSession{
-    Query(Areas).where(_.id inSetBind(ids)).list()
+  def findByIds(ids: Seq[String]) = DBHelper.database.withSession {
+    Query(Areas).where(_.id inSetBind (ids)).list()
   }
 
   def saveOrUpdate(area: Area) = DBHelper.database.withTransaction {
@@ -136,14 +146,43 @@ object Address {
     Query(Addresses).where(_.id === id).firstOption
   }
 
-  def saveOrUpdate(userId: String, address: Address) = DBHelper.database.withTransaction {
+  def saveOrUpdate(userId: String, address: Address, isDefaultAddress: Boolean) = DBHelper.database.withTransaction {
+    val userAddresses = Query(UserAddresses).where(_.userId === userId).list()
     findById(address.id) match {
       case Some(addr) => {
         Query(Addresses).where(_.id === address.id).update(address)
+        val originalUA = Query(UserAddresses).where(_.userId === userId).where(_.addrId === address.id)
+        if (isDefaultAddress && !originalUA.first().isDefault.getOrElse(false)) {
+          val originalDefaultAddress = Query(UserAddresses).where(_.userId === userId).where(_.isDefault === true)
+          if (log.isDebugEnabled)
+            log.debug("Should update current address to default address, and update original default to non default")
+          originalDefaultAddress.update(UserAddress(userId, originalDefaultAddress.first.addressId, Some(false)))
+          originalUA.update(UserAddress(userId, address.id, Some(true)))
+        } else if(!isDefaultAddress && originalUA.first().isDefault.get){
+          if (log.isDebugEnabled)
+            log.debug("change current default address to non default")
+          originalUA.update(UserAddress(userId, address.id, Some(false)))
+        }
       }
       case _ => {
         Addresses.insert(address)
-        UserAddresses.insert(UserAddress(userId, address.id))
+        if (userAddresses.isEmpty) {
+          if (log.isDebugEnabled)
+            log.debug("This is the first address of customer, set it to default address")
+          UserAddresses.insert(UserAddress(userId, address.id, Some(true)))
+        } else if (isDefaultAddress) {
+          if (log.isDebugEnabled)
+            log.debug("set current inserted address as default address, and make original non-default")
+          val originalDefaultAddress = Query(UserAddresses).where(_.userId === userId).where(_.isDefault === true)
+          if (originalDefaultAddress.firstOption.isDefined) {
+            originalDefaultAddress.update(UserAddress(userId, originalDefaultAddress.firstOption.get.addressId, Some(false)))
+          }
+          UserAddresses.insert(UserAddress(userId, address.id, Some(true)))
+        } else {
+          if (log.isDebugEnabled)
+            log.debug("not default address!")
+          UserAddresses.insert(UserAddress(userId, address.id, Some(false)))
+        }
       }
     }
   }

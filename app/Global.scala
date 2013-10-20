@@ -37,14 +37,15 @@ object Global extends GlobalSettings {
 //      Skus.ddl.create
       //MerchantAdvInfos.ddl.create
 //      Addresses.ddl.create
-//      UserAddresses.ddl.create
+    //  UserAddresses.ddl.drop
+      UserAddresses.ddl.create
       //ProductCategories.ddl.create
 //      Categories.ddl.create
 //      CategoryCategories.ddl.drop
 //      InternalUsers.ddl.create
 //      Areas.ddl.create
-      MerchantServiceInfos.ddl.create
-      MerchantShippingScopes.ddl.create
+//      MerchantServiceInfos.ddl.create
+//      MerchantShippingScopes.ddl.create
 
 //      CategoryCategories.ddl.create
 

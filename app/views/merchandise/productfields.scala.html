@@ -365,7 +365,7 @@
 <div class="item">
     <span class="label"><em>*</em>@Messages("product.image")</span>
     <div class="fl">
-        <input type="file" id="selImage" />
+        <input type="file" name="image" id="image" />
         @if(productForm.error("image").isDefined){
         <div class="prompt-error"><span id="petName_msg">@Messages(productForm.error("image").get.message)</span></div>
         }
