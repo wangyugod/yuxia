@@ -66,6 +66,11 @@
         $('#contactPhone').val($('#phone' + addrId).text());
         $('#contactPerson').val($('#person' + addrId).text());
         $('#areaName').val($('#areaName' + addrId).text());
+        if($('#isDefault' + addrId).text() == "true"){
+            $('#isDefaultAddress0').attr("checked",'2');
+        } else {
+            $('#isDefaultAddress1').attr("checked",'2');
+        }
         showAddressForm();
     }
 
@@ -321,6 +326,7 @@
                         <span style="display:none" id="city@address.id">@address.city</span>
                         <span style="display:none" id="dist@address.id">@address.district</span>
                         <span style="display:none" id="line@address.id">@address.addressLine</span>
+                        <span style="display:none" id="isDefault@address.id">@address.isDefault</span>
                         </tbody>
                     </table>
                 </div>

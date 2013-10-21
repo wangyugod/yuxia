@@ -42,6 +42,15 @@
             </div>
             <div class="total"><span>@Html(Messages("srp.product.total", result.numFound))</span></div>
         </div>
+        <div class="fore2 form">
+            <dl class="store">
+                <dt>区域：</dt>
+                <dd id="store-selector" class="hover">
+                    <div class="text"></div>
+                </dd>
+
+            </dl>
+        </div>
     </div>
     <div id="plist" class="plist-n7a">
         <ul class="list-h">
@@ -93,6 +102,8 @@
             searchCategory(parseInt("@result.currentPage", 10) - 1);
         });
     }
+
+    $('#topNav' +  '@result.keyword').addClass("curr");
     })
 </script>
 

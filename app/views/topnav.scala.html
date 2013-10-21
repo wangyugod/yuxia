@@ -4,7 +4,7 @@
         <ul id="navitems-2013">
             <li class="fore1" id="nav-home" ><a href="@routes.Application.index()">首页</a></li>
             @for((cat, idx) <- Category.topNavCategories.zipWithIndex){
-                <li class="fore@(idx+2)"><a href="@routes.Browse.categoryLanding(cat.id)">@cat.name</a></li>
+                <li class="fore@(idx+2)" id="topNav@cat.id"><a href="@routes.Browse.categoryLanding(cat.id)">@cat.name</a></li>
             }
 
         </ul>

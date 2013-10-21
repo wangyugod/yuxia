@@ -18,9 +18,22 @@ import util.DBHelper
  * To change this template use File | Settings | File Templates.
  */
 
-case class Profile(id: String, login: String, password: String, name: String, gender: Option[String], birthDay: Option[Date]){
-  def defaultAddress() = DBHelper.database.withSession{
-    Query(UserAddresses).where(_.userId === id).where(_.isDefault === true).firstOption
+case class Profile(id: String, login: String, password: String, name: String, gender: Option[String], birthDay: Option[Date]) {
+  lazy val defaultAddress: Option[Address] = DBHelper.database.withSession {
+    Query(UserAddresses).where(_.userId === id).where(_.isDefault === true).firstOption match {
+      case Some(ua) => Address.findById(ua.addressId)
+      case _ => {
+        Query(UserAddresses).where(_.userId === id).firstOption match {
+          case Some(userAddr) => Address.findById(userAddr.addressId)
+          case _ => None
+        }
+      }
+    }
+  }
+
+  lazy val defaultArea: Option[Area] = defaultAddress match {
+    case Some(address) => Area.findById(address.areaId.get)
+    case _ => None
   }
 }
 
@@ -69,25 +82,3 @@ object Profile {
     result.list()
   }
 }
-
-/*object ProfileService {
-  def authenticateUser(login:String, password:String) = {
-    ModelConfiguration.database.withSession{
-      val result = for(p <- Profiles if(p.login === login && p.password === password)) yield p
-      result.firstOption()
-    }
-  }
-
-
-
-  def createUser(user:Profile) = ModelConfiguration.database.withTransaction{
-    println("start creating users")
-    val s = Profiles.insert(user);
-    println("user id is :" + user.id + " " + s)
-  }
-
-  def findAllUsers() = ModelConfiguration.database.withSession{
-    val result = for(p <- Profiles) yield p
-    result.list()
-  }*/
-

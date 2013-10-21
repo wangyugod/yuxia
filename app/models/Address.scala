@@ -6,7 +6,6 @@ import Database.threadLocalSession
 import java.sql.Timestamp
 import util.DBHelper
 import play.api.Logger
-import scala.slick.lifted
 
 /**
  * Created with IntelliJ IDEA.
@@ -156,9 +155,10 @@ object Address {
           val originalDefaultAddress = Query(UserAddresses).where(_.userId === userId).where(_.isDefault === true)
           if (log.isDebugEnabled)
             log.debug("Should update current address to default address, and update original default to non default")
-          originalDefaultAddress.update(UserAddress(userId, originalDefaultAddress.first.addressId, Some(false)))
+          if (originalDefaultAddress.firstOption.isDefined)
+            originalDefaultAddress.update(UserAddress(userId, originalDefaultAddress.first.addressId, Some(false)))
           originalUA.update(UserAddress(userId, address.id, Some(true)))
-        } else if(!isDefaultAddress && originalUA.first().isDefault.get){
+        } else if (!isDefaultAddress && originalUA.first().isDefault.get) {
           if (log.isDebugEnabled)
             log.debug("change current default address to non default")
           originalUA.update(UserAddress(userId, address.id, Some(false)))

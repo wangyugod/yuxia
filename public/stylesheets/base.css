@@ -994,6 +994,29 @@ list-style: none;
     zoom: 1;
 }
 
+#filter .fore2 {
+    padding: 3px 8px;
+    height: 26px;
+    zoom: 1;
+}
+
+#store-selector .text {
+    float: left;
+    position: relative;
+    top: 0;
+    overflow: hidden;
+    height: 23px;
+    padding: 0 24px 0 4px;
+    border: 1px solid #ddd;
+    background: #fff;
+    line-height: 23px;
+}
+
+#filter .store {
+    padding-right: 15px;
+    border-right: 1px solid #E7E3E7;
+}
+
 #filter dl, #filter dt, #filter dd {
     float: left;
     line-height: 26px;
