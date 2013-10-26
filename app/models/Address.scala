@@ -3,6 +3,7 @@ package models
 import scala.slick.driver.MySQLDriver.simple._
 import slick.session.Database
 import Database.threadLocalSession
+import slick.jdbc.{GetResult, StaticQuery => Q}
 import java.sql.Timestamp
 import util.DBHelper
 import play.api.Logger
@@ -98,6 +99,9 @@ object UserAddresses extends Table[UserAddress]("user_addr") {
 }
 
 object Area {
+  private val log = Logger(this.getClass())
+  implicit val getAreaResult = GetResult(r => Area(r.<<, r.<<, r.<<, r.<<, r.<<))
+
   def all() = DBHelper.database.withSession {
     Query(Areas).list()
   }
@@ -119,6 +123,14 @@ object Area {
       case Some(a) => Query(Areas).where(_.id === area.id).update(area)
       case _ => Areas.insert(area)
     }
+  }
+
+  def allLeaveAreas() = DBHelper.database.withSession{
+    val result = Q.queryNA[Area]("select * from area a where not exists (select * from area b where b.parent_area_id  = a.id)").list()
+    if(log.isDebugEnabled){
+      log.debug("leave areas is:" + result)
+    }
+    result
   }
 
   def childAreas(id: String) = DBHelper.database.withSession {

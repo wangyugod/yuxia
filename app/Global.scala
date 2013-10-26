@@ -80,7 +80,7 @@ object Global extends GlobalSettings {
 
   override def onStart(app: Application) {
     println("start loading")
-
+//    println("leaves:" + Area.allLeaveAreas())
 //    initializeTable()
   }
 }
