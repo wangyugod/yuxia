@@ -40,7 +40,7 @@ object Addresses extends Controller {
 
   def searchArea(keyword: String) = Action{
     implicit request => {
-      val searchResult = AreaSearchResult(SearchHelper.query(SearchHelper.ADDRESS_SEARCH, "text", keyword, request))
+      val searchResult = AreaSearchResult(SearchHelper.query(SearchHelper.ADDRESS_SEARCH, "text", keyword, Map.empty[String, String], request))
       val results = searchResult.areas.map(area =>
           JsObject(List("label" -> JsString(area.name), "value" -> JsString(area.id), "detail" -> JsString(area.detail)))
       )

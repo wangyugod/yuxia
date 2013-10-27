@@ -1,10 +1,14 @@
-
+@(user:Option[Profile])
 <div class="w">
     <div id="nav-2013">
         <ul id="navitems-2013">
             <li class="fore1" id="nav-home" ><a href="@routes.Application.index()">首页</a></li>
             @for((cat, idx) <- Category.topNavCategories.zipWithIndex){
-                <li class="fore@(idx+2)" id="topNav@cat.id"><a href="@routes.Browse.categoryLanding(cat.id)">@cat.name</a></li>
+                @if(user.isDefined && user.get.defaultArea.isDefined){
+                    <li class="fore@(idx+2)" id="topNav@cat.id"><a href="/category/@(cat.id)?area=@user.get.defaultArea.get.id">@cat.name</a></li>
+                } else {
+                    <li class="fore@(idx+2)" id="topNav@cat.id"><a href="/category/@(cat.id)?area=@play.api.Play.current.configuration.getString("defaultArea").get">@cat.name</a></li>
+                }
             }
 
         </ul>

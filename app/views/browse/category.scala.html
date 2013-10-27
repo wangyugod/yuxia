@@ -68,7 +68,11 @@
                 <dd id="store-selector" class="hover">
                     <select id="combobox">
                         @for(area <- Area.allLeaveAreas){
-                            <option value="@area.id" title="@area.detail">@area.name</option>
+                            @if(user.isDefined && user.get.defaultArea.isDefined){
+                               <option value="@area.id" title="@area.detail" @(if(area.id == user.get.defaultArea.get.id) "selected")>@area.name</option>
+                            } else {
+                                <option value="@area.id" title="@area.detail" @(if(area.id == play.api.Play.current.configuration.getString("defaultArea").get) "selected")>@area.name</option>
+                            }
                         }
                     </select>
                     <span style="display:none" id="areaId"></span>
@@ -105,43 +109,14 @@
 
         </ul>
     </div>
-
-   <!-- <div class="ui-widget">
-        <select id="combobox">
-            <option value="">Select one...</option>
-            <option value="ActionScript">ActionScript</option>
-            <option value="AppleScript">AppleScript</option>
-            <option value="Asp">Asp</option>
-            <option value="BASIC">BASIC</option>
-            <option value="C">C</option>
-            <option value="C++">C++</option>
-            <option value="Clojure">Clojure</option>
-            <option value="COBOL">COBOL</option>
-            <option value="ColdFusion">ColdFusion</option>
-            <option value="Erlang">Erlang</option>
-            <option value="Fortran">Fortran</option>
-            <option value="Groovy">Groovy</option>
-            <option value="Haskell">Haskell</option>
-            <option value="Java">Java</option>
-            <option value="JavaScript">JavaScript</option>
-            <option value="Lisp">Lisp</option>
-            <option value="Perl">Perl</option>
-            <option value="PHP">PHP</option>
-            <option value="Python">Python</option>
-            <option value="Ruby">Ruby</option>
-            <option value="Scala">Scala</option>
-            <option value="Scheme">Scheme</option>
-        </select>
-    </div>-->
 </div>
 <script type="text/javascript">
     (function( $ ) {
     $.widget( "custom.combobox", {
     _create: function() {
-    this.wrapper = $( "<span>" )
+        this.wrapper = $( "<span>" )
           .addClass( "custom-combobox" )
           .insertAfter( this.element );
-
         this.element.hide();
         this._createAutocomplete();
         this._createShowAllButton();
@@ -149,8 +124,8 @@
 
       _createAutocomplete: function() {
         var selected = this.element.children( ":selected" ),
-          value = selected.val() ? selected.text() : "";
-
+        value = selected.val() ? selected.text() : "";
+        $("#areaId").text(selected.val());
         this.input = $( "<input>" )
           .appendTo( this.wrapper )
           .val( value )
@@ -189,7 +164,7 @@
 
       _createShowAllButton: function() {
         var input = this.input,
-          wasOpen = false;
+        wasOpen = false;
 
         $( "<a>" )
         .attr( "tabIndex", -1 )
@@ -278,9 +253,10 @@
 
     function searchCategory(pageNum){
         var url = "";
-        url = "@routes.Browse.categoryLanding(result.keyword)"
+        url = "@routes.Browse.categoryLanding(result.keyword)";
+        url = url + "?area=" + $("#areaId").text();
         if(pageNum != undefined)
-            url = url + "?page=" + pageNum;
+            url = url + "&page=" + pageNum;
         location.href=url
     }
 

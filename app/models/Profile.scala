@@ -8,6 +8,7 @@ import slick.session.Database
 import Database.threadLocalSession
 import scala.Predef._
 import util.DBHelper
+import play.api.{Logger, Play}
 
 
 /**
@@ -19,6 +20,7 @@ import util.DBHelper
  */
 
 case class Profile(id: String, login: String, password: String, name: String, gender: Option[String], birthDay: Option[Date]) {
+  private val log = Logger(this.getClass)
   lazy val defaultAddress: Option[Address] = DBHelper.database.withSession {
     Query(UserAddresses).where(_.userId === id).where(_.isDefault === true).firstOption match {
       case Some(ua) => Address.findById(ua.addressId)

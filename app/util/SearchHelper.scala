@@ -24,7 +24,7 @@ object SearchHelper {
   lazy val productSearchEngineUrl = Play.current.configuration.getString("solr.product.url").get
   lazy val addressSearchEngineUrl = Play.current.configuration.getString("solr.address.url").get
 
-  def doQuery(parameters: Map[String, String], searchType: Int) = {
+  def doQuery(parameters: Map[String, String], searchType: Int, fqMap: Map[String, String]) = {
     if(log.isDebugEnabled)
       log.debug("query started with parameters " + parameters)
 
@@ -39,6 +39,10 @@ object SearchHelper {
 
       for(key <- parameters.keySet){
         builder.addParameter(key, parameters.get(key).get)
+      }
+
+      for(fq <- fqMap.keySet){
+        builder.addParameter("fq", fq + ":" + fqMap.get(fq).get)
       }
       val uri = builder.build()
       httpGet.setURI(uri)
@@ -55,7 +59,7 @@ object SearchHelper {
     }
   }
 
-  def query(searchType:Int, fieldName: String, fieldValue: String, request: Request[AnyContent]) = {
+  def query(searchType:Int, fieldName: String, fieldValue: String, fqMap: Map[String, String], request: Request[AnyContent]) = {
     val pageParameter = request.queryString.get("page")
     val pageNum: Int = pageParameter match {
       case Some(x) => x.head.toInt - 1
@@ -66,7 +70,7 @@ object SearchHelper {
     val rows = Play.current.configuration.getInt("pagination.quantity").get
     val start = pageNum * rows
     val params = Map("q" -> (fieldName + ":" + fieldValue), "wt" -> "json", "indent" -> "true", "rows" -> rows.toString, "start" -> start.toString)
-    val result = doQuery(params, searchType)
+    val result = doQuery(params, searchType, fqMap)
     if (log.isDebugEnabled)
       log.debug("search result is " + result)
     result
