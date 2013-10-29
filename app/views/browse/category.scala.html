@@ -68,14 +68,14 @@
                 <dd id="store-selector" class="hover">
                     <select id="combobox">
                         @for(area <- Area.allLeaveAreas){
-                            @if(user.isDefined && user.get.defaultArea.isDefined){
-                               <option value="@area.id" title="@area.detail" @(if(area.id == user.get.defaultArea.get.id) "selected")>@area.name</option>
+                            @if(result.areaId.isDefined){
+                               <option value="@area.id" title="@area.detail" @(if(area.id == result.areaId.get) "selected")>@area.name</option>
                             } else {
                                 <option value="@area.id" title="@area.detail" @(if(area.id == play.api.Play.current.configuration.getString("defaultArea").get) "selected")>@area.name</option>
                             }
                         }
                     </select>
-                    <span style="display:none" id="areaId"></span>
+                    <span style="display:none" id="areaId">@result.areaId</span>
                 </dd>
 
             </dl>
@@ -149,6 +149,7 @@
             });
             $("#areaId").text(ui.item.value);
             $(this.input).val(ui.item.label);
+            this._trigger("change");
           },
 
           autocompletefocus: function(event, ui){
@@ -274,7 +275,9 @@
     }
 
     $('#topNav' +  '@result.keyword').addClass("curr");
-    $( "#combobox" ).combobox();
+    $( "#combobox" ).combobox({ change: function() { searchCategory();}});
+    $("#combobox").change(function() {
+    });
 
     //---tooltip
     $( document ).tooltip();

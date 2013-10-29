@@ -12,7 +12,7 @@ import play.api.Logger
  * To change this template use File | Settings | File Templates.
  */
 
-case class SearchResult(numFound: Int, start: Int, pageQty: Int, currentPage: Int, keyword: String, products: Seq[ProductSearchResult])
+case class SearchResult(numFound: Int, start: Int, pageQty: Int, currentPage: Int, keyword: String, areaId: Option[String], products: Seq[ProductSearchResult])
 
 case class ProductSearchResult(id: String, name: String, description: Option[String], longDescription: Option[String], categories: Seq[String], prices: Seq[BigDecimal], imageUrl: String) {
   lazy val priceRange: (BigDecimal, BigDecimal) = {
@@ -59,6 +59,11 @@ object SearchResult {
     val requestParams = jsObject \ "responseHeader" \ "params"
     val numFound = (responseBody \ ("numFound")).as[Int]
     val start = (responseBody \ ("start")).as[Int]
+    val area = (requestParams \ "fq").asOpt[String] match{
+      case Some(areaFq) if(areaFq.startsWith("area.id:")) => Some(areaFq.substring(8))
+      case _ => None
+    }
+
     if (log.isDebugEnabled)
       log.debug("parameters is " + requestParams.toString())
     val rows = (requestParams \ "rows").as[String].toInt
@@ -68,16 +73,15 @@ object SearchResult {
       case _ => numFound / rows + 1
     }
     val keyword = (requestParams \ "q").as[String].split(":")(1)
-
     if (numFound == 0) {
-      SearchResult(numFound, start, 1, 1, keyword, Nil)
+      SearchResult(numFound, start, 1, 1, keyword, area, Nil)
     } else {
       val products = responseBody \ ("docs")
       val productObjects = products.as[Seq[JsObject]]
       val productSearchResults =
         for (product <- productObjects)
         yield ProductSearchResult(product)
-      SearchResult(numFound, start, pageQty, currentPage, keyword, productSearchResults)
+      SearchResult(numFound, start, pageQty, currentPage, keyword, area, productSearchResults)
     }
   }
 }
