@@ -71,23 +71,6 @@ select:focus, input:focus{
 	box-shadow: none;
 }*/
 
-select, input[type="text"], input[type="password"], textarea{
-	border: 1px solid #a5acb2;
-}
-
-input[type="text"], input[type="password"]{
-	padding: 0 3px;
-}
-
-textarea{
-	padding: 3px;
-}
-
-input[name="button"]{
-	border: 0;
-	cursor: pointer;
-}
-
 /* form */
 fieldset > dl + dl{
 	margin-top: 10px;
@@ -168,12 +151,8 @@ fieldset > dl .error{
 }
 
 #mainSection{
-	display: -webkit-box;
-	display: -moz-box;
 	display: box;
 	box-orient: horizontal;
-	-moz-box-orient: horizontal;
-	-webkit-box-orient: horizontal;
 	min-height: 500px;
 }
 
@@ -423,11 +402,19 @@ html, body, div, span, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, ad
     padding: 0;
 }
 
+img{
+   border:none
+}
+
 /** top bar **/
 #topbar {
     width: 100%;
     border-bottom: 1px solid #eee;
     line-height: 30px;
+}
+
+.w{
+    width: 100%;
 }
 
 #topbar .w {
