@@ -38,7 +38,7 @@ object Global extends GlobalSettings {
       //MerchantAdvInfos.ddl.create
 //      Addresses.ddl.create
     //  UserAddresses.ddl.drop
-      UserAddresses.ddl.create
+//      UserAddresses.ddl.create
       //ProductCategories.ddl.create
 //      Categories.ddl.create
 //      CategoryCategories.ddl.drop
@@ -46,6 +46,11 @@ object Global extends GlobalSettings {
 //      Areas.ddl.create
 //      MerchantServiceInfos.ddl.create
 //      MerchantShippingScopes.ddl.create
+      OrderRepo.ddl.create
+      CommerceItemRepo.ddl.create
+      PriceInfoRepo.ddl.create
+      PaymentGroupRepo.ddl.create
+      ShippingGroupRepo.ddl.create
 
 //      CategoryCategories.ddl.create
 

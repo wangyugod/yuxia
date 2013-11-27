@@ -21,7 +21,7 @@ case class Order(id: String, profileId: String, state: Int, priceId: String, cre
 
 case class CommerceItem(id: String, skuId: String, orderId: String, priceId: String, createdTime: Timestamp)
 
-case class PriceInfo(id: String, listPrice: BigDecimal, realPrice: BigDecimal, promoDescription: Option[String])
+case class PriceInfo(id: String, listPrice: BigDecimal, salePrice: BigDecimal, promoDescription: Option[String])
 
 case class PaymentGroup(id: String, name: String, amount: BigDecimal, orderId: String)
 
@@ -55,11 +55,11 @@ object CommerceItemRepo extends Table[CommerceItem]("commerce_item"){
 object PriceInfoRepo extends Table[PriceInfo]("price_info"){
   def id = column[String]("id", O.PrimaryKey)
   def listPrice = column[BigDecimal]("list_price")
-  def realPrice = column[BigDecimal]("real_price")
+  def salePrice = column[BigDecimal]("sale_price")
   def promoDescription = column[Option[String]]("promo_desc")
-  def * = id ~ listPrice ~ realPrice ~ promoDescription <>(
-    (id, listPrice, realPrice, promoDescription) => PriceInfo(id, listPrice, realPrice, promoDescription),
-    (priceInfo: PriceInfo) => Some(priceInfo.id, priceInfo.listPrice, priceInfo.realPrice, priceInfo.promoDescription)
+  def * = id ~ listPrice ~ salePrice ~ promoDescription <>(
+    (id, listPrice, salePrice, promoDescription) => PriceInfo(id, listPrice, salePrice, promoDescription),
+    (priceInfo: PriceInfo) => Some(priceInfo.id, priceInfo.listPrice, priceInfo.salePrice, priceInfo.promoDescription)
     )
 }
 

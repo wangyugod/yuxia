@@ -30,9 +30,10 @@
                 <div class="dd">
                     @for(sku <- product.childSkus){
                     <div class="item">
-                        <a href="#" title="白色">@sku.name</a>
+                        <a href="#" title="@sku.name" onclick="selectSku('@sku.id')">@sku.name</a>
                     </div>
                     }
+                    <span id="selectedSku" style="display:none"></span>
                 </div>
             </li>
             <li id="choose-qty">
@@ -45,6 +46,12 @@
                     </div>
                 </div>
             </li>
+            <li id="choose-btns">
+                <div id="choose-btn-append" class="btnbuy">
+                    <a class="btn-append " id="InitCartUrl" onclick="addToCart()" title="">加入购物车<b></b></a>
+                </div>
+
+            </li>
 
         </ul>
     </div>
@@ -54,5 +61,23 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    function selectSku(skuId){
+        alert("selectedSku is " + skuId);
+        $("#selectedSku").text(skuId);
+    }
+    function addToCart() {
+        var skuId = $("#selectedSku").text();
+        $.ajax({
+            async:true,
+            url:"/cart/add/" + skuId + "/" + $("#buy-num").val(),
+            type:"GET",
+            success: function(result){
+                alert("result is " + result);
+            }
+            }
+        );
+    }
+</script>
 
 }
