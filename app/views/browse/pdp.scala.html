@@ -67,6 +67,7 @@
         $("#selectedSku").text(skuId);
     }
     function addToCart() {
+        alert("quantity is " + $("#buy-num").val());
         var skuId = $("#selectedSku").text();
         $.ajax({
             async:true,

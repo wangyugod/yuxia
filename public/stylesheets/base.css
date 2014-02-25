@@ -1,32 +1,5 @@
-/**********************************************************************************************
 
-Title: ACRS
-Date: August 2012
-
-***********************************************************************************************
-
-1. Reset
-1.1 Basic Form
-
-2. Global Stucture
-2.1 Templete Layout
-	2.1.1 1-Column Layout
-	2.1.2 2-Column Left Layout
-	2.1.3 2-Column Right Layout
-	2.1.4 3-Column Layout
-2.2 Wrapper and Page Container
-2.3 Top Section
-	2.3.1 Keywords
-	2.3.2 breadcrumb
-2.4 Bottom Section
-2.5 Main Navigation and Drop Down Menu Functionality
-
-3. Clear Float
-
-**********************************************************************************************
-
-1. Reset                                                                                    
-============================================================================================*/
+/**/
 body{
     font: 12px/150% Arial,Verdana,"\5b8b\4f53";
     color: #333;
@@ -1855,6 +1828,40 @@ table th {
 #choose .item {
     float: left;
     margin: 2px 8px 2px 0;
+}
+
+#choose .item a:link, #choose .item a:visited {
+    border: 1px solid #ccc;
+    padding: 1px;
+}
+
+#choose-sku .item a:link, #choose-sku .item a:visited {
+    float: left;
+    padding: 4px 6px;
+    background: #fff;
+}
+
+#choose-sku .item a:hover, #choose-sku .item a:active, #choose-sku .selected a:link, #choose-sku .selected a:visited {
+    padding: 3px 5px;
+}
+
+#choose .item a:hover, #choose .item a:active, #choose .selected a:link, #choose .selected a:visited {
+    border: 2px solid #e4393c;
+}
+
+#choose .selected, #choose .disabled {
+    position: relative;
+    zoom: 1;
+}
+
+#choose-sku .dt {
+    margin-top: 8px;
+}
+
+#choose a {
+    display: block;
+    white-space: nowrap;
+    text-decoration: none;
 }
 
 #choose .selected {

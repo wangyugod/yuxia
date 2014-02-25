@@ -7,6 +7,9 @@ import play.api.Play.current
 import slick.session.Database
 import Database.threadLocalSession
 import scala.slick.driver.MySQLDriver.simple._
+import util.{DBHelper, IdGenerator}
+import java.util.Date
+import play.api.Logger
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,13 +18,13 @@ import scala.slick.driver.MySQLDriver.simple._
  * Time: 11:08 PM
  * To change this template use File | Settings | File Templates.
  */
-case class Order(id: String, profileId: String, state: Int, priceId: String, createdTime: Timestamp, modifiedTime: Timestamp) {
+case class Order(id: String, profileId: String, state: Int, priceId: Option[String], createdTime: Timestamp, modifiedTime: Timestamp) {
 
 }
 
 case class CommerceItem(id: String, skuId: String, orderId: String, priceId: String, createdTime: Timestamp)
 
-case class PriceInfo(id: String, listPrice: BigDecimal, salePrice: BigDecimal, promoDescription: Option[String])
+case class PriceInfo(id: String, listPrice: BigDecimal, actualPrice: BigDecimal, promoDescription: Option[String])
 
 case class PaymentGroup(id: String, name: String, amount: BigDecimal, orderId: String)
 
@@ -31,7 +34,7 @@ object OrderRepo extends Table[Order]("order"){
   def id = column[String]("id", O.PrimaryKey)
   def profileId = column[String]("profile_id")
   def state = column[Int]("state")
-  def priceId = column[String]("price_id")
+  def priceId = column[Option[String]]("price_id")
   def createdTime = column[Timestamp]("created_time")
   def modifiedTime = column[Timestamp]("modified_time")
   def * = id ~ profileId ~ state ~ priceId ~ createdTime ~ modifiedTime <> (
@@ -55,11 +58,11 @@ object CommerceItemRepo extends Table[CommerceItem]("commerce_item"){
 object PriceInfoRepo extends Table[PriceInfo]("price_info"){
   def id = column[String]("id", O.PrimaryKey)
   def listPrice = column[BigDecimal]("list_price")
-  def salePrice = column[BigDecimal]("sale_price")
+  def actualPrice = column[BigDecimal]("actual_price")
   def promoDescription = column[Option[String]]("promo_desc")
-  def * = id ~ listPrice ~ salePrice ~ promoDescription <>(
-    (id, listPrice, salePrice, promoDescription) => PriceInfo(id, listPrice, salePrice, promoDescription),
-    (priceInfo: PriceInfo) => Some(priceInfo.id, priceInfo.listPrice, priceInfo.salePrice, priceInfo.promoDescription)
+  def * = id ~ listPrice ~ actualPrice ~ promoDescription <>(
+    (id, listPrice, actualPrice, promoDescription) => PriceInfo(id, listPrice, actualPrice, promoDescription),
+    (priceInfo: PriceInfo) => Some(priceInfo.id, priceInfo.listPrice, priceInfo.actualPrice, priceInfo.promoDescription)
     )
 }
 
@@ -91,20 +94,49 @@ object OrderState{
 
 object Order{
 
+  val log = Logger(this.getClass)
+
   def priceOrder(order: Order) = {
 
 
   }
 
-  def addItem(order: Order, skuId: String, quantity: Int) = {
-
+  /**
+   * Add SKU to order
+   * @param profileId
+   * @param orderId
+   * @param skuId
+   * @param quantity
+   * @return
+   */
+  def addItem(profileId: String, orderId: Option[String], skuId: String, quantity: Int) = {
+    val order = orderId match {
+      case Some(id) =>
+        Query(OrderRepo).where(_.id === orderId).first()
+      case None =>
+        create(profileId)
+    }
+    //GET SKU Price
+    val sku = Product.findSkuById(skuId) match {
+      case Some(sku) => sku
+      case None => throw new java.util.NoSuchElementException(s"SKU with id $skuId cannot be found")
+    }
+    val priceInfo = PriceInfo(IdGenerator.generatePriceInfoId(), sku.listPrice, sku.getPrice, None)
+    val ci = CommerceItem(IdGenerator.generateCommerceItemId(), skuId, order.id, priceInfo.id, new Timestamp(new Date().getTime))
+    DBHelper.database.withTransaction{
+      PriceInfoRepo.insert(priceInfo)
+      CommerceItemRepo.insert(ci)
+    }
+    log.debug(s"SKU $skuId is added to order successfully")
   }
 
-  def newOrder(profileId: String) = {
-
+  def create(profileId: String) = {
+    val order = Order(IdGenerator.generateOrderId(), profileId, OrderState.INITIAL,None, new Timestamp(new Date().getTime()), new Timestamp(new Date().getTime()) )
+    DBHelper.database.withTransaction{
+      OrderRepo.insert(order)
+    }
+    log.debug(s"order is created with id $order.id")
+    order
   }
-
-
-
 
 }

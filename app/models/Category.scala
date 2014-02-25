@@ -228,6 +228,10 @@ object Product {
     Query(Products).where(_.id === id).firstOption
   }
 
+  def findSkuById(id: String) = DBHelper.database.withSession{
+    Query(Skus).where(_.id === id).firstOption
+  }
+
   def delete(id: String) = DBHelper.database.withTransaction {
     Query(ProductCategories).where(_.productId === id).delete
     Query(Skus).where(_.parentProduct === id).delete

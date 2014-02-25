@@ -24,6 +24,7 @@ trait Users {
   val LOGIN_KEY = "user_login"
   val USER_NAME = "user_name"
   val USER_ID = "user_id"
+  val CURR_ORDER_ID = "curr_order_id"
 
   implicit def toUser(implicit session: Session): Option[Profile] = {
     session.get(LOGIN_KEY) match {
@@ -108,7 +109,11 @@ object ProfileController extends Controller with Users with Secured {
         user => {
           val foundUser = Profile.authenticateUser(user._1, user._2)
           if (foundUser.isDefined) {
-            Redirect(routes.Application.index()).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id)
+            val order = Profile.findCurrentOrder(foundUser.get.id)
+            if(order.isDefined)
+              Redirect(routes.Application.index()).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id, CURR_ORDER_ID -> order.get.id)
+            else
+              Redirect(routes.Application.index()).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id)
           } else {
             BadRequest(html.login(loginForm.withError("login.failed", Messages("login.failed.msg"))))
           }
@@ -154,6 +159,7 @@ object ProfileController extends Controller with Users with Secured {
 
   def myAccount = isAuthenticated(
     implicit request =>{
+      log.debug("ORDER ID is " + request.session.get(CURR_ORDER_ID))
       val profile = Profile.findUserByLogin(request.session.get(loginKey).get)
       Ok(html.myaccount.baseinfo(profileUpdateForm.fill(profile.get)))
     }

@@ -83,4 +83,8 @@ object Profile {
     val result = for (p <- Profiles) yield p
     result.list()
   }
+
+  def findCurrentOrder(profileId: String) = DBHelper.database.withSession {
+    Query(OrderRepo).where(_.profileId === profileId).where(_.state === OrderState.INITIAL).firstOption
+  }
 }
