@@ -1871,11 +1871,17 @@ table th {
 
 #choose-qty .wrap-input {
     position: relative;
+    width: 36px;
+    padding: 0 18px;
 }
 
 #choose-qty .btn-reduce {
     left: 0;
     background-position: -216px -190px;
+}
+
+#choose-qty .btn-reduce:hover {
+    background-position:-216px -206px
 }
 
 #choose-qty .btn-add {
@@ -1889,6 +1895,24 @@ table th {
     border: 1px solid #ccc;
     padding: 2px;
     text-align: center;
+}
+
+#choose-qty .btn-add:hover {
+    background-position: -232px -206px;
+}
+
+.spec-control, #store-selector .text b, #choose .selected b, .slogens b, #brand-bar .slogens .fore2, #brand-bar .slogens .fore4, .star, .wrap-input a, #brand-bar .slogens dt, #brand-bar .seller-btn a, .itemover-title button, .topic .icon, #ranklist .tabcon span, #comment .btn-comment, #recomment .master s, .topic-best, .master s, .suits li s, #recommend .infos s, #favorable-suit .infos s, .btn-buy, #product-detail .detail-correction b, div.nav-minicart-buynow a, #consult-search .btn-search, #comments-list .tl, .item-warnning s, .share-list-item a, .share-ft b, #view-bigimg, #tab-services table td .btn-buy, #evaluate s, #evaluate-detail s, .li-img a b, #store-selector .close, .extra-ico, .f-sercvice-list b, .btn-append-extra, .u-name a b, #more-fitting-link b, #summary-countdown s, .m3 .p-info s {
+    background-image:  url(/assets/images/newicon20140218.png);
+    background-repeat: no-repeat;
+}
+
+#choose-qty .wrap-input a {
+    position: absolute;
+    top: 3px;
+    width: 15px;
+    height: 15px;
+    overflow: hidden;
+    line-height: 50px;
 }
 
 #choose #choose-btns {

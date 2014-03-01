@@ -30,7 +30,7 @@
                 <div class="dd">
                     @for(sku <- product.childSkus){
                     <div class="item">
-                        <a href="#" title="@sku.name" onclick="selectSku('@sku.id')">@sku.name</a>
+                        <a href="#" title="@sku.name" onclick="selectSku('@sku.id', $(this))">@sku.name</a>
                     </div>
                     }
                     <span id="selectedSku" style="display:none"></span>
@@ -40,9 +40,9 @@
                 <div class="dt">购买数量：</div>
                 <div class="dd">
                     <div class="wrap-input">
-                        <a class="btn-reduce" href="javascript:;" onclick="setAmount.reduce('#buy-num')">-</a>
-                        <input class="text" id="buy-num" value="1" onkeyup="setAmount.modify('#buy-num');">
-                        <a class="btn-add" href="javascript:;" onclick="setAmount.add('#buy-num')">+</a>
+                        <a class="btn-reduce" href="javascript:;" onclick="reduceQty()">-</a>
+                        <input class="text" id="buy-num" value="1" >
+                        <a class="btn-add" href="javascript:;" onclick="increaseQty()">+</a>
                     </div>
                 </div>
             </li>
@@ -62,9 +62,11 @@
     </div>
 </div>
 <script type="text/javascript">
-    function selectSku(skuId){
-        alert("selectedSku is " + skuId);
+    function selectSku(skuId, obj){
         $("#selectedSku").text(skuId);
+        $(".selected").removeClass("selected");
+        obj.parent().addClass("selected");
+
     }
     function addToCart() {
         alert("quantity is " + $("#buy-num").val());
@@ -78,6 +80,19 @@
             }
             }
         );
+    }
+
+    function reduceQty(){
+        var currentQty = parseInt($("#buy-num").val());
+        if(currentQty != 0){
+            $("#buy-num").val(currentQty - 1)
+        }
+    }
+
+    function increaseQty(){
+        var currentQty = parseInt($("#buy-num").val());
+        $("#buy-num").val(currentQty + 1)
+
     }
 </script>
 
