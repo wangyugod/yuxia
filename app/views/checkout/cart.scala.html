@@ -1,0 +1,14 @@
+@(order: Option[Order])(implicit user:Option[Profile])
+@main(Messages("mycart.title"), user, false) {
+    @order match {
+        case Some(ord) =>{
+            <span>@ord.id</span>
+        }
+        case _ => {
+
+        }
+    }
+
+
+
+}

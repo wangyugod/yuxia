@@ -37,6 +37,9 @@ case class Profile(id: String, login: String, password: String, name: String, ge
     case Some(address) => Area.findById(address.areaId.get)
     case _ => None
   }
+
+  lazy val currentOrder: Option[Order] = Profile.findCurrentOrder(id)
+
 }
 
 object Profiles extends Table[Profile]("user") {

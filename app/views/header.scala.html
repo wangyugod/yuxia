@@ -1,3 +1,4 @@
+@(user:Option[Profile])
 <div id="o-header-2013">
     <div class="w" id="header-2013">
         <div id="logo-2013" class="ld">
@@ -36,10 +37,19 @@
                 </dd>
             </dl>
         </div>
-        <!--my360buy end-->
+        <!--myAccount end-->
         <div id="settleup-2013" >
             <dl>
-                <dt class="ld"><s></s><span class="shopping"><span id="shopping-amount">2</span></span><a href="http://cart.jd.com/cart/cart.html" id="settleup-url">去购物车结算</a> <b></b> </dt>
+                <dt class="ld"><s></s><span class="shopping"><span id="shopping-amount">
+                    @user match {
+                        case Some(us) if (us.currentOrder.isDefined) => {
+                            @us.currentOrder.get.itemSize
+                        }
+                        case _ => {
+                            0
+                        }
+                    }
+                </span></span><a href="@routes.CheckoutController.viewCart" id="settleup-url">去购物车结算</a> <b></b> </dt>
                 <dd>
                     <div class="prompt">
                         <div class="loading-style1"><b></b>0</div>

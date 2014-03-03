@@ -85,7 +85,7 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
           if (foundUser.isDefined) {
             Redirect(routes.InternalManagement.home()).withSession(LOGIN_KEY -> foundUser.get.login, NAME -> foundUser.get.name, ID -> foundUser.get.id)
           } else {
-            BadRequest(html.login(loginForm.withError("login.failed", Messages("login.failed.msg"))))
+            BadRequest(html.admin.login(loginForm.withError("login.failed", Messages("login.failed.msg"))))
           }
         }
       )

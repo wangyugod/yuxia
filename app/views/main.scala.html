@@ -1,4 +1,4 @@
-@(title: String, user:Option[Profile])(content: Html)
+@(title: String, user:Option[Profile], showNav: Boolean = true)(content: Html)
 
 <!DOCTYPE html>
 
@@ -20,8 +20,10 @@
 <div id="wrapper">
     <section id="topSection">
         @topbar(user)
-        @header()
-        @topnav(user)
+        @header(user)
+        @if(showNav){
+            @topnav(user)
+        }
     </section>
     <section id="mainSection">
         <!-- left aside -->

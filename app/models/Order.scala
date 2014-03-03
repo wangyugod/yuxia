@@ -19,10 +19,14 @@ import play.api.Logger
  * To change this template use File | Settings | File Templates.
  */
 case class Order(id: String, profileId: String, state: Int, priceId: Option[String], createdTime: Timestamp, modifiedTime: Timestamp) {
+  lazy val commerceItems = DBHelper.database.withSession{
+    Query(CommerceItemRepo).where(_.orderId === id).list()
+  }
 
+  lazy val itemSize = (commerceItems.map(_.quantity):\0)(_ + _)
 }
 
-case class CommerceItem(id: String, skuId: String, orderId: String, priceId: String, createdTime: Timestamp)
+case class CommerceItem(id: String, skuId: String, orderId: String, priceId: String,quantity: Int, createdTime: Timestamp)
 
 case class PriceInfo(id: String, listPrice: BigDecimal, actualPrice: BigDecimal, promoDescription: Option[String])
 
@@ -48,10 +52,11 @@ object CommerceItemRepo extends Table[CommerceItem]("commerce_item"){
   def skuId = column[String]("sku_id")
   def orderId = column[String]("order_id")
   def priceId = column[String]("price_id")
+  def quantity = column[Int]("quantity")
   def createdTime = column[Timestamp]("created_time")
-  def * = id ~ skuId ~ orderId ~ priceId ~ createdTime <> (
-    (id, skuId, orderId, priceId, createdTime) => CommerceItem(id, skuId, orderId, priceId, createdTime),
-    (ci: CommerceItem) => Some(ci.id, ci.skuId, ci.orderId, ci.priceId, ci.createdTime)
+  def * = id ~ skuId ~ orderId ~ priceId ~ quantity ~ createdTime <> (
+    (id, skuId, orderId, priceId, quantity, createdTime) => CommerceItem(id, skuId, orderId, priceId,quantity, createdTime),
+    (ci: CommerceItem) => Some(ci.id, ci.skuId, ci.orderId, ci.priceId, ci.quantity, ci.createdTime)
     )
 }
 
@@ -109,7 +114,7 @@ object Order{
    * @param quantity
    * @return
    */
-  def addItem(profileId: String, orderId: Option[String], skuId: String, quantity: Int) = {
+  def addItem(profileId: String, orderId: Option[String], skuId: String, quantity: Int) = DBHelper.database.withSession{
     val order = orderId match {
       case Some(id) =>
         Query(OrderRepo).where(_.id === orderId).first()
@@ -122,7 +127,7 @@ object Order{
       case None => throw new java.util.NoSuchElementException(s"SKU with id $skuId cannot be found")
     }
     val priceInfo = PriceInfo(IdGenerator.generatePriceInfoId(), sku.listPrice, sku.getPrice, None)
-    val ci = CommerceItem(IdGenerator.generateCommerceItemId(), skuId, order.id, priceInfo.id, new Timestamp(new Date().getTime))
+    val ci = CommerceItem(IdGenerator.generateCommerceItemId(), skuId, order.id, priceInfo.id,quantity,  new Timestamp(new Date().getTime))
     DBHelper.database.withTransaction{
       PriceInfoRepo.insert(priceInfo)
       CommerceItemRepo.insert(ci)

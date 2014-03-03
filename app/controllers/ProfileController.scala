@@ -73,10 +73,11 @@ object ProfileController extends Controller with Users with Secured {
       }) //verifying("User with the same loign already exists", profile => ProfileService.findUserByLogin(profile.login).isEmpty)
   )
 
-  val loginForm: Form[(String, String)] = Form(
+  val loginForm: Form[(String, String, Option[String])] = Form(
     tuple(
       "login" -> email,
-      "password" -> nonEmptyText
+      "password" -> nonEmptyText,
+      "forwardURL" -> optional(text)
     )
   )
 
@@ -110,14 +111,25 @@ object ProfileController extends Controller with Users with Secured {
           val foundUser = Profile.authenticateUser(user._1, user._2)
           if (foundUser.isDefined) {
             val order = Profile.findCurrentOrder(foundUser.get.id)
-            if(order.isDefined)
-              Redirect(routes.Application.index()).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id, CURR_ORDER_ID -> order.get.id)
-            else
-              Redirect(routes.Application.index()).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id)
+            val forwardUrl = user._3
+            log.debug(s"forwardURL is $user._3")
+            forwardUrl match {
+              case Some(url) =>
+                if(order.isDefined)
+                  Redirect(url).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id, CURR_ORDER_ID -> order.get.id)
+                else
+                  Redirect(url).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id)
+
+              case _ =>
+                if(order.isDefined)
+                  Redirect(routes.Application.index()).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id, CURR_ORDER_ID -> order.get.id)
+                else
+                  Redirect(routes.Application.index()).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id)
+
+            }
           } else {
             BadRequest(html.login(loginForm.withError("login.failed", Messages("login.failed.msg"))))
           }
-
         }
       )
   }

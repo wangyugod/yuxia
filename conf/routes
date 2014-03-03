@@ -47,6 +47,7 @@ GET     /area/child/:id             controllers.Addresses.childAreas(id)
 DELETE  /area/delete/:id            controllers.InternalManagement.deleteArea(id)
 GET     /area/search                controllers.Addresses.searchArea(term: String)
 GET     /cart/add/:skuId/:qty       controllers.CheckoutController.addItemToCart(skuId, qty: Int)
+GET     /cart/view                  controllers.CheckoutController.viewCart()
 
 
 # Map static resources from the /public folder to the /assets URL path

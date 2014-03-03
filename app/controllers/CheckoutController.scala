@@ -3,7 +3,7 @@ package controllers
 import play.api.mvc._
 import play.api._
 import views.html
-import models.Order
+import models.{Profile, Order}
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,6 +18,13 @@ object CheckoutController extends Controller with Users with Secured{
     implicit request => {
       Order.addItem(request.session.get(USER_ID).get, request.session.get(CURR_ORDER_ID), skuId, quantity)
       Ok("Add To Cart with " + skuId + " qty:" + quantity)
+    }
+  }
+
+  def viewCart() = isAuthenticated{
+    implicit request => {
+      val order = Profile.findCurrentOrder(request.session.get(USER_ID).get)
+      Ok(html.checkout.cart(order))
     }
   }
 
