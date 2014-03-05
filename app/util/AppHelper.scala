@@ -5,6 +5,10 @@ import play.api.Play
 import play.api.Play._
 import play.api.i18n.Messages
 
+import models.Product
+import play.api.mvc._
+import play.api._
+
 /**
  * Created with IntelliJ IDEA.
  * User: simonwang
@@ -45,5 +49,9 @@ object AppHelper {
         Messages("srp.price.range", x.setScale(2).toString(), y.setScale(2).toString())
       }
     }
+  }
+
+  def productImage(product: Product) = {
+    controllers.routes.Assets.at("images/product/" + product.imageUrl)
   }
 }

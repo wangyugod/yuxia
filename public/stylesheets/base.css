@@ -1972,3 +1972,182 @@ table th {
     border: 1px solid #ddd;
     margin-bottom: 5px;
 }
+
+/*Shopping Cart*/
+.cart {
+    padding-bottom: 20px;
+}
+.cart .cart-hd {
+    height: 35px;
+}
+.cart-hd {
+    position: relative;
+}
+.cart .cart-hd h2 {
+    width: 100px;
+    float: left;
+}
+.cart h2 {
+    height: 20px;
+    margin-bottom: 15px;
+    line-height: 100px;
+    overflow: hidden;
+    background: url(/assets/images/my_cart_title.png) no-repeat left top;
+}
+
+.cart-inner {
+    border: 1px solid #ddd;
+    border-top: 2px solid #999;
+}
+.cart-inner .cart-thead {
+    height: 35px;
+    background-color: #f7f7f7;
+}
+.clearfix {
+    display: block;
+}
+.cart-thead .t-checkbox {
+    line-height: normal;
+    text-align: left;
+}
+.cart-thead .column {
+    width: 200px;
+    height: 35px;
+    border-right: 1px solid #f7f7f7;
+    float: left;
+    color: #666;
+    line-height: 35px;
+    text-align: center;
+}
+.cart-thead .t-checkbox input {
+    margin: 11px 5px 0 19px;
+    margin: 11px 5px 0 16px\9;
+    display: inline;
+}
+.form label, .form input, .form select, .form textarea, .form button, .form .label {
+    float: left;
+    font-size: 12px;
+}
+.cart-inner .cart-tbody {
+    border-bottom: 1px solid #ddd;
+}
+.cart-tbody .cell {
+    float: left;
+    min-height: 52px;
+    height: auto!important;
+}
+.cart-tbody .p-goods {
+    width: 280px;
+    overflow: hidden;
+}
+.cart-tbody .item_form {
+    height: 52px;
+}
+.cart-tbody .item {
+    border-top: 1px solid #ddd;
+    padding: 10px 0;
+    background-color: #fffdee!important;
+}
+.cart-tbody .item, .cart-tbody .item-meet, .cart-tbody .suit {
+    clear: left;
+}
+
+.cart-tbody .p-name {
+    padding-right: 10px;
+    line-height: 18px;
+}
+.p-name, .p-detail {
+    word-break: break-all;
+    word-wrap: break-word;
+}
+.p-img, .p-name, .p-price, .p-market, .p-detail {
+    overflow: hidden;
+}
+
+.cart-tbody .p-name span {
+    display: block;
+    color: #999;
+    line-height: 18px;
+}
+.cart-tbody .p-img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    padding: 0;
+    float: left;
+    background-color: #fff;
+}
+
+.cart-tbody .p-price, .cart-tbody .p-sum{
+    width: 100px;
+    text-align: center;
+    line-height: 52px;
+}
+.p-price, .p-sum {
+    color: #999;
+}
+
+.cart-tbody .p-quantity {
+    line-height: 52px;
+}
+.cart-tbody .p-quantity, .cart-tbody .p-promotion, .cart-tbody .p-remove {
+    width: 220px;
+    line-height: 52px;
+    text-align: center;
+}
+.cart-tbody .p-quantity .quantity-form {
+    width: 76px;
+    height: 22px;
+    margin: 0 auto;
+    padding-top: 16px;
+    overflow: hidden;
+    text-align: left;
+}
+.p-quantity .quantity-form input {
+    float: left;
+    border: 1px solid #ccc;
+}
+.cart-tbody .quantity-text {
+    width: 34px;
+    height: 18px;
+    border: 1px solid #ddd;
+    border-top-color: #aaa;
+    border-left-color: #aaa;
+    padding-top: 2px;
+    overflow: hidden;
+    text-align: center;
+    background-color: #fff;
+}
+.cart-tbody .p-quantity a.decrement {
+    margin-right: 5px;
+}
+.cart-tbody .p-quantity a.increment {
+    float: right;
+}
+.cart-tbody .p-quantity a {
+    width: 13px;
+    height: 13px;
+    margin-top: 3px;
+    float: left;
+    display: block;
+    overflow: hidden;
+    line-height: 13px;
+    background: #fff;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+.cart-thead .t-goods {
+    width: 280px;
+}
+
+.cart-thead .t-price {
+    width: 100px;
+}
+.cart-thead .t-sum {
+    width: 100px;
+}
+.cart-thead .t-promotion, .cart-thead .t-quantity {
+    width: 221px;
+}

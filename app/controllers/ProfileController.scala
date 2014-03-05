@@ -21,6 +21,7 @@ import vo.AddressVo
  */
 
 trait Users {
+
   val LOGIN_KEY = "user_login"
   val USER_NAME = "user_name"
   val USER_ID = "user_id"
@@ -28,8 +29,12 @@ trait Users {
 
   implicit def toUser(implicit session: Session): Option[Profile] = {
     session.get(LOGIN_KEY) match {
-      case Some(login) => Some(Profile(session.get(USER_ID).get, session.get(LOGIN_KEY).get, "", session.get(USER_NAME).get, None, None))
-      case None => None
+      case Some(login) =>
+        println(s"found login in session $login")
+        Some(Profile(session.get(USER_ID).get, session.get(LOGIN_KEY).get, "", session.get(USER_NAME).get, None, None))
+      case None =>
+        println("No login in session found")
+        None
     }
   }
 }

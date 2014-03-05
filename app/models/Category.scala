@@ -68,6 +68,7 @@ case class CategoryCategory(parentCatId: String, childCatId: String)
 
 case class Sku(id: String, name: String, description: Option[String], skuType: Option[String], productId: String, listPrice: BigDecimal, salePrice: Option[BigDecimal], saleStartDate: Option[Date], saleEndDate: Option[Date], lastUpdatedTime: Timestamp) {
   lazy val price = getPrice
+  lazy val parentProduct = Product.findById(productId).get
   def getPrice: BigDecimal = {
     salePrice match {
       case Some(spr) if (spr < listPrice) => {

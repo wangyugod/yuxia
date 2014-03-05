@@ -1,8 +1,80 @@
 @(order: Option[Order])(implicit user:Option[Profile])
-@main(Messages("mycart.title"), user, false) {
+@main(Messages("cart.mycart.title"), user, false) {
     @order match {
         case Some(ord) =>{
-            <span>@ord.id</span>
+            <div class="w cart">
+                <div class="cart-hd group">
+                    <h2>@Messages("cart.mycart.title")</h2>
+                </div>
+                <div id="show">
+                    <div class="cart-frame">
+                        <div class="tl"></div>
+                        <div class="tr"></div>
+                    </div>
+
+                    <div class="cart-inner">
+                        <div class="cart-thead clearfix">
+                            <div class="column t-goods">商品</div>
+                            <div class="column t-price">单价</div>
+                            <div class="column t-promotion">优惠</div>
+                            <div class="column t-quantity">数量</div>
+                            <div class="column t-sum">小计</div>
+                            <div class="column t-action">操作</div>
+                        </div>
+                        <div id="product-list" class="cart-tbody">
+                            @for(item <- ord.commerceItems){
+                            <div id="ci_@item.id" data-bind="rowid:1" class="item item_selected ">
+                                <div class="item_form clearfix">
+                                    <div class="cell p-goods">
+                                        <div class="p-img"><a href="@routes.Browse.productDetail(item.sku.parentProduct.id)" target="_blank"><img width="52px" height="52px" src="@util.AppHelper.productImage(item.sku.parentProduct)" alt=" "></a></div>
+                                        <div class="p-name"><a href="@routes.Browse.productDetail(item.sku.parentProduct.id)"target="_blank">@(item.sku.parentProduct.name + item.sku.name)</a></div>
+                                    </div>
+                                    <div class="cell p-price"><span class="price">@item.priceInfo.actualPrice</span></div>
+                                    <div class="cell p-promotion">
+
+                                    </div>
+                                    <div class="cell p-quantity" for-stock="for-stock-853067">
+                                        <div class="quantity-form" data-bind="">
+                                            <a href="javascript:void(0);" id="dec_@item.sku.id" onclick="decreaseQuantity(this)" class="decrement" id="decrement-853067-1-1">-</a>
+                                            <input type="text" id="qty_@item.sku.id" class="quantity-text" value="@item.quantity" id="changeQuantity-853067-1-1-0" onblur="updateQuantity(this.id.substring(4))">
+                                            <a href="javascript:void(0);"  id="inc_@item.sku.id" onclick="increaseQuantity(this)" class="increment" clstag="clickcart|keycount|xincart|add1" id="increment-853067-1-1-0">+</a>
+                                        </div>
+                                    </div>
+                                    <div class="cell p-sum"><span class="price">@(item.priceInfo.actualPrice * item.quantity)</span></div>
+                                    <div class="cell p-remove"><a id="rem_@item.id" data-more="removed-7.90-1" class="cart-remove" href="@routes.CheckoutController.removeItem(item.id)">删除</a>
+                                        <!-- modify-pre end  -->
+                                    </div>
+                                </div>
+                            </div>}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <script type="text/javascript">
+            function decreaseQuantity(obj){
+                var skuId = $(obj).attr("id").substring(4);
+                var qty = $("#qty_" + skuId).val();
+                alert("qty old is " + qty);
+                var quantityInt = parseInt(qty);
+                if(quantityInt > 1){
+                    $("#qty_" + skuId).val(quantityInt - 1);
+                    alert("qty is " + $("#qty_" + skuId).val())
+                    updateQuantity(skuId);
+                }
+            }
+
+            function increaseQuantity(obj){
+                var skuId = $(obj).attr("id").substring(4);
+                var qty = $("#qty_" + skuId).val();
+                var quantityInt = parseInt(qty);
+                $("#qty_" + skuId).val(quantityInt + 1);
+                updateQuantity(skuId);
+            }
+
+            function updateQuantity(skuId){
+                location.href = "/cart/update/" + skuId + "/" + $("#qty_" + skuId).val();
+            }
+        </script>
         }
         case _ => {
 

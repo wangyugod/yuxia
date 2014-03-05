@@ -165,4 +165,4 @@ error.message.title=错误提示
 cart.success.message=商品已经成功加入购物车
 view.cart.message=查看购物车
 prompt.title=提示
-mycart.title=我的购物车
+cart.mycart.title=我的购物车

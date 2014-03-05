@@ -19,14 +19,32 @@ import play.api.Logger
  * To change this template use File | Settings | File Templates.
  */
 case class Order(id: String, profileId: String, state: Int, priceId: Option[String], createdTime: Timestamp, modifiedTime: Timestamp) {
-  lazy val commerceItems = DBHelper.database.withSession{
-    Query(CommerceItemRepo).where(_.orderId === id).list()
+  val log = Logger(this.getClass)
+  def commerceItems = DBHelper.database.withSession{
+    val cis = Query(CommerceItemRepo).where(_.orderId === id).list()
+    cis
   }
 
-  lazy val itemSize = (commerceItems.map(_.quantity):\0)(_ + _)
+  def itemSize = (commerceItems.map(_.quantity):\0)(_ + _)
+
+  def removeCommerceItem(itemId: String) = DBHelper.database.withTransaction{
+    if(log.isDebugEnabled)
+      log.debug(s"remove commerceItem with ID $itemId")
+    Query(CommerceItemRepo).where(_.id === itemId).delete
+    reprice
+  }
+
+  def reprice() = Order.priceOrder(this)
 }
 
-case class CommerceItem(id: String, skuId: String, orderId: String, priceId: String,quantity: Int, createdTime: Timestamp)
+case class CommerceItem(id: String, skuId: String, orderId: String, priceId: String,quantity: Int, createdTime: Timestamp){
+  lazy val sku = Product.findSkuById(skuId).get
+  lazy val priceInfo = DBHelper.database.withSession{
+    Query(PriceInfoRepo).where(_.id === priceId).first()
+  }
+  def totalActualPrice = priceInfo.actualPrice * quantity
+  def totalListPrice = priceInfo.listPrice * quantity
+}
 
 case class PriceInfo(id: String, listPrice: BigDecimal, actualPrice: BigDecimal, promoDescription: Option[String])
 
@@ -101,38 +119,76 @@ object Order{
 
   val log = Logger(this.getClass)
 
-  def priceOrder(order: Order) = {
 
-
+  def findOrderById(orderId: String) = DBHelper.database.withSession{
+    Query(OrderRepo).where(_.id === orderId).firstOption
   }
 
   /**
-   * Add SKU to order
+   * Price Order and persist order price information
+   * @param order
+   */
+  def priceOrder(order: Order) = DBHelper.database.withTransaction{
+    val actualPrice = (order.commerceItems.map(_.totalActualPrice):\(BigDecimal(0)))(_ + _)
+    val listPrice = (order.commerceItems.map(_.totalListPrice):\(BigDecimal(0)))(_ + _)
+    log.debug(s"totalActualPrice: $actualPrice, totalListPrice: $listPrice")
+    order.priceId match {
+      case Some(pid) => {
+        Query(PriceInfoRepo).where(_.id === pid).update(PriceInfo(pid, listPrice, actualPrice, None))
+      }
+      case _ => {
+        val priceInfoId = IdGenerator.generatePriceInfoId()
+        PriceInfoRepo.insert(PriceInfo(priceInfoId, listPrice, actualPrice, None))
+        Query(OrderRepo).where(_.id === order.id).update(Order(order.id, order.profileId, order.state, Some(priceInfoId), order.createdTime, new Timestamp(new Date().getTime)))
+      }
+    }
+    log.debug("price order done!")
+  }
+
+  /**
+   * Add SKU to order, if order already contain this SKU, merge it, otherwise add new commerceItem
    * @param profileId
    * @param orderId
    * @param skuId
    * @param quantity
    * @return
    */
-  def addItem(profileId: String, orderId: Option[String], skuId: String, quantity: Int) = DBHelper.database.withSession{
-    val order = orderId match {
-      case Some(id) =>
-        Query(OrderRepo).where(_.id === orderId).first()
-      case None =>
-        create(profileId)
+  def addItem(profileId: String, orderId: Option[String], skuId: String, quantity: Int) = {
+    val order = DBHelper.database.withTransaction{
+      if(log.isDebugEnabled)
+        log.debug(s"add new item with skuId $skuId, quantity $quantity")
+      val order = orderId match {
+        case Some(id) =>
+          log.debug(s"Found existed order with id $orderId")
+          Query(OrderRepo).where(_.id === orderId).first()
+        case None =>
+          log.debug(s"No order found, create new!")
+          create(profileId)
+      }
+      //GET SKU Price
+      val sku = Product.findSkuById(skuId) match {
+        case Some(sku) => sku
+        case None => throw new java.util.NoSuchElementException(s"SKU with id $skuId cannot be found")
+      }
+      val existedCi = order.commerceItems.filter(_.skuId == skuId).headOption
+      existedCi match {
+        case Some(ci) =>
+          //Merge existed commerceItem
+          log.debug(s"found existed commerce item")
+          val commerceItem = CommerceItem(ci.id, ci.skuId, order.id, ci.priceInfo.id,quantity, new Timestamp(new Date().getTime))
+          Query(CommerceItemRepo).where(_.id === ci.id).update(commerceItem)
+        case _ =>
+          //Add new commerceItem
+          log.debug(s"No existed item found, add new!")
+          val priceInfo = PriceInfo(IdGenerator.generatePriceInfoId(), sku.listPrice, sku.price, None)
+          val commerceItem = CommerceItem(IdGenerator.generateCommerceItemId(), skuId, order.id, priceInfo.id,quantity,  new Timestamp(new Date().getTime))
+          PriceInfoRepo.insert(priceInfo)
+          CommerceItemRepo.insert(commerceItem)
+      }
+      order
     }
-    //GET SKU Price
-    val sku = Product.findSkuById(skuId) match {
-      case Some(sku) => sku
-      case None => throw new java.util.NoSuchElementException(s"SKU with id $skuId cannot be found")
-    }
-    val priceInfo = PriceInfo(IdGenerator.generatePriceInfoId(), sku.listPrice, sku.getPrice, None)
-    val ci = CommerceItem(IdGenerator.generateCommerceItemId(), skuId, order.id, priceInfo.id,quantity,  new Timestamp(new Date().getTime))
-    DBHelper.database.withTransaction{
-      PriceInfoRepo.insert(priceInfo)
-      CommerceItemRepo.insert(ci)
-    }
-    log.debug(s"SKU $skuId is added to order successfully")
+    order.reprice
+    order
   }
 
   def create(profileId: String) = {
@@ -143,5 +199,7 @@ object Order{
     log.debug(s"order is created with id $order.id")
     order
   }
+
+
 
 }
