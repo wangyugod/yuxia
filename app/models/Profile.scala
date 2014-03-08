@@ -4,8 +4,6 @@ import scala.slick.driver.MySQLDriver.simple._
 import java.sql.Date
 import play.api.db.DB
 import play.api.Play.current
-import slick.session.Database
-import Database.threadLocalSession
 import scala.Predef._
 import util.DBHelper
 import play.api.{Logger, Play}
@@ -22,15 +20,17 @@ import play.api.{Logger, Play}
 case class Profile(id: String, login: String, password: String, name: String, gender: Option[String], birthDay: Option[Date]) {
   private val log = Logger(this.getClass)
   lazy val defaultAddress: Option[Address] = DBHelper.database.withSession {
-    Query(UserAddresses).where(_.userId === id).where(_.isDefault === true).firstOption match {
-      case Some(ua) => Address.findById(ua.addressId)
-      case _ => {
-        Query(UserAddresses).where(_.userId === id).firstOption match {
-          case Some(userAddr) => Address.findById(userAddr.addressId)
-          case _ => None
+    implicit session =>
+      val userAddressQuery = TableQuery[UserAddresses]
+      userAddressQuery.where(_.userId === id).where(_.isDefault === true).firstOption match {
+        case Some(ua) => Address.findById(ua.addressId)
+        case _ => {
+          userAddressQuery.where(_.userId === id).firstOption match {
+            case Some(userAddr) => Address.findById(userAddr.addressId)
+            case _ => None
+          }
         }
       }
-    }
   }
 
   lazy val defaultArea: Option[Area] = defaultAddress match {
@@ -42,7 +42,7 @@ case class Profile(id: String, login: String, password: String, name: String, ge
 
 }
 
-object Profiles extends Table[Profile]("user") {
+class Profiles(tag: Tag) extends Table[Profile](tag, "user") {
   def id = column[String]("id", O.PrimaryKey)
 
   def login = column[String]("login")
@@ -55,39 +55,42 @@ object Profiles extends Table[Profile]("user") {
 
   def birthday = column[Option[Date]]("birthday")
 
-  def * = id ~ login ~ password ~ name ~ gender ~ birthday <>(
-    (id, login, password, name, gender, birthday) => Profile(id, login, password, name, gender, birthday),
-    (p: Profile) => Some(p.id, p.login, p.password, p.name, p.gender, p.birthDay)
-    )
+  def * = (id, login, password, name, gender, birthday) <>(Profile.tupled, Profile.unapply)
 }
 
-object Profile {
+object Profile extends ((String, String, String, String, Option[String], Option[Date]) => Profile) {
+  private val profileQuery = TableQuery[Profiles]
+
   def createUser(user: Profile) = DBHelper.database.withTransaction {
-    Profiles.insert(user)
+    implicit session =>
+      profileQuery.insert(user)
   }
 
   def updateUser(user: Profile) = DBHelper.database.withTransaction {
-    Profiles.where(_.id === user.id).update(user)
+    implicit session =>
+      profileQuery.where(_.id === user.id).update(user)
   }
 
-  def authenticateUser(login: String, password: String) = {
-    DBHelper.database.withSession {
-      val result = for (p <- Profiles if (p.login === login && p.password === password)) yield p
+  def authenticateUser(login: String, password: String) = DBHelper.database.withSession {
+    implicit session =>
+      val result = for (p <- profileQuery if (p.login === login && p.password === password)) yield p
       result.firstOption()
-    }
   }
 
   def findUserByLogin(login: String): Option[Profile] = DBHelper.database.withSession {
-    val result = for (p <- Profiles if (p.login === login)) yield p
-    result.firstOption()
+    implicit session =>
+      val result = for (p <- profileQuery if (p.login === login)) yield p
+      result.firstOption()
   }
 
   def findAllUsers() = DBHelper.database.withSession {
-    val result = for (p <- Profiles) yield p
-    result.list()
+    implicit session =>
+      val result = for (p <- profileQuery) yield p
+      result.list()
   }
 
   def findCurrentOrder(profileId: String) = DBHelper.database.withSession {
-    Query(OrderRepo).where(_.profileId === profileId).where(_.state === OrderState.INITIAL).firstOption
+    implicit session =>
+      TableQuery[OrderRepo].where(_.profileId === profileId).where(_.state === OrderState.INITIAL).firstOption
   }
 }

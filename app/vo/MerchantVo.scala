@@ -39,16 +39,17 @@ case class MerchantVo(id: Option[String], login: String, name: String, descripti
 
 object MerchantVo {
   def apply(merchant: Merchant): MerchantVo = DBHelper.database.withSession {
-    val advMerchant = merchant.advancedInfo
-    advMerchant match {
-      case Some(am) => {
-        val address = am.address
-        MerchantVo(Some(merchant.id), merchant.login, merchant.name, merchant.description, am.merchNum, am.artificialPerson, am.artPerCert, Some(am.addressId), address.province, address.city, address.district, address.contactPhone, address.addressLine, address.contactPerson)
+    implicit session =>
+      val advMerchant = merchant.advancedInfo
+      advMerchant match {
+        case Some(am) => {
+          val address = am.address
+          MerchantVo(Some(merchant.id), merchant.login, merchant.name, merchant.description, am.merchNum, am.artificialPerson, am.artPerCert, Some(am.addressId), address.province, address.city, address.district, address.contactPhone, address.addressLine, address.contactPerson)
+        }
+        case _ => {
+          MerchantVo(Some(merchant.id), merchant.login, merchant.name, merchant.description, None, "", "", None, "", "", "", "", "", "")
+        }
       }
-      case _ => {
-        MerchantVo(Some(merchant.id), merchant.login, merchant.name, merchant.description, None, "", "", None, "", "", "", "", "", "")
-      }
-    }
   }
 }
 

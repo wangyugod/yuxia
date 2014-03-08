@@ -41,7 +41,7 @@
                                         </div>
                                     </div>
                                     <div class="cell p-sum"><span class="price">@(item.priceInfo.actualPrice * item.quantity)</span></div>
-                                    <div class="cell p-remove"><a id="rem_@item.id" data-more="removed-7.90-1" class="cart-remove" href="@routes.CheckoutController.removeItem(item.id)">删除</a>
+                                    <div class="cell p-remove"><a id="rem_@item.id" class="cart-remove" href="javascript:void(0)" onclick="deleteItem('@item.id')">删除</a>
                                         <!-- modify-pre end  -->
                                     </div>
                                 </div>
@@ -50,6 +50,9 @@
                     </div>
                 </div>
             </div>
+        <div id="deleteConfirmMessage" style="display: none">
+            <span>@Messages("cart.item.delete.message")</span>
+        </div>
         <script type="text/javascript">
             function decreaseQuantity(obj){
                 var skuId = $(obj).attr("id").substring(4);
@@ -73,6 +76,28 @@
 
             function updateQuantity(skuId){
                 location.href = "/cart/update/" + skuId + "/" + $("#qty_" + skuId).val();
+            }
+
+            function deleteItem(itemId){
+                alert("deleteItem");
+                $('#deleteConfirmMessage').dialog({
+                    title: '@Messages("prompt.title")',
+                    resizable: false,
+                    height:140,
+                    modal: true,
+                    open:function(event, ui){
+                        $(".ui-dialog-titlebar-close", $(this).parent()).hide();
+                    },
+                    closeOnEscape: false,
+                    buttons: {
+                        "@Messages("ok.button")": function() {
+                            location.href = "/cart/remove/" + itemId;
+                        },
+                        "@Messages("cancel.button")": function() {
+                            $(this).dialog( "close" );
+                        }
+                    }
+                });
             }
         </script>
         }

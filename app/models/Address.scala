@@ -1,8 +1,6 @@
 package models
 
 import scala.slick.driver.MySQLDriver.simple._
-import slick.session.Database
-import Database.threadLocalSession
 import slick.jdbc.{GetResult, StaticQuery => Q}
 import java.sql.Timestamp
 import util.DBHelper
@@ -18,16 +16,17 @@ import play.api.Logger
 
 case class Area(id: String, name: String, detail: String, parentAreaId: Option[String], lastUpdatedTime: Timestamp) {
   lazy val parentArea = DBHelper.database.withSession {
-    parentAreaId match {
-      case Some(parentId) => Area.findById(parentId)
-      case _ => None
-    }
+    implicit session =>
+      parentAreaId match {
+        case Some(parentId) => Area.findById(parentId)
+        case _ => None
+      }
   }
 
   lazy val isRoot = parentAreaId.isEmpty
 }
 
-object Areas extends Table[Area]("area") {
+class Areas(tag: Tag) extends Table[Area](tag, "area") {
   def id = column[String]("id", O.PrimaryKey)
 
   def name = column[String]("name")
@@ -38,55 +37,51 @@ object Areas extends Table[Area]("area") {
 
   def lastUpdatedTime = column[Timestamp]("last_updated_time")
 
-  def * = id ~ name ~ detail ~ parentAreaId ~ lastUpdatedTime <>(
-    (id, name, detail, parentAreaId, lastUpdateTime) => Area(id, name, detail, parentAreaId, lastUpdateTime),
-    (area: Area) => Some(area.id, area.name, area.detail, area.parentAreaId, area.lastUpdatedTime)
-    )
+  def * = (id, name, detail, parentAreaId, lastUpdatedTime) <>(Area.tupled, Area.unapply)
 }
 
 
 case class Address(id: String, province: String, city: String, district: String, contactPhone: String, addressLine: String, contactPerson: String, areaId: Option[String]) {
   lazy val area = DBHelper.database.withSession {
-    areaId match {
-      case Some(id) => Area.findById(id)
-      case _ => None
-    }
+    implicit session =>
+      areaId match {
+        case Some(id) => Area.findById(id)
+        case _ => None
+      }
   }
 
   lazy val isDefault = DBHelper.database.withSession {
-    Query(UserAddresses).where(_.addrId === id).firstOption match {
+    implicit session =>
+    TableQuery[UserAddresses].where(_.addrId === id).firstOption match {
       case Some(ua) => ua.isDefault
       case _ => None
     }
   }
 }
 
-object Addresses extends Table[Address]("address") {
-  def id = column[String]("id", O.PrimaryKey)
+class Addresses(tag: Tag) extends Table[Address](tag, "address") {
+def id = column[String] ("id", O.PrimaryKey)
 
-  def province = column[String]("province")
+def province = column[String] ("province")
 
-  def city = column[String]("city")
+def city = column[String] ("city")
 
-  def district = column[String]("district")
+def district = column[String] ("district")
 
-  def phone = column[String]("phone")
+def phone = column[String] ("phone")
 
-  def addressLine = column[String]("address_line")
+def addressLine = column[String] ("address_line")
 
-  def contactPerson = column[String]("receiver_name")
+def contactPerson = column[String] ("receiver_name")
 
-  def areaId = column[Option[String]]("area_id")
+def areaId = column[Option[String]] ("area_id")
 
-  def * = id ~ province ~ city ~ district ~ phone ~ addressLine ~ contactPerson ~ areaId <>(
-    (id, province, city, district, phone, addressLine, contactPerson, areaId) => Address(id, province, city, district, phone, addressLine, contactPerson, areaId),
-    (addr: Address) => Some(addr.id, addr.province, addr.city, addr.district, addr.contactPhone, addr.addressLine, addr.contactPerson, addr.areaId)
-    )
+def * = (id, province, city, district, phone, addressLine, contactPerson, areaId) <> (Address.tupled, Address.unapply)
 }
 
 case class UserAddress(userId: String, addressId: String, isDefault: Option[Boolean])
 
-object UserAddresses extends Table[UserAddress]("user_addr") {
+class UserAddresses(tag: Tag) extends Table[UserAddress](tag, "user_addr") {
   def userId = column[String]("user_id")
 
   def addrId = column[String]("address_id")
@@ -95,113 +90,127 @@ object UserAddresses extends Table[UserAddress]("user_addr") {
 
   def pk = primaryKey("user_addr_pk", (userId, addrId))
 
-  def * = userId ~ addrId ~ isDefault <>(UserAddress, UserAddress.unapply(_))
+  def * = (userId, addrId, isDefault) <>(UserAddress.tupled, UserAddress.unapply)
 }
 
-object Area {
+object Area extends ((String, String, String, Option[String], Timestamp) => Area) {
   private val log = Logger(this.getClass())
   implicit val getAreaResult = GetResult(r => Area(r.<<, r.<<, r.<<, r.<<, r.<<))
 
   def all() = DBHelper.database.withSession {
-    Query(Areas).list()
+    implicit session =>
+      TableQuery[Areas].list()
   }
 
   def rootAreas() = DBHelper.database.withSession {
-    Query(Areas).where(_.parentAreaId isNull).list()
+    implicit session =>
+      TableQuery[Areas].where(_.parentAreaId isNull).list()
   }
 
   def findById(id: String) = DBHelper.database.withSession {
-    Query(Areas).where(_.id === id).firstOption
+    implicit session =>
+      TableQuery[Areas].where(_.id === id).firstOption
   }
 
   def findByIds(ids: Seq[String]) = DBHelper.database.withSession {
-    Query(Areas).where(_.id inSetBind (ids)).list()
+    implicit session =>
+      TableQuery[Areas].where(_.id inSetBind (ids)).list()
   }
 
   def saveOrUpdate(area: Area) = DBHelper.database.withTransaction {
-    findById(area.id) match {
-      case Some(a) => Query(Areas).where(_.id === area.id).update(area)
-      case _ => Areas.insert(area)
-    }
+    implicit session =>
+      findById(area.id) match {
+        case Some(a) => TableQuery[Areas].where(_.id === area.id).update(area)
+        case _ => TableQuery[Areas].insert(area)
+      }
   }
 
-  def allLeaveAreas() = DBHelper.database.withSession{
-    val result = Q.queryNA[Area]("select * from area a where not exists (select * from area b where b.parent_area_id  = a.id)").list()
-    if(log.isDebugEnabled){
-      log.debug("leave areas is:" + result)
-    }
-    result
+  def allLeaveAreas() = DBHelper.database.withSession {
+    implicit session =>
+      val result = Q.queryNA[Area]("select * from area a where not exists (select * from area b where b.parent_area_id  = a.id)").list()
+      if (log.isDebugEnabled) {
+        log.debug("leave areas is:" + result)
+      }
+      result
   }
 
   def childAreas(id: String) = DBHelper.database.withSession {
-    Query(Areas).where(_.parentAreaId === id).list()
+    implicit session =>
+      TableQuery[Areas].where(_.parentAreaId === id).list()
   }
 
   def delete(id: String) = DBHelper.database.withTransaction {
-    Query(Areas).where(_.id === id).delete
+    implicit session =>
+      TableQuery[Areas].where(_.id === id).delete
   }
 }
 
-object Address {
+object Address extends ((String, String, String, String, String, String, String, Option[String]) => Address){
   private val log = Logger(this.getClass())
+  private val addressQuery = TableQuery[Addresses]
+  private val userAddressQuery = TableQuery[UserAddresses]
 
   def userAddresses(userId: String) = DBHelper.database.withSession {
-    val addIds = for (ua <- UserAddresses if ua.userId === userId) yield ua.addrId
-    val addressIds = addIds.list()
-    if (log.isDebugEnabled)
-      log.debug("found addressId :" + addressIds)
-    Query(Addresses).where(_.id inSetBind (addressIds)).list()
+    implicit session =>
+      val addIds = for (ua <- userAddressQuery if ua.userId === userId) yield ua.addrId
+      val addressIds = addIds.list()
+      if (log.isDebugEnabled)
+        log.debug("found addressId :" + addressIds)
+      addressQuery.where(_.id inSetBind (addressIds)).list()
   }
 
   def findById(id: String) = DBHelper.database.withSession {
-    Query(Addresses).where(_.id === id).firstOption
+    implicit session =>
+      addressQuery.where(_.id === id).firstOption
   }
 
   def saveOrUpdate(userId: String, address: Address, isDefaultAddress: Boolean) = DBHelper.database.withTransaction {
-    val userAddresses = Query(UserAddresses).where(_.userId === userId).list()
-    findById(address.id) match {
-      case Some(addr) => {
-        Query(Addresses).where(_.id === address.id).update(address)
-        val originalUA = Query(UserAddresses).where(_.userId === userId).where(_.addrId === address.id)
-        if (isDefaultAddress && !originalUA.first().isDefault.getOrElse(false)) {
-          val originalDefaultAddress = Query(UserAddresses).where(_.userId === userId).where(_.isDefault === true)
-          if (log.isDebugEnabled)
-            log.debug("Should update current address to default address, and update original default to non default")
-          if (originalDefaultAddress.firstOption.isDefined)
-            originalDefaultAddress.update(UserAddress(userId, originalDefaultAddress.first.addressId, Some(false)))
-          originalUA.update(UserAddress(userId, address.id, Some(true)))
-        } else if (!isDefaultAddress && originalUA.first().isDefault.get) {
-          if (log.isDebugEnabled)
-            log.debug("change current default address to non default")
-          originalUA.update(UserAddress(userId, address.id, Some(false)))
-        }
-      }
-      case _ => {
-        Addresses.insert(address)
-        if (userAddresses.isEmpty) {
-          if (log.isDebugEnabled)
-            log.debug("This is the first address of customer, set it to default address")
-          UserAddresses.insert(UserAddress(userId, address.id, Some(true)))
-        } else if (isDefaultAddress) {
-          if (log.isDebugEnabled)
-            log.debug("set current inserted address as default address, and make original non-default")
-          val originalDefaultAddress = Query(UserAddresses).where(_.userId === userId).where(_.isDefault === true)
-          if (originalDefaultAddress.firstOption.isDefined) {
-            originalDefaultAddress.update(UserAddress(userId, originalDefaultAddress.firstOption.get.addressId, Some(false)))
+    implicit session =>
+      val userAddresses = userAddressQuery.where(_.userId === userId).list()
+      findById(address.id) match {
+        case Some(addr) => {
+          addressQuery.where(_.id === address.id).update(address)
+          val originalUA = userAddressQuery.where(_.userId === userId).where(_.addrId === address.id)
+          if (isDefaultAddress && !originalUA.first().isDefault.getOrElse(false)) {
+            val originalDefaultAddress = userAddressQuery.where(_.userId === userId).where(_.isDefault === true)
+            if (log.isDebugEnabled)
+              log.debug("Should update current address to default address, and update original default to non default")
+            if (originalDefaultAddress.firstOption.isDefined)
+              originalDefaultAddress.update(UserAddress(userId, originalDefaultAddress.first.addressId, Some(false)))
+            originalUA.update(UserAddress(userId, address.id, Some(true)))
+          } else if (!isDefaultAddress && originalUA.first().isDefault.get) {
+            if (log.isDebugEnabled)
+              log.debug("change current default address to non default")
+            originalUA.update(UserAddress(userId, address.id, Some(false)))
           }
-          UserAddresses.insert(UserAddress(userId, address.id, Some(true)))
-        } else {
-          if (log.isDebugEnabled)
-            log.debug("not default address!")
-          UserAddresses.insert(UserAddress(userId, address.id, Some(false)))
+        }
+        case _ => {
+          addressQuery.insert(address)
+          if (userAddresses.isEmpty) {
+            if (log.isDebugEnabled)
+              log.debug("This is the first address of customer, set it to default address")
+            userAddressQuery.insert(UserAddress(userId, address.id, Some(true)))
+          } else if (isDefaultAddress) {
+            if (log.isDebugEnabled)
+              log.debug("set current inserted address as default address, and make original non-default")
+            val originalDefaultAddress = userAddressQuery.where(_.userId === userId).where(_.isDefault === true)
+            if (originalDefaultAddress.firstOption.isDefined) {
+              originalDefaultAddress.update(UserAddress(userId, originalDefaultAddress.firstOption.get.addressId, Some(false)))
+            }
+            userAddressQuery.insert(UserAddress(userId, address.id, Some(true)))
+          } else {
+            if (log.isDebugEnabled)
+              log.debug("not default address!")
+            userAddressQuery.insert(UserAddress(userId, address.id, Some(false)))
+          }
         }
       }
-    }
   }
 
   def deleteUserAddress(userId: String, addressId: String) = DBHelper.database.withTransaction {
-    Query(UserAddresses).where(_.userId === userId).where(_.addrId === addressId).delete
-    Query(Addresses).where(_.id === addressId).delete
+    implicit session =>
+      userAddressQuery.where(_.userId === userId).where(_.addrId === addressId).delete
+      addressQuery.where(_.id === addressId).delete
   }
 }
 

@@ -5,8 +5,6 @@ import util.DBHelper
 import scala.Predef._
 import play.api.db.DB
 import play.api.Play.current
-import slick.session.Database
-import Database.threadLocalSession
 import scala.slick.driver.MySQLDriver.simple._
 import java.util.Calendar
 
@@ -19,17 +17,22 @@ import java.util.Calendar
  */
 case class Category(id: String, name: String, description: String, longDescription: String, isTopNav: Boolean) {
   def childCategories: Seq[Category] = DBHelper.database.withSession {
-    val childCatQuery = for (cc <- CategoryCategories if cc.parentCatId === id) yield cc.childCatId
-    Query(Categories).where(_.id inSetBind childCatQuery.list()).list()
+    implicit session =>
+      val catcat = TableQuery[CategoryCategories]
+      //      val childCatQuery = for (cc <- catcat if cc.parentCatId === id) yield cc.childCatId
+      val childCatIds = catcat.filter(_.parentCatId === id).list().map(_.childCatId)
+      TableQuery[Categories].where(_.id inSetBind childCatIds).list()
   }
 
   def parentCategory = DBHelper.database.withSession {
-    val parentCategoryQuery = for (cc <- CategoryCategories if cc.childCatId === id) yield cc.parentCatId
-    val parentCatOpt: Option[String] = parentCategoryQuery.firstOption
-    parentCatOpt match {
-      case Some(catId) => Query(Categories).where(_.id === catId).firstOption
-      case None => None
-    }
+    implicit session =>
+      val catcat = TableQuery[CategoryCategories]
+      val parentCategoryQuery = for (cc <- catcat if cc.childCatId === id) yield cc.parentCatId
+      val parentCatOpt: Option[String] = parentCategoryQuery.firstOption
+      parentCatOpt match {
+        case Some(catId) => TableQuery[Categories].where(_.id === catId).firstOption
+        case None => None
+      }
   }
 
   def isRoot = parentCategory.isEmpty
@@ -41,24 +44,28 @@ case class Product(id: String, name: String, description: String, longDescriptio
   lazy val priceRange = getPriceRange
 
   def getCategories: Seq[Category] = DBHelper.database.withSession {
-    val categories = for (pc <- ProductCategories if (pc.productId === id))
-    yield pc.categoryId
-    categories.list() match {
-      case Nil => Nil
-      case list => Query(Categories).where(_.id inSetBind (list)).list()
-    }
+    implicit session =>
+      val productCategory = TableQuery[ProductCategories]
+      val categories = for (pc <- productCategory if (pc.productId === id)) yield pc.categoryId
+      categories.list() match {
+        case Nil => Nil
+        case list => TableQuery[Categories].where(_.id inSetBind (list)).list()
+      }
   }
 
+
   def getChildSkus: Seq[Sku] = DBHelper.database.withSession {
-    Query(Skus).where(_.parentProduct === id).list()
+    implicit session =>
+      TableQuery[Skus].where(_.parentProduct === id).list()
   }
 
   def getPriceRange: (BigDecimal, BigDecimal) = DBHelper.database.withSession {
-    val sortedSkus = childSkus.sortWith((sku1, sku2) => {
-      sku1.price < sku2.price
-    })
-    println("sorted sku is " + sortedSkus)
-    (sortedSkus.head.price, sortedSkus.reverse.head.price)
+    implicit session =>
+      val sortedSkus = childSkus.sortWith((sku1, sku2) => {
+        sku1.price < sku2.price
+      })
+      println("sorted sku is " + sortedSkus)
+      (sortedSkus.head.price, sortedSkus.reverse.head.price)
   }
 }
 
@@ -69,6 +76,7 @@ case class CategoryCategory(parentCatId: String, childCatId: String)
 case class Sku(id: String, name: String, description: Option[String], skuType: Option[String], productId: String, listPrice: BigDecimal, salePrice: Option[BigDecimal], saleStartDate: Option[Date], saleEndDate: Option[Date], lastUpdatedTime: Timestamp) {
   lazy val price = getPrice
   lazy val parentProduct = Product.findById(productId).get
+
   def getPrice: BigDecimal = {
     salePrice match {
       case Some(spr) if (spr < listPrice) => {
@@ -94,7 +102,7 @@ case class ProductSku(skuId: String, productId: String)
 case class Media(id: String, name: String, description: String, url: String)
 
 
-object Products extends Table[Product]("product") {
+class Products(tag: Tag) extends Table[Product](tag, "product") {
   def id = column[String]("id", O.PrimaryKey)
 
   def name = column[String]("name")
@@ -113,23 +121,20 @@ object Products extends Table[Product]("product") {
 
   def lastUpdatedTime = column[Timestamp]("last_updated_time")
 
-  def * = id ~ name ~ description ~ longDescription ~ startDate ~ endDate ~ merchantId ~ imageUrl ~ lastUpdatedTime <>(
-    (id, name, description, longDescription, startDate, endDate, merchantId, imageUrl, lastUpdatedTime) => Product(id, name, description, longDescription, startDate, endDate, merchantId, imageUrl, lastUpdatedTime),
-    (p: Product) => Some(p.id, p.name, p.description, p.longDescription, p.startDate, p.endDate, p.merchantId, p.imageUrl, p.lastUpdatedTime)
-    )
+  def * = (id, name, description, longDescription, startDate, endDate, merchantId, imageUrl, lastUpdatedTime) <>(Product.tupled, Product.unapply)
 }
 
-object ProductCategories extends Table[ProductCategory]("product_category") {
+class ProductCategories(tag: Tag) extends Table[ProductCategory](tag, "product_category") {
   def productId = column[String]("prod_id")
 
   def categoryId = column[String]("category_id")
 
-  def * = productId ~ categoryId <>(ProductCategory, ProductCategory.unapply(_))
+  def * = (productId, categoryId) <>(ProductCategory.tupled, ProductCategory.unapply)
 
   def pk = primaryKey("prod_cat_pk", (productId, categoryId))
 }
 
-object Categories extends Table[Category]("category") {
+class Categories(tag: Tag) extends Table[Category](tag, "category") {
   def id = column[String]("id", O.PrimaryKey)
 
   def name = column[String]("name")
@@ -140,13 +145,10 @@ object Categories extends Table[Category]("category") {
 
   def isTopNav = column[Boolean]("top_nav_flag")
 
-  def * = id ~ name ~ description ~ longDescription ~ isTopNav <> (
-    (id, name, description, longDescription, isTopNav) => Category(id, name, description, longDescription, isTopNav),
-    (cat: Category) => Some(cat.id, cat.name, cat.description, cat.longDescription, cat.isTopNav)
-    )
+  def * = (id, name, description, longDescription, isTopNav) <>(Category.tupled, Category.unapply)
 }
 
-object Skus extends Table[Sku]("sku") {
+class Skus(tag: Tag) extends Table[Sku](tag, "sku") {
   def id = column[String]("id", O.PrimaryKey)
 
   def name = column[String]("name")
@@ -167,111 +169,122 @@ object Skus extends Table[Sku]("sku") {
 
   def lastUpdatedTime = column[Timestamp]("last_updated_time")
 
-  def * = id ~ name ~ description ~ skuType ~ parentProduct ~ listPrice ~ salePrice ~ saleStartDate ~ saleEndDate ~ lastUpdatedTime <>(
-    (id, name, description, skuType, parentProduct, listPrice, salePrice, saleStartDate, saleEndDate, lastUpdatedTime) => Sku(id, name, description, skuType, parentProduct, listPrice, salePrice, saleStartDate, saleEndDate, lastUpdatedTime),
-    (sku: Sku) => Some(sku.id, sku.name, sku.description, sku.skuType, sku.productId, sku.listPrice, sku.salePrice, sku.saleStartDate, sku.saleEndDate, sku.lastUpdatedTime)
-    )
+  def * = (id, name, description, skuType, parentProduct, listPrice, salePrice, saleStartDate, saleEndDate, lastUpdatedTime) <>(Sku.tupled, Sku.unapply)
 }
 
-object CategoryCategories extends Table[CategoryCategory]("category_category") {
+class CategoryCategories(tag: Tag) extends Table[CategoryCategory](tag, "category_category") {
   def parentCatId = column[String]("parent_cat_id")
 
   def childCatId = column[String]("child_cat_id")
 
-  def * = parentCatId ~ childCatId <>(CategoryCategory, CategoryCategory.unapply(_))
+  def * = (parentCatId, childCatId) <>(CategoryCategory.tupled, CategoryCategory.unapply)
 
   def pk = primaryKey("cat_cat_pk", (parentCatId, childCatId))
 }
 
-object Product {
+object Product extends ((String, String, String, String, Option[Date], Option[Date], String, String, Timestamp) => Product) {
   def create(p: Product, categoryIds: Seq[String], childSkus: Seq[Sku]) = DBHelper.database.withTransaction {
-    Products.insert(p)
-    for (catId <- categoryIds) {
-      ProductCategories.insert(ProductCategory(p.id, catId))
-    }
-    childSkus.foreach(Skus.insert(_))
+    implicit session =>
+      TableQuery[Products].insert(p)
+      for (catId <- categoryIds) {
+        TableQuery[ProductCategories].insert(ProductCategory(p.id, catId))
+      }
+      childSkus.foreach(TableQuery[Skus].insert(_))
   }
 
   def update(p: Product, categoryIds: Seq[String], childSkus: Seq[Sku]) = DBHelper.database.withTransaction {
-    val existingCatId = for (pc <- ProductCategories if (pc.productId === p.id)) yield pc.categoryId
-    val list: List[String] = existingCatId.list()
-    //check existing categories equals new
-    if (list != categoryIds) {
-      println("updating categories for product")
-      Query(ProductCategories).where(_.productId === p.id).delete
-      for (catId <- categoryIds) {
-        ProductCategories.insert(ProductCategory(p.id, catId))
+    implicit session =>
+      val productCategoryQuery = TableQuery[ProductCategories]
+      val existingCatId = for (pc <- productCategoryQuery if (pc.productId === p.id)) yield pc.categoryId
+      val list: List[String] = existingCatId.list()
+      //check existing categories equals new
+      if (list != categoryIds) {
+        println("updating categories for product")
+        productCategoryQuery.where(_.productId === p.id).delete
+        for (catId <- categoryIds) {
+          productCategoryQuery.insert(ProductCategory(p.id, catId))
+        }
       }
-    }
-    val existingProd = findById(p.id).get
-    //check if poperties changes, if not change don't update
-    if (p != existingProd) {
-      println("update product")
-      Products.where(_.id === p.id).update(p)
-    }
+      val existingProd = findById(p.id).get
+      //check if poperties changes, if not change don't update
+      if (p != existingProd) {
+        println("update product")
+        TableQuery[Products].where(_.id === p.id).update(p)
+      }
 
-    println("childSkus is " + childSkus)
-    if (childSkus != existingProd.childSkus) {
-      println("updating skus for product")
-      Query(Skus).where(_.parentProduct === p.id).delete
-      for (sku <- childSkus) {
-        Skus.insert(sku)
+      println("childSkus is " + childSkus)
+      if (childSkus != existingProd.childSkus) {
+        println("updating skus for product")
+        TableQuery[Skus].where(_.parentProduct === p.id).delete
+        for (sku <- childSkus) {
+          TableQuery[Skus].insert(sku)
+        }
       }
-    }
   }
 
 
   def findByMerchantId(merchantId: String) = DBHelper.database.withSession {
-    Query(Products).where(_.merchantId === merchantId).list()
+    implicit session =>
+      TableQuery[Products].where(_.merchantId === merchantId).list()
   }
 
   def findById(id: String) = DBHelper.database.withSession {
-    Query(Products).where(_.id === id).firstOption
+    implicit session =>
+      TableQuery[Products].where(_.id === id).firstOption
   }
 
-  def findSkuById(id: String) = DBHelper.database.withSession{
-    Query(Skus).where(_.id === id).firstOption
+  def findSkuById(id: String) = DBHelper.database.withSession {
+    implicit session =>
+      TableQuery[Skus].where(_.id === id).firstOption
   }
 
   def delete(id: String) = DBHelper.database.withTransaction {
-    Query(ProductCategories).where(_.productId === id).delete
-    Query(Skus).where(_.parentProduct === id).delete
-    Products.where(_.id === id).delete
+    implicit session =>
+      TableQuery[ProductCategories].where(_.productId === id).delete
+      TableQuery[Skus].where(_.parentProduct === id).delete
+      TableQuery[Products].where(_.id === id).delete
   }
 }
 
-object Category {
+object Category extends ((String, String, String, String, Boolean) => Category) {
   def create(category: Category, parentCatId: Option[String]) = DBHelper.database.withTransaction {
-    Categories.insert(category)
-    if (parentCatId.isDefined) {
-      CategoryCategories.insert(CategoryCategory(parentCatId.get, category.id))
-    }
+    implicit session =>
+      TableQuery[Categories].insert(category)
+      if (parentCatId.isDefined) {
+        TableQuery[CategoryCategories].insert(CategoryCategory(parentCatId.get, category.id))
+      }
   }
 
   def allCategories(): Seq[Category] = DBHelper.database.withSession {
-    Query(Categories).list()
+    implicit session =>
+      TableQuery[Categories].list()
   }
 
   def rootCategories(): Seq[Category] = DBHelper.database.withSession {
-    allCategories().filter(_.isRoot)
+    implicit session =>
+      allCategories().filter(_.isRoot)
   }
 
   def childCategories(catId: String): Seq[Category] = DBHelper.database.withSession {
-    findById(catId) match {
-      case Some(category) => category.childCategories
-      case None => Nil
-    }
+    implicit session =>
+      findById(catId) match {
+        case Some(category) => category.childCategories
+        case None => Nil
+      }
   }
 
   def findByIds(ids: Seq[String]): Seq[Category] = DBHelper.database.withSession {
-    Query(Categories).where(_.id inSetBind ids).list()
+    implicit session =>
+      TableQuery[Categories].where(_.id inSetBind ids).list()
   }
 
   def findById(id: String): Option[Category] = DBHelper.database.withSession {
-    Query(Categories).where(_.id === id).firstOption
+    implicit session =>
+      TableQuery[Categories].where(_.id === id).firstOption
   }
 
-  lazy val topNavCategories: Seq[Category] = DBHelper.database.withSession{
-    Query(Categories).where(_.isTopNav === true).list()
+  lazy val topNavCategories: Seq[Category] = DBHelper.database.withSession {
+    implicit session =>
+      TableQuery[Categories].where(_.isTopNav === true).list()
   }
 }

@@ -1,8 +1,8 @@
 package util
 
-import slick.session.Database
 import play.api.db.DB
 import play.api.Play.current
+import scala.slick.driver.MySQLDriver.simple._
 
 /**
  * Created with IntelliJ IDEA.
