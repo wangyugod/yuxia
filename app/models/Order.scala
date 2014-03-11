@@ -21,22 +21,22 @@ import play.api.Logger
 case class Order(id: String, profileId: String, state: Int, priceId: Option[String], createdTime: Timestamp, modifiedTime: Timestamp) {
   val log = Logger(this.getClass)
 
-  def commerceItems() = DBHelper.database.withSession {
+  lazy val commerceItems = DBHelper.database.withSession {
     implicit session =>
-      val commerceItemQuery = TableQuery[CommerceItemRepo]
-      val cis: List[CommerceItem] = commerceItemQuery.filter(_.orderId == id).list()
-      cis
+      Order.fetchCommerceItems(this)
+  }
+  lazy val itemSize = (commerceItems.map(_.quantity) :\ 0)(_ + _)
+  lazy val priceInfo = DBHelper.database.withSession{
+    implicit session =>
+      TableQuery[PriceInfoRepo].where(_.id === priceId.get).first()
   }
 
-  def itemSize = (commerceItems.map(_.quantity) :\ 0)(_ + _)
-
-  def removeCommerceItem(itemId: String) = DBHelper.database.withSession {
+  def removeCommerceItem(itemId: String) = DBHelper.database.withTransaction {
     implicit session =>
       if (log.isDebugEnabled)
         log.debug(s"remove commerceItem with ID $itemId")
       TableQuery[CommerceItemRepo].where(_.id === itemId).delete
-      reprice
-
+      Order.priceOrder(this)
   }
 
   def reprice() = DBHelper.database.withSession {
@@ -149,13 +149,29 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
       TableQuery[OrderRepo].filter(_.id === orderId).firstOption
   }
 
+  def fetchCommerceItems(order: Order)(implicit session: Session) = {
+    val commerceItemQuery = TableQuery[CommerceItemRepo]
+    val cis: List[CommerceItem] = commerceItemQuery.filter(_.orderId === order.id).list()
+    if (log.isDebugEnabled)
+      log.debug(s"commerceItems is $cis")
+    cis
+  }
+
+  def calculateCommerceItemTotaPrice(ci: CommerceItem)(implicit session: Session) ={
+    val priceInfo = TableQuery[PriceInfoRepo].where(_.id === ci.priceId).first()
+    val totalActualPrice = priceInfo.actualPrice * ci.quantity
+    val totalListPrice = priceInfo.listPrice * ci.quantity
+    (totalListPrice, totalActualPrice)
+  }
+
   /**
    * Price Order and persist order price information
    * @param order
    */
   def priceOrder(order: Order)(implicit session: Session) = {
-    val actualPrice = (order.commerceItems.map(_.totalActualPrice) :\ (BigDecimal(0)))(_ + _)
-    val listPrice = (order.commerceItems.map(_.totalListPrice) :\ (BigDecimal(0)))(_ + _)
+    val commerceItems = fetchCommerceItems(order)
+    val actualPrice = (commerceItems.map(calculateCommerceItemTotaPrice(_)._2) :\ (BigDecimal(0)))(_ + _)
+    val listPrice = (commerceItems.map(calculateCommerceItemTotaPrice(_)._1) :\ (BigDecimal(0)))(_ + _)
     log.debug(s"totalActualPrice: $actualPrice, totalListPrice: $listPrice")
     val priceInfoRepo = TableQuery[PriceInfoRepo]
     order.priceId match {
@@ -179,7 +195,7 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
    * @param quantity
    * @return
    */
-  def addItem(profileId: String, orderId: Option[String], skuId: String, quantity: Int): Order =
+  def addItem(profileId: String, orderId: Option[String], skuId: String, quantity: Int) =
     DBHelper.database.withSession {
       implicit session =>
         val orderRepo = TableQuery[OrderRepo]
@@ -217,7 +233,6 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
               ciRepo.insert(commerceItem)
           }
           Order.priceOrder(order)
-          log.debug("order item size is " + order.itemSize)
           order
         }
     }

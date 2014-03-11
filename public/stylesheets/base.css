@@ -2151,3 +2151,212 @@ table th {
 .cart-thead .t-promotion, .cart-thead .t-quantity {
     width: 221px;
 }
+.cart-toolbar {
+    padding: 5px 10px;
+    line-height: 22px;
+}
+.cart-toolbar, .cart-total {
+    clear: both;
+}
+
+.cart-toolbar .total {
+    width: 180px;
+}
+
+.fr {
+    float: right;
+}
+.cart-toolbar .total p {
+    clear: both;
+}
+
+.cart-toolbar .total span {
+    float: right;
+    font-family: Verdana,Arial;
+}
+
+.cart-toolbar .amout {
+    padding-right: 10px;
+}
+.cart-toolbar .amout span {
+    color: #e4393c;
+    font-family: Verdana,Arial;
+}
+.cart-total {
+    padding: 10px 10px;
+    background-color: #f7f7f7;
+}
+
+.cart-total .total {
+    width: 250px;
+    margin-left: 10px;
+    line-height: 30px;
+    font-weight: 700;
+}
+.cart-total .total span {
+    float: right;
+    color: #e4393c;
+    font-size: 20px;
+    font-weight: 400;
+    font-family: Verdana,Arial;
+}
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+.cart-button {
+    padding: 10px 0 0;
+}
+.cart-button a.checkout {
+    width: 135px;
+    height: 36px;
+    float: right;
+    display: block;
+    overflow: hidden;
+    line-height: 100px;
+    background: url(/assets/images/btn-check-2013.jpg) no-repeat #E43F45;
+    font-family: "\5FAE\8F6F\96C5\9ED1";
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 32px;
+    _line-height: 36px;
+    text-indent: 33px;
+    color: #fff;
+    position: relative;
+}
+
+.cart-empty {
+    height: 98px;
+    border: 1px solid #ddd;
+}
+.cart-empty .message {
+    height: 98px;
+    padding-left: 341px;
+    background: #f3f3f3 url(/assets/images/cart-empty-bg.png) no-repeat 250px 22px;
+}
+.cart-empty .message p {
+    line-height: 98px;
+}
+
+.cart-empty a, .cart-empty a:visited, .cart-empty a:hover {
+    color: #005ea7;
+}
+
+.m2 {
+    margin-bottom: 20px;
+}
+#checkout {
+    width: 100%;
+    border: 1px solid #ddd;
+}
+#checkout .mt {
+    height: 28px;
+    background-color: #f7f7f7;
+    padding-top: 7px;
+}
+#checkout .mt h2 {
+    height: 35px;
+    overflow: hidden;
+    line-height: 100px;
+    background: url(/assets/images/checkout-title.gif) no-repeat 10px 0;
+}
+.checkout-steps .step {
+    border-top: 1px solid #ddd;
+}
+.checkout-steps .step-title {
+    height: 45px;
+    padding: 0 20px;
+    line-height: 45px;
+    position: relative;
+}
+.step-right {
+    padding-right: 24px;
+    height: 20px;
+    line-height: 20px;
+    padding: 10px 10px 0 0;
+    position: absolute;
+    top: 2px;
+    left: 133px;
+}
+.checkout-steps .step-current .step-title strong, .checkout-steps .step-complete .step-title strong {
+    color: #000;
+}
+.checkout-steps .step-title strong {
+    color: #999;
+    font-size: 14px;
+}
+.checkout-steps .step-title {
+    line-height: 45px;
+}
+.checkout-steps .step-action {
+    padding-left: 10px;
+    color: #005ea7;
+    font-size: 12px;
+    font-weight: 400;
+}
+#checkout .step-complete .sbox-wrap {
+    padding: 0 44px;
+}
+#checkout .sbox {
+    padding: 0px 0 20px;
+}
+.sbox {
+    width: 900px;
+    overflow: hidden;
+}
+#checkout .s-content p {
+    line-height: 22px;
+}
+.checkout-steps .step-current {
+    width: 984px;
+    margin: -1px;
+    border: 3px solid #f60;
+    position: relative;
+}
+#consignee .item, #part-invoice .item {
+    height: 28px;
+    margin-bottom: 5px;
+    overflow: hidden;
+    zoom: 1;
+    line-height: 28px;
+}
+#consignee .item-selected, #part-invoice .item-selected {
+    background-color: #fff4d3;
+}
+#consignee .item .hookbox, #part-invoice .item .hookbox {
+    margin: 7px 5px 0 8px;
+}
+#consignee .list .label, .invoice-form .list .label {
+    width: 85px;
+    height: 26px;
+    margin-right: 5px;
+    float: left;
+    color: #666;
+    line-height: 26px;
+    text-align: right;
+}
+#consignee .list, .invoice-form .list {
+    padding: 5px 0;
+    overflow: hidden;
+    zoom: 1;
+}
+#consignee .list .field {
+    height: 26px;
+    float: left;
+    line-height: 26px;
+}
+#consignee .select-address select, .invoice-form .select-address select {
+    height: 22px;
+    margin: 2px 5px 0 0;
+}
+#consignee .textbox, .invoice-form .textbox {
+    width: 138px;
+    height: 16px;
+    border: 1px solid #ccc;
+    padding: 4px 3px;
+    font-family: Arial,"\5b8b\4f53",sans-serif;
+}

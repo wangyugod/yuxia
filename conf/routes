@@ -50,6 +50,7 @@ GET     /cart/add/:skuId/:qty       controllers.CheckoutController.addItemToCart
 GET     /cart/view                  controllers.CheckoutController.viewCart()
 GET     /cart/update/:skuId/:qty    controllers.CheckoutController.updateItemQuantity(skuId, qty: Int)
 GET     /cart/remove/:itemId        controllers.CheckoutController.removeItem(itemId)
+GET     /order/checkout             controllers.CheckoutController.checkout
 
 
 

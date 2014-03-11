@@ -33,6 +33,14 @@ case class Profile(id: String, login: String, password: String, name: String, ge
       }
   }
 
+  lazy val addresses = DBHelper.database.withSession {
+    implicit session =>
+      val userAddressQuery = TableQuery[UserAddresses]
+      val addrsIds = (userAddressQuery.filter(_.userId === id).map(_.addrId).list())
+      log.debug("addrsIds is " + addrsIds + " profileId " + id)
+      TableQuery[Addresses].where(_.id inSetBind addrsIds).list()
+  }
+
   lazy val defaultArea: Option[Area] = defaultAddress match {
     case Some(address) => Area.findById(address.areaId.get)
     case _ => None

@@ -1,16 +1,17 @@
 @(order: Option[Order])(implicit user:Option[Profile])
 @main(Messages("cart.mycart.title"), user, false) {
+    <div class="w cart">
+        <div class="cart-hd group">
+            <h2>@Messages("cart.mycart.title")</h2>
+        </div>
+        <div id="show">
+            <div class="cart-frame">
+                <div class="tl"></div>
+                <div class="tr"></div>
+            </div>
     @order match {
-        case Some(ord) =>{
-            <div class="w cart">
-                <div class="cart-hd group">
-                    <h2>@Messages("cart.mycart.title")</h2>
-                </div>
-                <div id="show">
-                    <div class="cart-frame">
-                        <div class="tl"></div>
-                        <div class="tr"></div>
-                    </div>
+        case Some(ord) if(ord.itemSize > 0) =>{
+
 
                     <div class="cart-inner">
                         <div class="cart-thead clearfix">
@@ -47,9 +48,27 @@
                                 </div>
                             </div>}
                         </div>
+                        <div class="cart-toolbar clearfix">
+                            <div class="total fr">
+                                <p><span id="totalSkuPrice">@ord.priceInfo.listPrice</span>总计：</p>
+                                <p><span id="totalRePrice">- ¥@(ord.priceInfo.listPrice - ord.priceInfo.actualPrice)</span>返现：</p>
+                            </div>
+                            <div class="amout fr"><span id="selectedCount">@ord.itemSize</span> 件商品</div>
+                        </div>
+                        <div class="cart-total clearfix">
+                            <div class="control fl clearfix">
+                                <!--
+                                <a href="javascript:void(0);" class="btn gray-btn btn-storage"  clstag="clickcart|keycount|xincart|savecartlink" alt="点击'寄存'后，京东商城将为您保存购物车内的商品，方便您随时随地去结算"  title="点击'寄存'后，京东商城将为您保存购物车内的商品，方便您随时随地去结算"><span class="btn-icon"></span><span class="btn-text">寄存</span></a>
+                                <a href="javascript:void(0);" class="btn gray-btn btn-takeout" alt="点击'取出'后，您可取出之前寄存在购物车内的商品" title="点击'取出'后，您可取出之前寄存在购物车内的商品"><span class="btn-icon"></span><span class="btn-text">取出</span></a>
+                                -->
+                            </div>
+                            <div class="total fr"><span id="finalPrice" data-bind="9787.60">¥@ord.priceInfo.actualPrice</span>总计（不含运费）：</div>
+                            <!--<div class="delivery fr">本订单已经免运费</div> -->
+                        </div>
                     </div>
-                </div>
-            </div>
+                    <div class="cart-button clearfix">
+                        <a class="checkout" href="@routes.CheckoutController.checkout"  id="toSettlement">去结算<b></b></a>
+                    </div>
         <div id="deleteConfirmMessage" style="display: none">
             <span>@Messages("cart.item.delete.message")</span>
         </div>
@@ -94,7 +113,7 @@
                             location.href = "/cart/remove/" + itemId;
                         },
                         "@Messages("cancel.button")": function() {
-                            $(this).dialog( "close" );
+                            $(this).dialog( "clo
                         }
                     }
                 });
@@ -102,9 +121,15 @@
         </script>
         }
         case _ => {
-
+            <div class="cart-inner cart-empty">
+                <div class="message">
+                    <p>@Html(Messages("cart.empty", "<a href='" + routes.Application.index + "'>去首页</a>"))<!-- ，或<a href="###" class="btn-takeout">取出之前寄存的商品</a> --></p>
+                </div>
+            </div>
         }
     }
+        </div>
+    </div>
 
 
 

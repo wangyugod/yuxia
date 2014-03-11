@@ -62,4 +62,13 @@ object CheckoutController extends Controller with Users with Secured{
     }
   }
 
+  def checkout() = isAuthenticated{
+    implicit request =>
+      val orderId = request.session.get(CURR_ORDER_ID).get
+      if(log.isDebugEnabled)
+        log.debug(s"Found order in session with id $orderId")
+      val order = Order.findOrderById(orderId).get
+      Ok(html.checkout.checkout(order))
+  }
+
 }

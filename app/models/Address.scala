@@ -3,7 +3,7 @@ package models
 import scala.slick.driver.MySQLDriver.simple._
 import slick.jdbc.{GetResult, StaticQuery => Q}
 import java.sql.Timestamp
-import util.DBHelper
+import util.{AddressInfo, DBHelper}
 import play.api.Logger
 
 /**
@@ -57,6 +57,8 @@ case class Address(id: String, province: String, city: String, district: String,
       case _ => None
     }
   }
+
+  override def toString = AddressInfo.fullName(province, city, district) + addressLine
 }
 
 class Addresses(tag: Tag) extends Table[Address](tag, "address") {
