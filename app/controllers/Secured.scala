@@ -2,6 +2,7 @@ package controllers
 
 import play.api.mvc._
 import play.api.libs.Files.TemporaryFile
+import play.api.Logger
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,6 +12,7 @@ import play.api.libs.Files.TemporaryFile
  * To change this template use File | Settings | File Templates.
  */
 trait Secured {
+
 
   def loginKey = "user_login"
 
@@ -22,7 +24,14 @@ trait Secured {
   /**
    * Redirect to login if the user in not authorized.
    */
-  protected def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.ProfileController.login)
+  protected def onUnauthorized(request: RequestHeader) = {
+    val forward = request.getQueryString("forward") match {
+      case Some(url) => url
+      case _ => request.uri
+    }
+    println("queryString is " + request.uri)
+    Results.Redirect(routes.ProfileController.login + "?forward=" + forward )
+  }
 
   // --
 
@@ -41,11 +50,13 @@ trait Secured {
 
 trait MerchSecured extends Secured {
   override def loginKey = "merch_login"
+
   override def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.Merchandise.login)
 }
 
 
 trait InternalMgtSecured extends Secured {
   override def loginKey = "internal_login"
+
   override def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.InternalManagement.login)
 }

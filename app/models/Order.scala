@@ -10,6 +10,7 @@ import scala.slick.driver.MySQLDriver.simple._
 import util.{DBHelper, IdGenerator}
 import java.util.Date
 import play.api.Logger
+import play.api.i18n.Messages
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,23 +27,32 @@ case class Order(id: String, profileId: String, state: Int, priceId: Option[Stri
       Order.fetchCommerceItems(this)
   }
   lazy val itemSize = (commerceItems.map(_.quantity) :\ 0)(_ + _)
-  lazy val priceInfo = DBHelper.database.withSession{
+  lazy val priceInfo = DBHelper.database.withSession {
     implicit session =>
       TableQuery[PriceInfoRepo].where(_.id === priceId.get).first()
   }
-
-  def removeCommerceItem(itemId: String) = DBHelper.database.withTransaction {
+  lazy val shippingAddress = DBHelper.database.withSession {
     implicit session =>
-      if (log.isDebugEnabled)
-        log.debug(s"remove commerceItem with ID $itemId")
-      TableQuery[CommerceItemRepo].where(_.id === itemId).delete
-      Order.priceOrder(this)
+      Order.findOrderShippingGroup(id) match {
+        case Some(sg) =>
+          Address.findById(sg.addressId)
+        case _ =>
+          None
+      }
+  }
+
+  def removeCommerceItem(itemId: String)(implicit session: Session) = {
+    if (log.isDebugEnabled)
+      log.debug(s"remove commerceItem with ID $itemId")
+    TableQuery[CommerceItemRepo].where(_.id === itemId).delete
+    Order.priceOrder(this)
   }
 
   def reprice() = DBHelper.database.withSession {
     implicit session =>
       Order.priceOrder(this)
   }
+
 }
 
 case class CommerceItem(id: String, skuId: String, orderId: String, priceId: String, quantity: Int, createdTime: Timestamp) {
@@ -144,9 +154,8 @@ object OrderState {
 object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp) => Order) {
   val log = Logger(this.getClass)
 
-  def findOrderById(orderId: String) = DBHelper.database.withSession {
-    implicit ss: Session =>
-      TableQuery[OrderRepo].filter(_.id === orderId).firstOption
+  def findOrderById(orderId: String)(implicit session: Session) = {
+    TableQuery[OrderRepo].filter(_.id === orderId).firstOption
   }
 
   def fetchCommerceItems(order: Order)(implicit session: Session) = {
@@ -157,7 +166,7 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
     cis
   }
 
-  def calculateCommerceItemTotaPrice(ci: CommerceItem)(implicit session: Session) ={
+  def calculateCommerceItemTotaPrice(ci: CommerceItem)(implicit session: Session) = {
     val priceInfo = TableQuery[PriceInfoRepo].where(_.id === ci.priceId).first()
     val totalActualPrice = priceInfo.actualPrice * ci.quantity
     val totalListPrice = priceInfo.listPrice * ci.quantity
@@ -243,10 +252,36 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
     DBHelper.database.withTransaction {
       implicit ss: Session =>
         TableQuery[OrderRepo].insert(order)
+        val profile = Profile.findUserById(profileId).get
+        profile.defaultAddress match {
+          case Some(address) =>
+            TableQuery[ShippingGroupRepo].insert(ShippingGroup(IdGenerator.generateShippingGroupId(), address.id, Messages("sg.default.method"), order.id))
+          case _ =>
+            if (log.isDebugEnabled)
+              log.debug("No address found on user")
+        }
     }
     log.debug(s"order is created with id $order.id")
     order
   }
 
+  def findOrderShippingGroup(orderId: String)(implicit session: Session) = {
+    TableQuery[ShippingGroupRepo].where(_.orderId === orderId).firstOption
+  }
+
+  def updateShippingGroup(address: Address, order: Order)(implicit session: Session) = {
+    val sgRepo = TableQuery[ShippingGroupRepo]
+    Order.findOrderShippingGroup(order.id) match {
+      case Some(sg) =>
+        if (sg.addressId != address.id) {
+          val shippingGroup = ShippingGroup(sg.id, address.id, sg.shippingMethod, sg.orderId)
+          sgRepo.update(shippingGroup)
+        }
+      case _ =>
+        if(log.isDebugEnabled)
+          log.debug("INSERT new ShippingGroup with id " + address.id)
+        sgRepo.insert(ShippingGroup(IdGenerator.generateShippingGroupId(), address.id, Messages("sg.default.method"), order.id))
+    }
+  }
 
 }

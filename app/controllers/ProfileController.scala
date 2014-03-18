@@ -53,9 +53,9 @@ object ProfileController extends Controller with Users with Secured {
         }),
         "confirm" -> text
       ).verifying(
-        // Add an additional constraint: both passwords must match
-        Messages("error.password.notmatch"), passwords => passwords._1 == passwords._2
-      ),
+          // Add an additional constraint: both passwords must match
+          Messages("error.password.notmatch"), passwords => passwords._1 == passwords._2
+        ),
       "name" -> nonEmptyText
     )
       ((id, login, passwords, name) => Profile(id.getOrElse(IdGenerator.generateProfileId), login, passwords._1, name, None, None))
@@ -120,13 +120,13 @@ object ProfileController extends Controller with Users with Secured {
             log.debug(s"forwardURL is $user._3")
             forwardUrl match {
               case Some(url) =>
-                if(order.isDefined)
+                if (order.isDefined)
                   Redirect(url).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id, CURR_ORDER_ID -> order.get.id)
                 else
                   Redirect(url).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id)
 
               case _ =>
-                if(order.isDefined)
+                if (order.isDefined)
                   Redirect(routes.Application.index()).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id, CURR_ORDER_ID -> order.get.id)
                 else
                   Redirect(routes.Application.index()).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id)
@@ -161,7 +161,7 @@ object ProfileController extends Controller with Users with Secured {
   def update = Action {
     implicit request => profileUpdateForm.bindFromRequest.fold(
       formWithErrors => {
-        if(log.isDebugEnabled)
+        if (log.isDebugEnabled)
           log.debug("error form is \n" + formWithErrors.errors)
         BadRequest(html.myaccount.baseinfo(formWithErrors))
       },
@@ -175,7 +175,7 @@ object ProfileController extends Controller with Users with Secured {
   }
 
   def myAccount = isAuthenticated(
-    implicit request =>{
+    implicit request => {
       log.debug("ORDER ID is " + request.session.get(CURR_ORDER_ID))
       val profile = Profile.findUserByLogin(request.session.get(loginKey).get)
       Ok(html.myaccount.baseinfo(profileUpdateForm.fill(profile.get)))
@@ -188,16 +188,16 @@ object ProfileController extends Controller with Users with Secured {
   }
 
   def addressList = isAuthenticated {
-    implicit request =>{
+    implicit request => {
       val userId = request.session.get(USER_ID).get
       val addresses = Address.userAddresses(userId)
-      if(log.isDebugEnabled)
+      if (log.isDebugEnabled)
         log.debug("address list: " + addresses)
       Ok(html.myaccount.addressmgt(addressForm, addresses))
     }
   }
 
-  def updateAddress = isAuthenticated{
+  def updateAddress = isAuthenticated {
     implicit request => {
       addressForm.bindFromRequest.fold(
         formWithErrors => {
@@ -207,19 +207,25 @@ object ProfileController extends Controller with Users with Secured {
         },
         address => {
           val userId = request.session.get(USER_ID).get
-          if(log.isDebugEnabled)
+          if (log.isDebugEnabled)
             log.debug("is default address:" + address.isDefaultAddress)
-          Address.saveOrUpdate(userId, address.address, address.isDefaultAddress.getOrElse(false))
+          DBHelper.database.withTransaction {
+            implicit session =>
+              Address.saveOrUpdate(userId, address.address, address.isDefaultAddress.getOrElse(false))
+          }
           Redirect(routes.ProfileController.addressList())
         }
       )
     }
   }
 
-  def deleteAddress(id: String) = isAuthenticated{
+  def deleteAddress(id: String) = isAuthenticated {
     implicit request => {
       val userId = request.session.get(USER_ID).get
-      Address.deleteUserAddress(userId, id)
+      DBHelper.database.withTransaction {
+        implicit session =>
+          Address.deleteUserAddress(userId, id)
+      }
       Ok
     }
   }

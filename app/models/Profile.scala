@@ -18,27 +18,14 @@ import play.api.{Logger, Play}
  */
 
 case class Profile(id: String, login: String, password: String, name: String, gender: Option[String], birthDay: Option[Date]) {
-  private val log = Logger(this.getClass)
   lazy val defaultAddress: Option[Address] = DBHelper.database.withSession {
     implicit session =>
-      val userAddressQuery = TableQuery[UserAddresses]
-      userAddressQuery.where(_.userId === id).where(_.isDefault === true).firstOption match {
-        case Some(ua) => Address.findById(ua.addressId)
-        case _ => {
-          userAddressQuery.where(_.userId === id).firstOption match {
-            case Some(userAddr) => Address.findById(userAddr.addressId)
-            case _ => None
-          }
-        }
-      }
+      Profile.findDefaultAddress(id)
   }
 
   lazy val addresses = DBHelper.database.withSession {
     implicit session =>
-      val userAddressQuery = TableQuery[UserAddresses]
-      val addrsIds = (userAddressQuery.filter(_.userId === id).map(_.addrId).list())
-      log.debug("addrsIds is " + addrsIds + " profileId " + id)
-      TableQuery[Addresses].where(_.id inSetBind addrsIds).list()
+      Profile.findUserAddresses(id)
   }
 
   lazy val defaultArea: Option[Area] = defaultAddress match {
@@ -91,6 +78,10 @@ object Profile extends ((String, String, String, String, Option[String], Option[
       result.firstOption()
   }
 
+  def findUserById(id: String)(implicit session: Session): Option[Profile] = {
+    profileQuery.where(_.id === id).firstOption
+  }
+
   def findAllUsers() = DBHelper.database.withSession {
     implicit session =>
       val result = for (p <- profileQuery) yield p
@@ -100,5 +91,24 @@ object Profile extends ((String, String, String, String, Option[String], Option[
   def findCurrentOrder(profileId: String) = DBHelper.database.withSession {
     implicit session =>
       TableQuery[OrderRepo].where(_.profileId === profileId).where(_.state === OrderState.INITIAL).firstOption
+  }
+
+  def findUserAddresses(userId: String)(implicit session: Session) = {
+    val userAddressQuery = TableQuery[UserAddresses]
+    val addrsIds = (userAddressQuery.filter(_.userId === userId).map(_.addrId).list())
+    TableQuery[Addresses].where(_.id inSetBind addrsIds).list()
+  }
+
+  def findDefaultAddress(userId: String)(implicit session: Session) = {
+    val userAddressQuery = TableQuery[UserAddresses]
+    userAddressQuery.where(_.userId === userId).where(_.isDefault === true).firstOption match {
+      case Some(ua) => Address.findById(ua.addressId)
+      case _ => {
+        userAddressQuery.where(_.userId === userId).firstOption match {
+          case Some(userAddr) => Address.findById(userAddr.addressId)
+          case _ => None
+        }
+      }
+    }
   }
 }
