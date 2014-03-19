@@ -24,6 +24,7 @@ object IdGenerator {
   val COMMERCEITEM_PREFIX = "ci"
   val PRICE_INFO_PREFIX = "pi"
   val SHIPPING_GROUP_PREFIX = "sg"
+  val PAYMENT_GROUP_PREFIX = "pg"
 
   def generateProfileId() = {
     println("generating ProfileID now")
@@ -79,5 +80,9 @@ object IdGenerator {
 
   def generateShippingGroupId() = {
     SHIPPING_GROUP_PREFIX  + UUID.randomUUID()
+  }
+
+  def generatePaymentGroupId() = {
+    PAYMENT_GROUP_PREFIX  + UUID.randomUUID()
   }
 }

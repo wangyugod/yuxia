@@ -53,6 +53,8 @@ GET     /cart/remove/:itemId        controllers.CheckoutController.removeItem(it
 GET     /order/checkout             controllers.CheckoutController.checkout
 POST    /order/checkout/sg          controllers.CheckoutController.updateShippingGroup
 DELETE  /order/sg/delete/:addressId     controllers.CheckoutController.removeShippingAddress(addressId)
+GET     /order/thankyou             controllers.CheckoutController.thankYou
+POST    /order/checkout             controllers.CheckoutController.submitOrder
 
 
 

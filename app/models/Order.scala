@@ -69,7 +69,7 @@ case class CommerceItem(id: String, skuId: String, orderId: String, priceId: Str
 
 case class PriceInfo(id: String, listPrice: BigDecimal, actualPrice: BigDecimal, promoDescription: Option[String])
 
-case class PaymentGroup(id: String, name: String, amount: BigDecimal, orderId: String)
+case class PaymentGroup(id: String, paymentType: Int, amount: BigDecimal, orderId: String)
 
 case class ShippingGroup(id: String, addressId: String, shippingMethod: String, orderId: String)
 
@@ -122,13 +122,13 @@ class PriceInfoRepo(tag: Tag) extends Table[PriceInfo](tag, "price_info") {
 class PaymentGroupRepo(tag: Tag) extends Table[PaymentGroup](tag, "payment_group") {
   def id = column[String]("id", O.PrimaryKey)
 
-  def name = column[String]("name")
+  def paymentType = column[Int]("payment_type")
 
   def amount = column[BigDecimal]("amount")
 
   def orderId = column[String]("order_id")
 
-  def * = (id, name, amount, orderId) <>(PaymentGroup.tupled, PaymentGroup.unapply)
+  def * = (id, paymentType, amount, orderId) <>(PaymentGroup.tupled, PaymentGroup.unapply)
 }
 
 class ShippingGroupRepo(tag: Tag) extends Table[ShippingGroup](tag, "shipping_group") {
@@ -149,6 +149,12 @@ object OrderState {
   val SUBMITTED: Int = 1
   val COMPLETE: Int = 2
   val CANCELLED: Int = 3
+}
+
+object PaymentType {
+  val REACH_DEBIT: Int = 0
+  val STORE_CREDIT: Int = 1
+  val paymentMap = Map(REACH_DEBIT -> "货到付款", STORE_CREDIT -> "积分支付")
 }
 
 object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp) => Order) {
@@ -275,13 +281,34 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
       case Some(sg) =>
         if (sg.addressId != address.id) {
           val shippingGroup = ShippingGroup(sg.id, address.id, sg.shippingMethod, sg.orderId)
-          sgRepo.update(shippingGroup)
+          sgRepo.where(_.id === sg.id).update(shippingGroup)
         }
       case _ =>
         if(log.isDebugEnabled)
           log.debug("INSERT new ShippingGroup with id " + address.id)
         sgRepo.insert(ShippingGroup(IdGenerator.generateShippingGroupId(), address.id, Messages("sg.default.method"), order.id))
     }
+  }
+
+  def findPaymentGroup(orderId: String)(implicit session:Session) = {
+    TableQuery[PaymentGroupRepo].filter(_.orderId === orderId).firstOption
+  }
+
+  def submitOrder(orderId: String)(implicit session: Session) = {
+    val order = findOrderById(orderId).get
+    priceOrder(order)
+    val priceInfo = order.priceInfo
+    val pgRepo = TableQuery[PaymentGroupRepo]
+    findPaymentGroup(orderId) match {
+      case Some(pg) =>
+        pgRepo.where(_.id === pg.id).update(PaymentGroup(pg.id, pg.paymentType, priceInfo.actualPrice, pg.orderId))
+      case _ =>
+        pgRepo.insert(PaymentGroup(IdGenerator.generatePaymentGroupId(), PaymentType.REACH_DEBIT, priceInfo.actualPrice, orderId))
+    }
+    val newOrder = order.copy(state = OrderState.SUBMITTED, modifiedTime = new Timestamp(new Date().getTime))
+    if(log.isDebugEnabled)
+      log.debug(s"new order is $newOrder")
+    TableQuery[OrderRepo].where(_.id === orderId).update(newOrder)
   }
 
 }

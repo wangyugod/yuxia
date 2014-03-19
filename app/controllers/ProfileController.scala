@@ -26,6 +26,7 @@ trait Users {
   val USER_NAME = "user_name"
   val USER_ID = "user_id"
   val CURR_ORDER_ID = "curr_order_id"
+  val LAST_ORDER_ID = "last_order_id"
 
   implicit def toUser(implicit session: Session): Option[Profile] = {
     session.get(LOGIN_KEY) match {

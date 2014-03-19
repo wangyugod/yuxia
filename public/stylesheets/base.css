@@ -2614,3 +2614,73 @@ em {
     vertical-align: bottom;
     font-weight: normal;
 }
+.msop {
+    background: #F3FDED;
+    border-top: 2px solid #7ABD54;
+    padding-right: 20px;
+}
+.msop {
+    padding: 30px 98px;
+}
+.msop .mt {
+    overflow: visible;
+    height: 32px;
+}
+.icon-succ02, .icon-wrong02, .icon-warn02 {
+    background-image: url(i/icon48.png);
+    display: inline-block;
+    font-size: 0;
+    line-height: 0;
+    overflow: hidden;
+    width: 48px;
+    height: 48px;
+}
+.msop .mt h3 {
+    font-size: 18px;
+    font-family: \5FAE\8F6F\96C5\9ED1;
+    font-weight: normal;
+    margin-bottom: 15px;
+}
+.ftx-02 {
+    color: #7ABD54;
+}
+.list-order {
+    background-color: #fff;
+    border-top: 1px solid #e6e6e6;
+    margin-bottom: 8px;
+}
+.li-st {
+    border-bottom: 1px solid #e6e6e6;
+    padding: 10px;
+    overflow: hidden;
+    color: #333;
+}
+.li-st .fore1, .li-st .fore2 {
+    margin-right: 30px;
+}
+.li-st .fore1, .li-st .fore2 {
+    margin-right: 30px;
+}
+.li-st .fore1, .li-st .fore2, .li-st .fore3 {
+    float: left;
+}
+.ftx-01, a.flk-01:link, a.flk-01:visited, .flk-01 a:link, .flk-01 a:visited {
+    color: #E4393C;
+}
+.i-tips01 {
+    text-indent: -36px;
+    padding-left: 36px;
+}
+.i-tips, .i-tips01 {
+    margin-bottom: 8px;
+}
+.o-mb {
+    background-color: #fff;
+    font-size: 12px;
+    height: 35px;
+    line-height: 35px;
+    padding-left: 0;
+}
+.main a:link, .main a:visited {
+    color: #005a9d;
+}

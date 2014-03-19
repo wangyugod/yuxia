@@ -170,3 +170,4 @@ cart.item.delete.message=您确定要从购物车移出该商品吗？
 cart.empty=购物车内暂时没有商品，您可以{0}挑选喜欢的商品
 order.checkout.title=订单结算
 order.address.delete.confirm=您确定要删除该地址吗？
+order.thankyou.title=订单成功页面

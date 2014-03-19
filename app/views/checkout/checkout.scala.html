@@ -239,22 +239,16 @@
                             <div class="inner">
                                 <style type="text/css">.checkout-buttons .checkout-submit{background-color:#e00;position:relative;line-height:36px;overflow:hidden;color:#fff;font-weight:bold;font-size:16px;}.checkout-buttons .checkout-submit b{position:absolute;left:0;top:0;width:135px;height:36px;background:url(http://misc.360buyimg.com/purchase/trade/skin/i/btn-submit.jpg) no-repeat;cursor:pointer;overflow:hidden;}.checkout-buttons .checkout-submit:hover{background-color:#EF494D;}.checkout-buttons  .checkout-submit:hover b{background-position:0 -36px;}.checkout-buttons .checkout-submit-disabled{background-color:#ccc;position:relative;line-height:36px;font-weight:bold;font-size:16px;cursor:not-allowed;}.checkout-buttons .checkout-submit-disabled b{position:absolute;left:0;top:0;width:135px;height:36px;background:url(http://misc.360buyimg.com/purchase/trade/skin/i/btn-disabled.png) no-repeat;cursor:not-allowed;}</style>
                                 <!--input type="submit"  class="checkout-submit" value="" id="order-submit" onclick="javascript:submit_Order();"/-->
-                                <button type="submit" class="checkout-submit" id="order-submit" onclick="javascript:submit_Order();">
+                                @form(routes.CheckoutController.submitOrder){
+                                <button type="submit" class="checkout-submit" id="order-submit">
                                     提交订单
                                     <b></b>
                                 </button>
-                                <span class="total">应付总额：<strong id="payPriceId">￥62.90</strong>元
-                                    <label class="noShowMoney hide" id="giftBuyHidePriceDiv">
-                                        <input type="checkbox" id="giftBuyHidePrice" checked="">隐藏礼品价格
-                                    </label>
+                                <span class="total">应付总额：<strong id="payPriceId"> @order.priceInfo.actualPrice</strong>元
                                 </span>
-                                <div class="checkout-submit-tip" id="changeAreaAndPrice" style="display: none;">由于地址更换，价格可能发生变化，请核对后再提交订单</div>
-                                <div style="display:none" id="factoryShipCodShowDivBottom" class="dispatching">
-                                    部分商品货到付款方式：先由京东配送“提货单”并收款，然后厂商发货。
-                                </div>
+                                }
                             </div>
                             <span id="submit_message" style="display:none" class="submit-error"></span>
-                            <div class="submit-check-info" id="submit_check_info_message" style="display:none"></div>
                         </div></div>
                     </div>
                 </div>

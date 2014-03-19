@@ -127,5 +127,31 @@ object CheckoutController extends Controller with Users with Secured {
       Redirect(routes.CheckoutController.checkout())
   }
 
+  def submitOrder = isAuthenticated {
+    implicit request =>
+      val orderId = request.session.get(CURR_ORDER_ID).get
+      val order: Order = DBHelper.database.withTransaction {
+        implicit session =>
+          Order.submitOrder(orderId)
+          Order.findOrderById(orderId).get
+      }
+      val newSession = request.session - CURR_ORDER_ID + (LAST_ORDER_ID -> orderId)
+      Redirect(routes.CheckoutController.thankYou).withSession(newSession)
+  }
+
+
+  def thankYou = isAuthenticated {
+    implicit request =>
+      val orderId = request.session.get(LAST_ORDER_ID).get
+      val currOrderId = request.session.get(CURR_ORDER_ID)
+      if(log.isDebugEnabled)
+        log.debug(s"lastOrderId is $orderId currentId is $currOrderId")
+      val order = DBHelper.database.withSession {
+        implicit session =>
+          Order.findOrderById(orderId).get
+      }
+      Ok(html.checkout.thankyou(order))
+  }
+
 
 }
