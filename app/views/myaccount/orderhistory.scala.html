@@ -1,0 +1,66 @@
+@(orders: List[Order])(implicit user: Option[Profile])
+
+@import helper._
+@myAccount(user){
+
+<div class="o-mt">
+    <h2>@Messages("myacct.orderhistory.title")</h2>
+</div>
+<div class="m m5" id="order02">
+    <div class="mc">
+        <div class="tb-void">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tbody>
+                <tr>
+                    <th width="286">订单信息</th>
+                    <th width="80">收货人</th>
+                    <th width="110">订单金额</th>
+                    <th width="100">时间</th>
+                    <th width="100">订单状态</th>
+                    <th width="128">操作</th>
+                </tr>
+                </tbody>
+                @for(order <- orders){
+                <tbody id="tb-@order.id">
+
+                <tr class="tr-th">
+                    <td colspan="6">
+                <span class="tcol1">订单编号:
+                    <a name="orderIdLinks" target="_blank" href="@routes.ProfileController.orderDetail(order.id)" >@order.id</a></span>
+                    </td>
+                </tr>
+
+                <tr id="track1129612684" oty="0,4" class="tr-td">
+                    <td>
+                        <div class="img-list">
+                            @for(item <- order.commerceItems){
+                            <a href="@routes.Browse.productDetail(item.sku.parentProduct.id)" class="img-box" target="_blank">
+                                <img title="@(item.sku.parentProduct.name + item.sku.name)" width="50" height="50" src="@util.AppHelper.productImage(item.sku.parentProduct)">
+                            </a>
+                            }
+                        </div>
+                    </td>
+                    <td><div class="u-name">@order.shippingAddress.get.contactPerson</div></td>
+                    <td>￥@order.priceInfo.actualPrice<br>@order.paymentGroup.get.paymentTypeDesc</td>
+                    <td>
+                        <span class="ftx-03">@order.modifiedTime </span>
+                    </td>
+
+                    <td><span class="ftx-03">@order.orderStateDesc</span></td>
+
+                    <td id="operate1129612684" class="order-doi" width="100">
+
+                        <span id="pay-button-1129612684" state=""></span>
+                        <a target="_blank" href="@routes.ProfileController.orderDetail(order.id)" >查看</a><span id="order_comment"></span>
+
+                    </td>
+                </tr>
+                </tbody>
+                }
+
+            </table>
+        </div>
+    </div>
+</div>
+
+}

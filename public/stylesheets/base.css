@@ -1397,12 +1397,50 @@ h4, h5, h6 {
     border-collapse: collapse;
     border: solid #E6E6E6;
     border-width: 0 1px 1px 1px;
-    margin-left: 1px;
 }
 
 #serviceinfo .tb-void{
     padding-bottom: 20px;
 }
+.breadcrumb {
+    height: 20px;
+    padding: 0 0 4px 6px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    line-height: 20px;
+    vertical-align: baseline;
+}
+.breadcrumb strong, .breadcrumb h1 {
+    display: inline;
+    font-weight: 700;
+    line-height: 20px;
+    font-size: 18px;
+    font-family: "microsoft yahei";
+}
+
+/*orderdetail*/
+#odlist, #orderstate, #process, #ordertrack, #orderinfo {
+    color: #333;
+}
+#orderstate {
+    border: 1px solid #EED97C;
+    padding: 0 5px;
+    background: #FFFCEB;
+}
+
+#orderstate .mt {
+    padding: 4px 8px;
+    height: 25px;
+    line-height: 25px;
+    border-bottom: 1px dotted #EED97C;
+}
+
+#orderstate .mt strong {
+    float: left;
+    font-size: 14px;
+}
+
+
 
 .bti {
     background: url(/assets/images/use.gif) 0 -67px;
@@ -2683,4 +2721,28 @@ em {
 }
 .main a:link, .main a:visited {
     color: #005a9d;
+}
+/*Order Hisotry*/
+
+.tr-td td {
+    vertical-align: top;
+    padding-top: 10px;
+}
+.tr-th td {
+    text-align: left;
+}
+.img-list {
+    width: 280px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+.img-list .img-box {
+    border: 1px solid #e1e1e1;
+    float: left;
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
+.m5 .mc {
+    border: 1px solid #e6e6e6;
+    border-top: none;
 }

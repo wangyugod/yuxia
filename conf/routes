@@ -14,6 +14,8 @@ POST    /myaccount                  controllers.ProfileController.update
 GET     /myaccount/addrlist         controllers.ProfileController.addressList
 POST    /myaccount/address          controllers.ProfileController.updateAddress
 DELETE  /myaccount/address/:id      controllers.ProfileController.deleteAddress(id)
+GET     /myaccount/orderhistory     controllers.ProfileController.orderHistory
+GET     /myaccount/order/:id        controllers.ProfileController.orderDetail(id)
 GET     /signout                    controllers.ProfileController.signout
 GET     /merch/login                controllers.Merchandise.login
 POST    /merch/login                controllers.Merchandise.authenticate

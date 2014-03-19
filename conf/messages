@@ -48,6 +48,8 @@ addr.addressline.label=详细地址：
 addr.phone.label=电话号码：
 addr.area.error=请选择合法的区域
 addr.delete.cfmsg=您确定删除地址{0}吗？
+myacct.orderhistory.title=我的订单
+myacct.orderdetail.title=订单详情
 
 
 

@@ -111,4 +111,8 @@ object Profile extends ((String, String, String, String, Option[String], Option[
       }
     }
   }
+
+  def findUserOrders(userId: String)(implicit session: Session) = {
+    TableQuery[OrderRepo].filter(_.profileId === userId).filter(_.state > OrderState.INITIAL).list()
+  }
 }

@@ -31,6 +31,12 @@ case class Order(id: String, profileId: String, state: Int, priceId: Option[Stri
     implicit session =>
       TableQuery[PriceInfoRepo].where(_.id === priceId.get).first()
   }
+  lazy val paymentGroup = DBHelper.database.withSession {
+    implicit session =>
+      Order.findPaymentGroup(id)
+  }
+  lazy val orderStateDesc = OrderState.getOrderStateDesc(state)
+
   lazy val shippingAddress = DBHelper.database.withSession {
     implicit session =>
       Order.findOrderShippingGroup(id) match {
@@ -69,7 +75,9 @@ case class CommerceItem(id: String, skuId: String, orderId: String, priceId: Str
 
 case class PriceInfo(id: String, listPrice: BigDecimal, actualPrice: BigDecimal, promoDescription: Option[String])
 
-case class PaymentGroup(id: String, paymentType: Int, amount: BigDecimal, orderId: String)
+case class PaymentGroup(id: String, paymentType: Int, amount: BigDecimal, orderId: String) {
+  def paymentTypeDesc = PaymentType.getPaymentTypeDesc(paymentType)
+}
 
 case class ShippingGroup(id: String, addressId: String, shippingMethod: String, orderId: String)
 
@@ -149,12 +157,17 @@ object OrderState {
   val SUBMITTED: Int = 1
   val COMPLETE: Int = 2
   val CANCELLED: Int = 3
+  private val orderStateMap = Map(INITIAL -> "初始化", SUBMITTED -> "已提交", COMPLETE -> "完成", CANCELLED -> "已取消")
+
+  def getOrderStateDesc(key: Int) = orderStateMap.get(key).get
 }
 
 object PaymentType {
   val REACH_DEBIT: Int = 0
   val STORE_CREDIT: Int = 1
-  val paymentMap = Map(REACH_DEBIT -> "货到付款", STORE_CREDIT -> "积分支付")
+  private val paymentMap = Map(REACH_DEBIT -> "货到付款", STORE_CREDIT -> "积分支付")
+
+  def getPaymentTypeDesc(key: Int) = paymentMap.get(key).get
 }
 
 object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp) => Order) {
@@ -284,13 +297,13 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
           sgRepo.where(_.id === sg.id).update(shippingGroup)
         }
       case _ =>
-        if(log.isDebugEnabled)
+        if (log.isDebugEnabled)
           log.debug("INSERT new ShippingGroup with id " + address.id)
         sgRepo.insert(ShippingGroup(IdGenerator.generateShippingGroupId(), address.id, Messages("sg.default.method"), order.id))
     }
   }
 
-  def findPaymentGroup(orderId: String)(implicit session:Session) = {
+  def findPaymentGroup(orderId: String)(implicit session: Session) = {
     TableQuery[PaymentGroupRepo].filter(_.orderId === orderId).firstOption
   }
 
@@ -306,7 +319,7 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
         pgRepo.insert(PaymentGroup(IdGenerator.generatePaymentGroupId(), PaymentType.REACH_DEBIT, priceInfo.actualPrice, orderId))
     }
     val newOrder = order.copy(state = OrderState.SUBMITTED, modifiedTime = new Timestamp(new Date().getTime))
-    if(log.isDebugEnabled)
+    if (log.isDebugEnabled)
       log.debug(s"new order is $newOrder")
     TableQuery[OrderRepo].where(_.id === orderId).update(newOrder)
   }

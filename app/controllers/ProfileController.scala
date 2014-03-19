@@ -231,5 +231,25 @@ object ProfileController extends Controller with Users with Secured {
     }
   }
 
+  def orderHistory() = isAuthenticated {
+    implicit request =>
+      val userId = request.session.get(USER_ID).get
+      val orderList =
+        DBHelper.database.withSession {
+          implicit session =>
+            Profile.findUserOrders(userId)
+        }
+      Ok(html.myaccount.orderhistory(orderList))
+  }
+
+  def orderDetail(orderId: String) = isAuthenticated{
+    implicit request =>
+      val order = DBHelper.database.withSession{
+        implicit session =>
+          Order.findOrderById(orderId).get
+      }
+      Ok(html.myaccount.orderdetail(order))
+  }
+
 
 }
