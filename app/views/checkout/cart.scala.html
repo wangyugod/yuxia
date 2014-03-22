@@ -27,8 +27,8 @@
                             <div id="ci_@item.id" data-bind="rowid:1" class="item item_selected ">
                                 <div class="item_form clearfix">
                                     <div class="cell p-goods">
-                                        <div class="p-img"><a href="@routes.Browse.productDetail(item.sku.parentProduct.id)" target="_blank"><img width="52px" height="52px" src="@util.AppHelper.productImage(item.sku.parentProduct)" alt=" "></a></div>
-                                        <div class="p-name"><a href="@routes.Browse.productDetail(item.sku.parentProduct.id)"target="_blank">@(item.sku.parentProduct.name + item.sku.name)</a></div>
+                                        <div class="p-img"><a href="@routes.Browse.productDetail(item.sku.parentProduct.id)?sku=@item.sku.id" target="_blank"><img width="52px" height="52px" src="@util.AppHelper.productImage(item.sku.parentProduct)" alt=" "></a></div>
+                                        <div class="p-name"><a href="@routes.Browse.productDetail(item.sku.parentProduct.id)?sku=@item.sku.id"target="_blank">@(item.sku.parentProduct.name + item.sku.name)</a></div>
                                     </div>
                                     <div class="cell p-price"><span class="price">@item.priceInfo.actualPrice</span></div>
                                     <div class="cell p-promotion">

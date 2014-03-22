@@ -50,7 +50,7 @@ addr.area.error=请选择合法的区域
 addr.delete.cfmsg=您确定删除地址{0}吗？
 myacct.orderhistory.title=我的订单
 myacct.orderdetail.title=订单详情
-
+order.review.message=订单已经完成，感谢您在京东商城购物，欢迎您对本次交易及所购商品进行评价。
 
 
 

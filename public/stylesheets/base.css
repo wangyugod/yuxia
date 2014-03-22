@@ -1439,7 +1439,95 @@ h4, h5, h6 {
     float: left;
     font-size: 14px;
 }
+.ftx14, .flk14 a:link, .flk14 a:visited, a.flk14:link, a.flk14:visited {
+    color: #12A000;
+}
+#orderstate .btn-inst {
+    width: 89px;
+    height: 25px;
+    background: url(/assets/images/btn0330.jpg) no-repeat 0 -75px;
+    color: #fff;
+}
+#orderstate .btn {
+    width: 46px;
+    height: 25px;
+    margin: 0 4px;
+    background: url(/assets/images/btn0330.jpg) no-repeat 0 0;
+    color: #fff;
+    padding-right: 0;
+}
+#orderstate .mc {
+    padding: 10px 8px;
+}
+.ftx13, .flk13 a:link, .flk13 a:visited, a.flk13:link, a.flk13:visited {
+    color: #005AA0;
+}
 
+/*Order Detail Info*/
+#orderinfo, #ordermess {
+    border: 1px solid #DADADA;
+    padding: 0 5px 10px;
+    background: #EDEDED;
+    overflow: visible;
+}
+#orderinfo .mt, #ordermess .mt {
+    padding: 0 8px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 14px;
+}
+#orderinfo .mc, #ordermess .mc {
+    padding: 5px 8px;
+    background: #fff;
+    overflow: visible;
+}
+#orderinfo .mc dl.fore {
+    border-top: 0;
+}
+#orderinfo .mc dl {
+    padding: 10px 5px;
+    border-top: 1px solid #EDEDED;
+}
+#orderinfo .mc dt {
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+#orderinfo .p-list {
+    overflow: hidden;
+    margin-right: -1px;
+    border-left: 1px solid #DEDEDE;
+}
+#orderinfo .p-list table {
+    border-collapse: collapse;
+    margin-left: -1px;
+    border: solid #DEDEDE;
+    border-width: 0 1px;
+}
+#orderinfo .p-list table {
+    border-collapse: collapse;
+}
+#orderinfo .p-list th {
+    padding: 5px;
+    background: #F0F0F0;
+    border-top: 1px solid #DEDEDE;
+    border-bottom: 1px solid #DEDEDE;
+    border-left: 1px solid #F0F0F0;
+    font-weight: normal;
+}
+#orderinfo .p-list td {
+    padding: 5px;
+    background: #fff;
+    border-top: 1px solid #DEDEDE;
+    border-bottom: 1px solid #DEDEDE;
+    border-left: 1px solid #F0F0F0;
+    text-align: center;
+}
+
+#orderinfo .p-list .img-list{
+    width: inherit;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
 
 
 .bti {

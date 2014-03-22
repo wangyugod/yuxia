@@ -34,7 +34,7 @@
                     <td>
                         <div class="img-list">
                             @for(item <- order.commerceItems){
-                            <a href="@routes.Browse.productDetail(item.sku.parentProduct.id)" class="img-box" target="_blank">
+                            <a href="@routes.Browse.productDetail(item.sku.parentProduct.id)?sku=@item.sku.id" class="img-box" target="_blank">
                                 <img title="@(item.sku.parentProduct.name + item.sku.name)" width="50" height="50" src="@util.AppHelper.productImage(item.sku.parentProduct)">
                             </a>
                             }

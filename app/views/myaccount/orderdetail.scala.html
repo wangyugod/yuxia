@@ -4,39 +4,93 @@
 @main(Messages("myacct.orderdetail.title"), user) {
 <div class="w">
     <div class="breadcrumb">
-        <strong><a href="@routes.Application.index/">我的京东</a></strong>
-        <span>&nbsp;&gt;&nbsp;<a href="http://jd2008.jd.com/JdHome/OrderList.aspx">订单中心</a>&nbsp;&gt;&nbsp;订单：@order.id<span></span></span>
+        <strong><a href="@routes.Application.index/">我的账户</a></strong>
+        <span>&nbsp;&gt;&nbsp;<a href="@routes.ProfileController.orderHistory()">订单中心</a>&nbsp;&gt;&nbsp;订单：@order.id<span></span></span>
     </div>
     <div class="m" id="orderstate">
         <div class="mt">
-            <strong>订单号：1135579807&nbsp;&nbsp;&nbsp;&nbsp;状态：<span class="ftx14">完成</span><span id="pay-button-1135579807"></span>
+            <strong>订单号：@order.id&nbsp;&nbsp;&nbsp;&nbsp;状态：<span class="ftx14">@order.orderStateDesc</span><span id="pay-button-1135579807"></span>
                 <span class="thirdpop"></span>
             </strong>
             <div class="fr">
-                <div class="toolbar"><input type="button" clstag="click|keycount|orderinfo|btn_Print" class="btn-img btn-inst" onclick="window.open('http://order.jd.com/normal/print.action?orderid=1135579807&amp;PassKey=6450CDBC9BB3E4AA43EC8B394A676906')" id="btn_Print" value="订单打印"><input type="button" class="btn-img btn" clstag="click|keycount|orderinfo|btn_Comment" onclick="javascript:location.href='http://club.jd.com/JdVote/TradeComment.aspx?ruleid=1135579807&amp;ot=0&amp;payid=4'" id="btn_Comment" value="评价"></div>
+                <div class="toolbar"><input type="button" class="btn-img btn-inst" onclick="window.open('http://order.jd.com/normal/print.action?orderid=1135579807&amp;PassKey=6450CDBC9BB3E4AA43EC8B394A676906')" id="btn_Print" value="订单打印"><input type="button" class="btn-img btn" clstag="click|keycount|orderinfo|btn_Comment" onclick="javascript:location.href='http://club.jd.com/JdVote/TradeComment.aspx?ruleid=1135579807&amp;ot=0&amp;payid=4'" id="btn_Comment" value="评价"></div>
             </div>
         </div>
-
         <div class="mc" style="display:show">
-
-            订单已经完成，感谢您在京东商城购物，欢迎您对本次交易及所购商品进行评价。<span class="flk13"><a href="http://club.jd.com/JdVote/TradeComment.aspx?ruleid=1135579807&amp;ot=0&amp;payid=4">发表评价</a></span>
-
+            @Messages("order.review.message")<span class="flk13"><a href="#">发表评价</a></span>
         </div>
-
-        <div class="mc" id="zxzf" style="display:none">
-            <div>
-                <p style="text-align:left;">
-                    尊敬的客户，您的订单商品已经从库房发出，请您做好收货准备。
-                </p>
-                <p style="text-align:left;">
-                    <span class="ftx-01">由京东提供</span>
-                    <s class="icon-bao"></s>
-                    <a target="_blank" href="http://help.jd.com/help/question-56.html#help1995">在线交易保障</a>
-                    <span>如果您已收到货，请确认收货，京东将与卖家结算。如果您对购买的商品不满意，您可在确认收货后发起返修/退换货申请!</span>
-                </p>
-            </div>
+    </div>
+    <div class="m" id="orderinfo">
+        <div class="mt">
+            <strong>订单信息</strong>
         </div>
-
+        <div class="mc">
+            <dl class="fore">
+                <dt>收货人信息</dt>
+                <dd>
+                    <ul>
+                        <li>收&nbsp;货&nbsp;人：@order.shippingAddress.get.contactPerson</li>
+                        <li>地&nbsp;&nbsp;&nbsp;&nbsp;址：@order.shippingAddress.get</li>
+                        <li>联系电话：@order.shippingAddress.get.contactPhone</li>
+                    </ul>
+                </dd>
+            </dl>
+            <dl>
+                <dt>支付及配送方式</dt>
+                <dd>
+                    <ul>
+                        <li>支付方式：@order.paymentGroup.get.paymentTypeDesc</li>
+                        <li>运&nbsp;&nbsp;&nbsp;&nbsp;费：￥0.00</li>
+                    </ul>
+                </dd>
+            </dl>
+            <dl>
+                <dt>
+                    <span class="i-mt">商品清单</span>
+                    <div class="clr"></div>
+                </dt>
+                <dd class="p-list">
+                    <table cellpadding="0" cellspacing="0" width="100%">
+                        <tbody><tr>
+                            <th width="18%"> 商品编号 </th>
+                            <th width="5%"> 商品图片 </th>
+                            <th width="41%"> 商品名称 </th>
+                            <th width="12%"> 京东价 </th>
+                            <th width="12%"> 商品数量 </th>
+                            <th width="12%">
+                                操作
+                            </th>
+                        </tr>
+                        @for(item <- order.commerceItems){
+                        <tr>
+                            <td>@item.sku.id</td>
+                            <td>
+                                <div class="img-list">
+                                    <a class="img-box" target="_blank" href="@routes.Browse.productDetail(item.sku.parentProduct.id)?sku=@item.sku.id">
+                                        <img width="50" height="50" src="@util.AppHelper.productImage(item.sku.parentProduct)" title="@(item.sku.parentProduct.name + item.sku.name)">
+                                    </a>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="al fl">
+                                    <a class="flk13" target="_blank" href="@routes.Browse.productDetail(item.sku.parentProduct.id)?sku=@item.sku.id" >@(item.sku.parentProduct.name + item.sku.name)</a>
+                                </div>
+                                <div class="clr"></div>
+                            </td>
+                            <td><span class="ftx04"> ￥@item.priceInfo.actualPrice</span></td>
+                            <td>1</td>
+                            <td>
+                                <span id="iwo206805" class="flk13">
+                                    <a target="_blank" href="#">评价</a>
+                                    <a target="_blank" href="@(item.sku.parentProduct.name + item.sku.name)">查看</a>
+				                </span>
+                            </td>
+                        </tr>
+                        }
+                        </tbody></table>
+                </dd>
+            </dl>
+        </div>
     </div>
 </div>
 }

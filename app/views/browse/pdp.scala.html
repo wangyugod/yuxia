@@ -30,7 +30,7 @@
                 <div class="dd">
                     @for(sku <- product.childSkus){
                     <div class="item">
-                        <a href="javascript:void(0)" title="@sku.name" onclick="selectSku('@sku.id', $(this))">@sku.name</a>
+                        <a href="javascript:void(0)" id="slink_@sku.id" title="@sku.name" onclick="selectSku('@sku.id')">@sku.name</a>
                     </div>
                     }
                     <span id="selectedSku" style="display:none"></span>
@@ -70,10 +70,23 @@
     </div>
 </div>
 <script type="text/javascript">
-    function selectSku(skuId, obj){
+    $(function(){
+        var selectedSkuId = window.location.search.replace('?sku=', '');
+        if(selectedSkuId){
+            selectSku(selectedSkuId);
+        } else {
+            var skuList = $("[id^=slink_]", "#choose-sku");
+            if(skuList.size() == 1){
+                selectSku(skuList[0].id.substr(6));
+            }
+        }
+
+
+    });
+    function selectSku(skuId){
         $("#selectedSku").text(skuId);
         $(".selected").removeClass("selected");
-        obj.parent().addClass("selected");
+        $("#slink_" + skuId).parent().addClass("selected");
 
     }
     function addToCart() {

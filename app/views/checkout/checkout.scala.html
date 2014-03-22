@@ -136,7 +136,6 @@
                                 }
                                     <div class="form-btn group">
                                         <a href="#none" class="btn-submit" onclick="saveConsignee()"><span id="saveConsigneeTitleDiv">保存收货人信息</span></a>
-                                        <div class="loading loading-1" style="display:none"><b></b>正在提交信息，请等待！</div>
                                     </div>
                                     <div style="display:none"><input id="consignee_form_reset" name="" type="reset"></div>
 
@@ -192,10 +191,10 @@
                                                     <tr>
                                                         <td class="fore1">
                                                             <div class="p-goods">
-                                                                <div class="p-img"><a href="@routes.Browse.productDetail(item.sku.parentProduct.id)" target="_blank"><img alt="" width="52px" height="52px" src="@util.AppHelper.productImage(item.sku.parentProduct)"></a></div>
+                                                                <div class="p-img"><a href="@routes.Browse.productDetail(item.sku.parentProduct.id)?sku=@item.sku.id" target="_blank"><img alt="" width="52px" height="52px" src="@util.AppHelper.productImage(item.sku.parentProduct)"></a></div>
                                                                 <div class="p-detail">
                                                                     <div class="p-name">
-                                                                        <a href="@routes.Browse.productDetail(item.sku.parentProduct.id)" target="_blank">
+                                                                        <a href="@routes.Browse.productDetail(item.sku.parentProduct.id)?sku=@item.sku.id" target="_blank">
                                                                             @(item.sku.parentProduct.name + item.sku.name)
                                                                         </a>
                                                                     </div>
