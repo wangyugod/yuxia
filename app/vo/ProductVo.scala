@@ -12,7 +12,7 @@ import util._
  * To change this template use File | Settings | File Templates.
  */
 case class ProductVo(id: Option[String], merchantId: String, name: String, description: String, longDescription: String, startDate: Option[String], endDate: Option[String], categories: String, selectedCat: String, skus: Seq[SkuVo]) {
-  val productId = id.getOrElse(IdGenerator.generateProductId())
+  val productId = id.getOrElse(LocalIdGenerator.generateProductId())
   var imageUrl = ""
 
   def product = {
@@ -26,7 +26,7 @@ case class ProductVo(id: Option[String], merchantId: String, name: String, descr
 
 case class SkuVo(id: Option[String], name: String, description: Option[String], listPrice: BigDecimal, salePrice: Option[BigDecimal], saleStartDate: Option[String], saleEndDate: Option[String]) {
   def sku(productId: String) = {
-    Sku(id.getOrElse(IdGenerator.generateSkuId()), name, description, None, productId, listPrice, salePrice, AppHelper.convertDateFromText(saleStartDate), AppHelper.convertDateFromText(saleEndDate), new Timestamp(new java.util.Date().getTime))
+    Sku(id.getOrElse(LocalIdGenerator.generateSkuId()), name, description, None, productId, listPrice, salePrice, AppHelper.convertDateFromText(saleStartDate), AppHelper.convertDateFromText(saleEndDate), new Timestamp(new java.util.Date().getTime))
   }
 }
 

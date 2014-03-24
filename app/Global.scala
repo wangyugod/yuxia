@@ -1,7 +1,6 @@
 
-import util.IdGenerator
+import models.CategoryCategory
 import java.sql.Date
-import models.{Profile, Profiles}
 import models._
 import play.api.db.DB
 import play.api.GlobalSettings
@@ -44,11 +43,12 @@ object Global extends GlobalSettings {
 //      Areas.ddl.create
 //      MerchantServiceInfos.ddl.create
 //      MerchantShippingScopes.ddl.create
-      TableQuery[OrderRepo].ddl.create
-      TableQuery[CommerceItemRepo].ddl.create
-      TableQuery[PriceInfoRepo].ddl.create
-      TableQuery[PaymentGroupRepo].ddl.create
-      TableQuery[ShippingGroupRepo].ddl.create
+//      TableQuery[OrderRepo].ddl.create
+//      TableQuery[CommerceItemRepo].ddl.create
+//      TableQuery[PriceInfoRepo].ddl.create
+//      TableQuery[PaymentGroupRepo].ddl.create
+//      TableQuery[ShippingGroupRepo].ddl.create
+        TableQuery[IdGenerationRepo].ddl.create
 
 //      CategoryCategories.ddl.create
 
@@ -57,7 +57,7 @@ object Global extends GlobalSettings {
         Profiles.insert(Profile(IdGenerator.generateProfileId(), "simonwang@gmail.com", "test", "simon", Some("M"), Some(new Date(1981 + 1900, 9, 20))))
       }*/
 
-      val categoryQuery = TableQuery[Categories]
+      /*val categoryQuery = TableQuery[Categories]
       val catcatQuery = TableQuery[CategoryCategories]
       if(categoryQuery.list().isEmpty){
         println("insert categories")
@@ -79,7 +79,7 @@ object Global extends GlobalSettings {
         catcatQuery.insert(CategoryCategory("cat11", "cat111"))
         catcatQuery.insert(CategoryCategory("cat11", "cat112"))
         catcatQuery.insert(CategoryCategory("cat11", "cat113"))
-      }
+      }*/
     }
   }
 

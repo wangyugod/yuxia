@@ -1,7 +1,7 @@
 package vo
 
 import models._
-import util.{DBHelper, IdGenerator}
+import util.{DBHelper}
 import play.api.Logger
 
 /**
@@ -16,7 +16,7 @@ case class MerchantVo(id: Option[String], login: String, name: String, descripti
   lazy val addrId: String = {
     this.addressId match {
       case Some(aid) => aid
-      case _ => IdGenerator.generateAddressId()
+      case _ => LocalIdGenerator.generateAddressId()
     }
   }
 

@@ -4,11 +4,10 @@ import play.api.mvc._
 import play.api.data.Form
 import play.api.data.Forms._
 import scala.Some
-import models.{Area, InternalUser}
+import models.{LocalIdGenerator, Area, InternalUser}
 import views.html
 import play.api.i18n.Messages
 import java.sql.Timestamp
-import util.IdGenerator
 import play.api.Logger
 
 /**
@@ -58,7 +57,7 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
       "name" -> nonEmptyText,
       "detail" -> nonEmptyText,
       "parentAreaId" -> optional(text)
-    )((id, name, detail, parentAreaId) => Area(id.getOrElse(IdGenerator.generateAreaId()), name, detail, parentAreaId, new Timestamp(new java.util.Date().getTime())))(
+    )((id, name, detail, parentAreaId) => Area(id.getOrElse(LocalIdGenerator.generateAreaId()), name, detail, parentAreaId, new Timestamp(new java.util.Date().getTime())))(
       (area: Area) => Some(Some(area.id), area.name, area.detail, area.parentAreaId))
 
   )

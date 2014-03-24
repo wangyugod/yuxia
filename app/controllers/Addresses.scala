@@ -1,6 +1,6 @@
 package controllers
 
-import _root_.util.{SearchHelper, IdGenerator}
+import _root_.util.{SearchHelper}
 import play.api.mvc._
 import play.api.Logger
 import models.{Address, Area}

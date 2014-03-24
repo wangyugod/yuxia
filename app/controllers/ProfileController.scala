@@ -59,7 +59,7 @@ object ProfileController extends Controller with Users with Secured {
         ),
       "name" -> nonEmptyText
     )
-      ((id, login, passwords, name) => Profile(id.getOrElse(IdGenerator.generateProfileId), login, passwords._1, name, None, None))
+      ((id, login, passwords, name) => Profile(id.getOrElse(LocalIdGenerator.generateProfileId), login, passwords._1, name, None, None))
       ((profile: Profile) => {
         Some((Some(profile.id), profile.login, (profile.password, ""), profile.name))
       }) verifying(Messages("error.login.alreadyexist"), profile => Profile.findUserByLogin(profile.login).isEmpty)
@@ -73,7 +73,7 @@ object ProfileController extends Controller with Users with Secured {
       "gender" -> optional(text),
       "birthday" -> optional(text.verifying(Constraints.pattern( """(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])""".r, "Date Constraint", Messages("error.myacct.birthday"))))
     )
-      ((id, login, name, gender, birthday) => Profile(id.getOrElse(IdGenerator.generateProfileId), login, "", name, gender, AppHelper.convertDateFromText(birthday)))
+      ((id, login, name, gender, birthday) => Profile(id.getOrElse(LocalIdGenerator.generateProfileId), login, "", name, gender, AppHelper.convertDateFromText(birthday)))
       ((profile: Profile) => {
         Some((Some(profile.id), profile.login, profile.name, profile.gender, AppHelper.convertDateToText(profile.birthDay)))
       }) //verifying("User with the same loign already exists", profile => ProfileService.findUserByLogin(profile.login).isEmpty)
@@ -98,7 +98,7 @@ object ProfileController extends Controller with Users with Secured {
       "contactPerson" -> nonEmptyText,
       "areaId" -> nonEmptyText,
       "isDefaultAddress" -> optional(boolean)
-    )((id, province, city, district, contactPhone, addressLine, contactPerson, areaId, isDefaultAddress) => AddressVo(id.getOrElse(IdGenerator.generateAddressId()), province, city, district, contactPhone, addressLine, contactPerson, Some(areaId), isDefaultAddress))
+    )((id, province, city, district, contactPhone, addressLine, contactPerson, areaId, isDefaultAddress) => AddressVo(id.getOrElse(LocalIdGenerator.generateAddressId()), province, city, district, contactPhone, addressLine, contactPerson, Some(areaId), isDefaultAddress))
       ((addr: AddressVo) => Some(Some(addr.id), addr.province, addr.city, addr.district, addr.contactPhone, addr.addressLine, addr.contactPerson, addr.areaId.get, addr.isDefaultAddress))
   )
 

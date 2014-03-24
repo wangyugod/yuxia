@@ -63,7 +63,7 @@ object Merchandise extends Controller with Merchants with MerchSecured {
       ),
       "name" -> nonEmptyText
     )
-      ((id, login, description, passwords, name) => Merchant(id.getOrElse(IdGenerator.generateMerchantId), login, passwords._1, name, description, Constants.SELF_REGISTERED))
+      ((id, login, description, passwords, name) => Merchant(id.getOrElse(LocalIdGenerator.generateMerchantId), login, passwords._1, name, description, Constants.SELF_REGISTERED))
       ((merchant: Merchant) => {
         Some(Some(merchant.id), merchant.login, merchant.description, (merchant.password, ""), merchant.name)
       }) verifying(Messages("error.login.alreadyexist"), profile => Merchant.findByLogin(profile.login).isEmpty

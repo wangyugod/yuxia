@@ -7,7 +7,7 @@ import play.api.Play.current
 import play.api.Play.current
 
 import scala.slick.driver.MySQLDriver.simple._
-import util.{DBHelper, IdGenerator}
+import util.{DBHelper}
 import java.util.Date
 import play.api.Logger
 import play.api.i18n.Messages
@@ -207,7 +207,7 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
         priceInfoRepo.where(_.id === pid).update(PriceInfo(pid, listPrice, actualPrice, None))
       }
       case _ => {
-        val priceInfoId = IdGenerator.generatePriceInfoId()
+        val priceInfoId = LocalIdGenerator.generatePriceInfoId()
         priceInfoRepo.insert(PriceInfo(priceInfoId, listPrice, actualPrice, None))
         TableQuery[OrderRepo].where(_.id === order.id).update(Order(order.id, order.profileId, order.state, Some(priceInfoId), order.createdTime, new Timestamp(new Date().getTime)))
       }
@@ -255,8 +255,8 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
             case _ =>
               //Add new commerceItem
               log.debug(s"No existed item found, add new!")
-              val priceInfo = PriceInfo(IdGenerator.generatePriceInfoId(), sku.listPrice, sku.price, None)
-              val commerceItem = CommerceItem(IdGenerator.generateCommerceItemId(), skuId, order.id, priceInfo.id, quantity, new Timestamp(new Date().getTime))
+              val priceInfo = PriceInfo(LocalIdGenerator.generatePriceInfoId(), sku.listPrice, sku.price, None)
+              val commerceItem = CommerceItem(LocalIdGenerator.generateCommerceItemId(), skuId, order.id, priceInfo.id, quantity, new Timestamp(new Date().getTime))
               priceInfoRepo.insert(priceInfo)
               ciRepo.insert(commerceItem)
           }
@@ -267,14 +267,14 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
 
 
   def create(profileId: String) = {
-    val order = Order(IdGenerator.generateOrderId(), profileId, OrderState.INITIAL, None, new Timestamp(new Date().getTime()), new Timestamp(new Date().getTime()))
+    val order = Order(LocalIdGenerator.generateOrderId(), profileId, OrderState.INITIAL, None, new Timestamp(new Date().getTime()), new Timestamp(new Date().getTime()))
     DBHelper.database.withTransaction {
       implicit ss: Session =>
         TableQuery[OrderRepo].insert(order)
         val profile = Profile.findUserById(profileId).get
         profile.defaultAddress match {
           case Some(address) =>
-            TableQuery[ShippingGroupRepo].insert(ShippingGroup(IdGenerator.generateShippingGroupId(), address.id, Messages("sg.default.method"), order.id))
+            TableQuery[ShippingGroupRepo].insert(ShippingGroup(LocalIdGenerator.generateShippingGroupId(), address.id, Messages("sg.default.method"), order.id))
           case _ =>
             if (log.isDebugEnabled)
               log.debug("No address found on user")
@@ -299,7 +299,7 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
       case _ =>
         if (log.isDebugEnabled)
           log.debug("INSERT new ShippingGroup with id " + address.id)
-        sgRepo.insert(ShippingGroup(IdGenerator.generateShippingGroupId(), address.id, Messages("sg.default.method"), order.id))
+        sgRepo.insert(ShippingGroup(LocalIdGenerator.generateShippingGroupId(), address.id, Messages("sg.default.method"), order.id))
     }
   }
 
@@ -316,7 +316,7 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
       case Some(pg) =>
         pgRepo.where(_.id === pg.id).update(PaymentGroup(pg.id, pg.paymentType, priceInfo.actualPrice, pg.orderId))
       case _ =>
-        pgRepo.insert(PaymentGroup(IdGenerator.generatePaymentGroupId(), PaymentType.REACH_DEBIT, priceInfo.actualPrice, orderId))
+        pgRepo.insert(PaymentGroup(LocalIdGenerator.generatePaymentGroupId(), PaymentType.REACH_DEBIT, priceInfo.actualPrice, orderId))
     }
     val newOrder = order.copy(state = OrderState.SUBMITTED, modifiedTime = new Timestamp(new Date().getTime))
     if (log.isDebugEnabled)
