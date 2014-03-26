@@ -1,4 +1,4 @@
-@(order: Order)(implicit user:Option[Profile])
+@(order: Order)(implicit user:Option[Profile],flash: Flash)
 @import helper._
 @main(Messages("order.checkout.title"), user, false) {
 <script src="@routes.Assets.at("javascripts/area.js")" type="text/javascript"></script>
@@ -81,14 +81,14 @@
                                         <div class="consignee-form" id="consignee-form" name="consignee-form" style="padding-left:12px; display:none">
                                             <input type="hidden" name="id" id="id"/>
                                             <input type="hidden" name="areaId" id="areaId"/>
-                                            <div class="list" id="name_div">
+                                            <div class="list message" id="name_div">
                                                 <span class="label"><em>*</em>@Messages("addr.contactperson.label")</span>
                                                 <div class="field">
-                                                    <input type="text" class="textbox" id="contactPerson" name="contactPerson" maxlength="20" onblur="check_Consignee('name_div')">
+                                                    <input type="text" class="textbox" id="contactPerson" name="contactPerson" maxlength="20" onblur="check_Consignee('name_div', $(this))">
                                                 </div>
-                                                <span class="status error" id="name_div_error"></span>
+                                                <span class="status error" id="name_div_error" style="display: none">@Messages("checkout.address.name.error")</span>
                                             </div>
-                                            <div class="list select-address" id="area_div">
+                                            <div class="list select-address" id="address_div">
                                                 <span class="label"><em>*</em>所在地区：</span>
                                                 <div class="field">
                                                     <span id="span_area">
@@ -97,7 +97,7 @@
                                                        </span>
                                                        <span id="span_city"><select id="city" name="city"><option value="cd">@util.AddressInfo.cityName("cd")</option></select></span>
                                                        <span id="span_county">
-                                                           <select id="district" name="district" onchange="loadTowns()">
+                                                           <select id="district" name="district"">
                                                                @for(dist <- (util.AddressInfo.cityDistrictMap.get("cd").get)){
                                                                <option value="@dist">@util.AddressInfo.distName(dist)</option>
                                                                }
@@ -107,35 +107,39 @@
                                                     </span>
                                                 </div>
                                             </div>
-                                            <div class="list" id="email_div">
-                                                <span class="label"><em></em>@Messages("addr.area.label")</span>
+                                            <div class="list message" id="area_div">
+                                                <span class="label"><em>*</em>@Messages("addr.area.label")</span>
                                                 <div class="field">
-                                                    <input type="text" class="textbox" id="areaName" name="areaName" maxlength="50" onblur="check_Consignee('email_div')">
+                                                    <input type="text" class="textbox" id="areaName" name="areaName" maxlength="50" onblur="check_Consignee('area_div', $('#areaId'))">
                                                     <a class="btn-12" href="#none" id="choosearea" onclick="showAreaTree()"><s></s>@Messages("addr.area.btn")</a>
                                                 </div>
-                                                <span class="status error" id="email_div_error"></span>
+                                                    <span class="status error" id="area_div_error" style="display: none">@Messages("checkout.address.area.error")</span>
                                             </div>
-                                            <div class="list" id="call_div">
+                                            <div class="list message" id="call_div">
                                                 <span class="label"><em>*</em>手机号码：</span>
                                                 <div class="field">
                                                     <div class="phone">
-                                                        <input type="text" class="textbox" id="contactPhone" name="contactPhone" onblur="check_Consignee('call_mobile_div')" maxlength="11" onkeyup="check_Phone('call_mobile_div')">
+                                                        <input type="text" class="textbox" id="contactPhone" name="contactPhone" onblur="check_Consignee('call_div',$(this))" maxlength="11" onkeyup="check_Phone('call_div', $(this))">
                                                     </div>
-                                                    <span class="status error" id="call_div_error"></span>
                                                 </div>
+                                                <span class="status error" id="call_div_error" style="display: none">@Messages("checkout.address.phone.error")</span>
                                             </div>
-                                            <div class="list full-address" id="address_div">
+                                            <div class="list full-address message" id="address_div">
                                                 <span class="label"><em>*</em>详细地址：</span>
                                                 <div class="field">
                                                     <span class="fl selected-address" id="areaNameTxt"></span>
-                                                    <input type="text" class="textbox" id="addressLine" name="addressLine" maxlength="50" onblur="check_Consignee('address_div')">
+                                                    <input type="text" class="textbox" id="addressLine" name="addressLine" maxlength="50" onblur="check_Consignee('address_div', $(this))">
                                                 </div>
-                                                <span class="status error" id="address_div_error"></span>
+                                                    <span class="status error" id="address_div_error" style="display: none">@Messages("checkout.address.line.error")</span>
                                             </div>
                                         </div>
                                 }
                                     <div class="form-btn group">
                                         <a href="#none" class="btn-submit" onclick="saveConsignee()"><span id="saveConsigneeTitleDiv">保存收货人信息</span></a>
+                                        @if(flash.get("addrError").isDefined){
+                                            <strong class="checkout-error">@flash.get("addrError").get</strong>
+                                        }
+
                                     </div>
                                     <div style="display:none"><input id="consignee_form_reset" name="" type="reset"></div>
 
@@ -228,6 +232,12 @@
                                                 </div>
                                                 <div class="list"><span>返现：</span><em class="price" id="cachBackId" v="0.00"> -@(order.priceInfo.actualPrice - order.priceInfo.listPrice)</em></div>
                                                 <div class="list"><span>应付总额：</span><em id="sumPayPriceId" class="price"> @order.priceInfo.actualPrice</em></div>
+                                                @flash.get("result") match {
+                                                    case Some("fail") => {
+                                                <strong class="checkout-error"> @Messages("order.submit.error")</strong>
+                                                    }
+                                                    case _ =>{}
+                                                }
                                             </div>
                                         </div>
                                     </div>
@@ -261,6 +271,23 @@
         <span>@Messages("order.address.delete.confirm")</span>
     </div>
     <script type="text/javascript">
+        function check_Consignee(div, obj){
+            var errorDiv = $("#" + div + "_error")
+            if(obj.val().trim() == ""){
+                errorDiv.show();
+            }else{
+                errorDiv.hide();
+            }
+        }
+
+        function check_Phone(div, obj){
+            var errorDiv = $("#" + div + "_error")
+            if(!$.isNumeric(obj.val())){
+                errorDiv.show();
+            } else {
+                errorDiv.hid()
+            }
+        }
 
         function modifyConsignee(){
             $(".s-content").hide();

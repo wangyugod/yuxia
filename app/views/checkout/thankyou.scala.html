@@ -10,7 +10,7 @@
             <input type="hidden" id="skuIds" value="206805"><!-- 商品id串  -->
             <ul class="list-order">
                 <li class="li-st">
-                    <div class="fore1">订单号：<a href="http://order.jd.com/normal/item.action?orderid=1200889432&amp;PassKey=B1DE3C29C8F6B1D53BA02AF646D29A46">@order.id</a></div>
+                    <div class="fore1">订单号：<a href="@routes.ProfileController.orderDetail(order.id)">@order.id</a></div>
                     <!-- 货到付款 -->
                     <div class="fore2">货到付款：<strong class="ftx-01">@(order.priceInfo.actualPrice)元</strong></div>
                 </li>
@@ -23,6 +23,6 @@
         </div>
     </div>
     <div class="o-mb">完成支付后，您可以：
-        <a href="http://jd2008.jd.com/JdHome/OrderList.aspx">查看订单状态</a>&nbsp;&nbsp;<a href="@routes.Application.index">继续购物</a></div>
+        <a href="@routes.ProfileController.orderDetail(order.id)">查看订单状态</a>&nbsp;&nbsp;<a href="@routes.Application.index">继续购物</a></div>
 </div>
 }

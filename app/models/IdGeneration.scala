@@ -4,12 +4,13 @@ import scala.slick.driver.MySQLDriver.simple._
 import util.{DBHelper}
 import scala.slick.lifted
 import java.util.UUID
+import play.api.Logger
 
 /**
  * Created by thinkpad-pc on 14-3-23.
  */
 case class IdGeneration(id: String, initial: Int, step: Int, sequence: Int, prefix: String, key: String) {
-  def generatePassword = prefix + sequence
+  lazy val generatePassword = prefix + (sequence - 1)
 }
 
 class IdGenerationRepo(tag: Tag) extends Table[IdGeneration](tag, "id_gen") {
@@ -24,6 +25,7 @@ class IdGenerationRepo(tag: Tag) extends Table[IdGeneration](tag, "id_gen") {
 }
 
 object IdGeneration extends ((String, Int, Int, Int, String, String) => IdGeneration) {
+  val log = Logger(this.getClass)
   val SHIPPING_GROUP = "shipping_group"
   val ORDER = "order"
   val PROFILE = "profile"
@@ -46,8 +48,10 @@ object IdGeneration extends ((String, Int, Int, Int, String, String) => IdGenera
       idGenQuery.where(_.key === key).firstOption match {
         case Some(idGenerator) =>
           val nextGen = idGenerator.copy(sequence = idGenerator.sequence + idGenerator.step)
+          if(log.isDebugEnabled)
+            log.debug("new password is " + nextGen.generatePassword)
           idGenQuery.where(_.id === idGenerator.id).update(nextGen)
-          idGenerator.generatePassword
+          nextGen.generatePassword
         case _ =>
           val idGeneration: IdGeneration = IdGeneration(UUID.randomUUID().toString, INITIAL, STEP, INITIAL + STEP, prefixMap.get(key).get, key)
           idGenQuery.insert(idGeneration)

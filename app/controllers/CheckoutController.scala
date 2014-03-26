@@ -5,6 +5,7 @@ import play.api._
 import views.html
 import models.{ShippingGroup, Address, Profile, Order}
 import util.DBHelper
+import play.api.i18n.Messages
 
 /**
  * Created with IntelliJ IDEA.
@@ -87,7 +88,9 @@ object CheckoutController extends Controller with Users with Secured {
     implicit request =>
       ProfileController.addressForm.bindFromRequest.fold(
         formWithErrors => {
-          Redirect(routes.CheckoutController.checkout())
+          if (log.isDebugEnabled)
+            log.debug("here eror form now")
+          Redirect(routes.CheckoutController.checkout()).flashing("addrError" -> Messages("checkout.address.error"))
         },
         address => {
           val userId = request.session.get(USER_ID).get
@@ -130,13 +133,22 @@ object CheckoutController extends Controller with Users with Secured {
   def submitOrder = isAuthenticated {
     implicit request =>
       val orderId = request.session.get(CURR_ORDER_ID).get
-      val order: Order = DBHelper.database.withTransaction {
+      var result = false
+      DBHelper.database.withTransaction {
         implicit session =>
-          Order.submitOrder(orderId)
-          Order.findOrderById(orderId).get
+          val sg = Order.findOrderShippingGroup(orderId)
+          val pg = Order.findPaymentGroup(orderId)
+          if (sg.isDefined && pg.isDefined) {
+            Order.submitOrder(orderId)
+            result = true
+          }
       }
-      val newSession = request.session - CURR_ORDER_ID + (LAST_ORDER_ID -> orderId)
-      Redirect(routes.CheckoutController.thankYou).withSession(newSession)
+      if (result) {
+        val newSession = request.session - CURR_ORDER_ID + (LAST_ORDER_ID -> orderId)
+        Redirect(routes.CheckoutController.thankYou).withSession(newSession).flashing("result" -> "success")
+      } else {
+        Redirect(routes.CheckoutController.checkout()).flashing("result" -> "fail")
+      }
   }
 
 
@@ -144,7 +156,7 @@ object CheckoutController extends Controller with Users with Secured {
     implicit request =>
       val orderId = request.session.get(LAST_ORDER_ID).get
       val currOrderId = request.session.get(CURR_ORDER_ID)
-      if(log.isDebugEnabled)
+      if (log.isDebugEnabled)
         log.debug(s"lastOrderId is $orderId currentId is $currOrderId")
       val order = DBHelper.database.withSession {
         implicit session =>

@@ -1529,6 +1529,11 @@ h4, h5, h6 {
     margin-bottom: 4px;
 }
 
+a:hover {
+    color: #E4393C;
+    text-decoration: underline;
+}
+
 
 .bti {
     background: url(/assets/images/use.gif) 0 -67px;
@@ -2504,6 +2509,16 @@ table th {
     color: #fff;
     text-decoration: none;
 }
+#consignee .full-address .textbox{
+    width: 308px;
+}
+#consignee .message .error{
+    height: 26px;
+    padding-left: 6px;
+    float: left;
+    color: #c00;
+    line-height: 26px;
+}
 #checkout .btn-submit:hover span {
     height: 30px;
     padding-right: 20px;
@@ -2685,6 +2700,13 @@ em {
     width: 15%;
     text-align: right;
 }
+
+.checkout-error{
+    color: #e4393c;
+    vertical-align: bottom;
+    font-weight: normal;
+}
+
 .group {
     zoom: 1;
 }
@@ -2740,6 +2762,8 @@ em {
     vertical-align: bottom;
     font-weight: normal;
 }
+
+
 .msop {
     background: #F3FDED;
     border-top: 2px solid #7ABD54;

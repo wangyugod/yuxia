@@ -114,6 +114,7 @@ pdp.price.label=价格
 pdp.shipping.scope.label=配送范围
 pdp.rating.label=评分
 pdp.choose.sku.label=选择类型
+pdp.sale.quantity.label=总销售量
 
 #SRP
 srp.search.order=排序
@@ -173,3 +174,9 @@ cart.empty=购物车内暂时没有商品，您可以{0}挑选喜欢的商品
 order.checkout.title=订单结算
 order.address.delete.confirm=您确定要删除该地址吗？
 order.thankyou.title=订单成功页面
+order.submit.error=提交订单失败，请确认是否正确选择收货地址和付款方式！
+checkout.address.error=请填完地址信息的必需字段！
+checkout.address.name.error=请您填写收货人姓名！
+checkout.address.area.error=请您选择所属区域！
+checkout.address.phone.error=请您正确填写联系电话！
+checkout.address.line.error=请您填写详细地址！
