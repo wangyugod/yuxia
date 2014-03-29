@@ -42,7 +42,7 @@ object AppHelper {
     Play.application.path.getPath + "\\" + Play.current.configuration.getString("prod.image.dir").get
   }
 
-  def displayPrice(priceRange:(BigDecimal, BigDecimal)) = {
+  def displayPrice(priceRange: (BigDecimal, BigDecimal)) = {
     priceRange match {
       case (x, y) if x == y => Messages("srp.price.single", x)
       case (x, y) => {
@@ -53,5 +53,18 @@ object AppHelper {
 
   def productImage(product: Product) = {
     controllers.routes.Assets.at("images/product/" + product.imageUrl)
+  }
+
+  def maskMail(email: String) = {
+    val user = email.substring(0, email.indexOf('@'))
+    val domain = email.substring(email.indexOf('@'))
+    var userMask = ""
+    val userStart = user.charAt(0)
+    if (user.length < 3) {
+      userMask = userStart + "*"
+    } else {
+      userMask = userStart + "*****" + user.charAt(user.length - 1)
+    }
+    userMask + domain
   }
 }

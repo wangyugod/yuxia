@@ -3,6 +3,7 @@ package controllers
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.Play.current
 import validation.Constraints
 import views.html
 
@@ -11,6 +12,7 @@ import util._
 import play.api.i18n.Messages
 import play.api.Logger
 import vo.AddressVo
+import java.util.{Date, UUID}
 
 /**
  * Created with IntelliJ IDEA.
@@ -42,6 +44,7 @@ trait Users {
 
 object ProfileController extends Controller with Users with Secured {
   private val log = Logger(this.getClass)
+  private val PWD_MAIL_CODE = "mailcode"
 
 
   val profileForm: Form[Profile] = Form(
@@ -242,14 +245,61 @@ object ProfileController extends Controller with Users with Secured {
       Ok(html.myaccount.orderhistory(orderList))
   }
 
-  def orderDetail(orderId: String) = isAuthenticated{
+  def orderDetail(orderId: String) = isAuthenticated {
     implicit request =>
-      val order = DBHelper.database.withSession{
+      val order = DBHelper.database.withSession {
         implicit session =>
           Order.findOrderById(orderId).get
       }
       Ok(html.myaccount.orderdetail(order))
   }
 
+  def passwordManagement() = isAuthenticated {
+    implicit request =>
+      Ok(html.myaccount.passwordmgt())
+  }
 
+  def sendMailVerificationCode() = isAuthenticated {
+    import com.typesafe.plugin._
+    implicit request =>
+      val mailCode = request.session.get(USER_ID).get + new Date().getTime()
+      val encodedResult = Encoder.encodeSHA(mailCode)
+      if (log.isDebugEnabled)
+        log.debug(s"encoded $mailCode as $encodedResult")
+      val userLogin = request.session.get(LOGIN_KEY).get
+      val mail = use[MailerPlugin].email
+      mail.setSubject(Messages("pwdmgt.mail.title"))
+      mail.addFrom("wangyu4j@gmail.com")
+      mail.addRecipient(userLogin)
+      mail.send(Messages("pwdmgt.mail.code", encodedResult))
+      Ok(encodedResult).withSession(request.session + (PWD_MAIL_CODE -> encodedResult))
+  }
+
+  val mailCodeForm = Form(
+    single(
+      "code" -> text
+    )
+  )
+
+  def verifyPwdChangeMailCode = isAuthenticated {
+    implicit request =>
+      mailCodeForm.bindFromRequest.fold(
+        formWithErrors => {
+          BadRequest(html.myaccount.passwordmgt())
+        },
+        code => {
+          request.session.get(PWD_MAIL_CODE) match {
+            case Some(mailCode) if mailCode == code =>
+              Redirect(routes.ProfileController.changePassword()).withSession(request.session - PWD_MAIL_CODE)
+            case _ =>
+              Redirect(routes.ProfileController.passwordManagement()).flashing("verify.result" -> "您输入的验证码不匹配,或者该验证码已经使用过，请重新输入")
+          }
+        }
+      )
+  }
+
+  def changePassword = isAuthenticated{
+    implicit request =>
+      Ok(html.myaccount.passwordchange())
+  }
 }

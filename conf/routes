@@ -16,6 +16,10 @@ POST    /myaccount/address          controllers.ProfileController.updateAddress
 DELETE  /myaccount/address/:id      controllers.ProfileController.deleteAddress(id)
 GET     /myaccount/orderhistory     controllers.ProfileController.orderHistory
 GET     /myaccount/order/:id        controllers.ProfileController.orderDetail(id)
+GET     /myaccount/pwdmgt           controllers.ProfileController.passwordManagement
+POST    /myaccount/pwdmgt/mailcode  controllers.ProfileController.sendMailVerificationCode
+POST    /myaccount/pwdmgt           controllers.ProfileController.verifyPwdChangeMailCode
+GET     /myaccount/pwdmgt/form      controllers.ProfileController.changePassword
 GET     /signout                    controllers.ProfileController.signout
 GET     /merch/login                controllers.Merchandise.login
 POST    /merch/login                controllers.Merchandise.authenticate

@@ -137,8 +137,9 @@ object CheckoutController extends Controller with Users with Secured {
       DBHelper.database.withTransaction {
         implicit session =>
           val sg = Order.findOrderShippingGroup(orderId)
-          val pg = Order.findPaymentGroup(orderId)
-          if (sg.isDefined && pg.isDefined) {
+          if (log.isDebugEnabled)
+            log.debug(s"shippingGroup is $sg")
+          if (sg.isDefined) {
             Order.submitOrder(orderId)
             result = true
           }

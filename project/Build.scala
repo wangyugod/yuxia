@@ -15,6 +15,8 @@ object ApplicationBuild extends Build {
     //"com.typesafe.play" %% "play-slick" % "0.4.0",
     "mysql" % "mysql-connector-java" % "5.1.26",
     "org.apache.httpcomponents" % "httpclient" % "4.2.5",
+    "commons-codec" % "commons-codec" % "1.9",
+    "com.typesafe" %% "play-plugins-mailer" % "2.1-RC2",
 
     jdbc
   )

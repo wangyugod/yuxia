@@ -1,5 +1,5 @@
 @(user: Option[Profile])(content:Html)
-@main("My Account", user){
+@main(Messages("myaccount.title"), user){
 <div class="w main">
     <div id="accountMenu" class="left">
         <div class="mt">
@@ -10,7 +10,7 @@
                 <dt tag="1">订单中心<b></b></dt>
                 <dd style="display: block;">
                     <div id="mcBaseInfo" class="item"><a href="@routes.ProfileController.myAccount" tag="102">基本信息</a></div>
-                    <div id="mcPwdMgt" class="item"><a href="#" tag="102">密码管理</a></div>
+                    <div id="mcPwdMgt" class="item"><a href="@routes.ProfileController.passwordManagement" tag="102">密码管理</a></div>
                     <div id="mcOrderHistory" class="item"><a href="@routes.ProfileController.orderHistory" tag="101">我的订单</a></div>
                     <div id="mcAddress" class="item"><a href="@routes.ProfileController.addressList" tag="104">收货地址</a></div>
                     <div id="_MYJD_history" class="item"><a href="#" tag="106">我的收藏</a></div>

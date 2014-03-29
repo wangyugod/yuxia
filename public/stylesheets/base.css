@@ -583,6 +583,113 @@ a:link, a:visited {
     text-decoration: none;
 }
 
+/*Password Management*/
+.step {
+    overflow: hidden;
+    background: #ededed;
+    color: #999999;
+    font-weight: bold;
+    margin: 0 auto 10px;
+    zoom: 1;
+}
+#step1 .fore1, #step2 .fore2, #step3 .fore3, #step4 .fore4 {
+    background: #ffe6bc;
+    color: #ff6600;
+}
+.step01 li {
+    width: 280px;
+    text-align: center;
+}
+.step li {
+    float: left;
+    position: relative;
+    padding-left: 22px;
+    padding-right: 35px;
+    line-height: 25px;
+    height: 25px;
+    overflow: hidden;
+}
+#step1 .fore1 b, #step2 .fore2 b, #step3 .fore3 b {
+    background-position: 0 -26px;
+}
+.step li b {
+    position: absolute;
+    width: 22px;
+    height: 25px;
+    background: url(/assets/images/flow.gif) no-repeat;
+    top: 0;
+    right: -1px;
+}
+.safe-sevi {
+    padding: 20px 10px 0;
+}
+.m1 {
+    border: 1px solid #e6e6e6;
+    margin-top: -1px;
+    z-index: -1;
+}
+.safe-sevi .form01 {
+    border-bottom: 1px dotted #E5E5E5;
+    margin-bottom: 20px;
+}
+.right .safe-sevi .item {
+    min-height: 40px;
+    margin-bottom: 0;
+}
+.right .form .item01 {
+    margin-bottom: 15px;
+}
+.right .form .label, .right .form label {
+    line-height: 25px;
+    margin-right: 8px;
+}
+.right .form .label {
+    color: #666666;
+    text-align: right;
+}
+
+.ftx-un {
+    font-size: 16px;
+    line-height: 25px;
+    margin-right: 10px;
+}
+.right .safe-sevi .item .btn {
+    margin-right: 10px;
+}
+.right .safe-sevi .item .btn-7 {
+    background-position: right -393px;
+    font-weight: normal;
+}
+.btn-7 {
+    background-position: right -393px;
+}
+#step2 .fore1, #step3 .fore1, #step3 .fore2, #step4 .fore1, #step4 .fore2, #step4 .fore3 {
+    background: #bbbbbb;
+    color: #ffffff;
+}
+#step2 .fore1 b, #step3 .fore2 b, #step4 .fore3 b {
+    background-position: 0 -78px;
+}
+.m3 {
+    border: 1px solid #EDD28B;
+    background: #FFFDEE;
+}
+.safe-sevi04 .mc {
+    padding: 25px 0 22px 40px;
+}
+.right .form .item {
+    margin-bottom: 20px;
+}
+.right .form .text {
+    width: 175px;
+}
+.btn-3 {
+    background-position: right -161px;
+}
+.btn-3 s {
+    background-position: 0 -135px;
+}
+
 
 /**/
 #settleup-2013 {

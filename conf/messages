@@ -21,6 +21,9 @@ error.password.minlength=密码长度不能小于6位
 error.password.notmatch=您两次输入的密码不匹配
 error.login.alreadyexist=该邮箱已被注册
 
+#Password Management
+myacct.changepwd.title=修改登录密码
+
 #common
 cancel.button=退出
 ok.button=确定
@@ -31,6 +34,7 @@ topbar.logout.label=[退出]
 topbar.hello.label=您好，{0}
 
 #My Account
+myaccount.title=我的账户
 my.site.name=我的雨侠
 myacct.email.label=邮箱：
 myacct.name.label=昵称：
@@ -51,7 +55,8 @@ addr.delete.cfmsg=您确定删除地址{0}吗？
 myacct.orderhistory.title=我的订单
 myacct.orderdetail.title=订单详情
 order.review.message=订单已经完成，感谢您在京东商城购物，欢迎您对本次交易及所购商品进行评价。
-
+pwdmgt.mail.code=密码修改验证码: {0}
+pwdmgt.mail.title=雨峡网密码修改验证
 
 
 
@@ -175,6 +180,7 @@ order.checkout.title=订单结算
 order.address.delete.confirm=您确定要删除该地址吗？
 order.thankyou.title=订单成功页面
 order.submit.error=提交订单失败，请确认是否正确选择收货地址和付款方式！
+sg.default.method=货到付款
 checkout.address.error=请填完地址信息的必需字段！
 checkout.address.name.error=请您填写收货人姓名！
 checkout.address.area.error=请您选择所属区域！
