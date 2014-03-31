@@ -4,7 +4,6 @@ import java.sql.Timestamp
 
 import play.api.db.DB
 import play.api.Play.current
-import play.api.Play.current
 
 import scala.slick.driver.MySQLDriver.simple._
 import util.{DBHelper}

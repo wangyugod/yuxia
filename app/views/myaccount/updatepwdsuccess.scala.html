@@ -1,0 +1,16 @@
+@()(implicit user: Option[Profile])
+
+@import helper._
+@myAccount(user){
+<div class="o-mt">
+    <h2>@Messages("myacct.changepwd.title")</h2>
+</div>
+<div class="m m3  safe-sevi04">
+    <div class="mc">
+        <s class="icon-succ02"></s>
+        <div class="jd-add">
+            <h3><span class="ftx-02">恭喜您，修改密码成功！</span></h3>
+        </div>
+    </div>
+</div>
+}

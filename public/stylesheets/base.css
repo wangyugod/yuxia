@@ -689,7 +689,26 @@ a:link, a:visited {
 .btn-3 s {
     background-position: 0 -135px;
 }
-
+.msg-error {
+    color: #cc0000;
+    line-height: 25px;
+}
+.icon-succ02, .icon-warn02, .icon-wrong02 {
+    float: left;
+}
+.safe-sevi04 .jd-add {
+    margin-left: 60px;
+    margin-bottom: 8px;
+}
+.safe-sevi01 .ftx-02, .safe-sevi03 .ftx-02, .safe-sevi03 h3.ftx-01, .safe-sevi04 .ftx-02 {
+    font-size: 18px;
+}
+.safe-sevi01 h3, .safe-sevi03 h3, .safe-sevi04 .ftx-02 {
+    font-family: '\5fae\8f6f\96c5\9ed1';
+}
+.safe-sevi04 .ftx-02 {
+    color: #009900;
+}
 
 /**/
 #settleup-2013 {
@@ -2884,7 +2903,7 @@ em {
     height: 32px;
 }
 .icon-succ02, .icon-wrong02, .icon-warn02 {
-    background-image: url(i/icon48.png);
+    background-image: url(/assets/images/icon48.png);
     display: inline-block;
     font-size: 0;
     line-height: 0;

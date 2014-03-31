@@ -13,6 +13,8 @@ import play.api.i18n.Messages
 import play.api.Logger
 import vo.AddressVo
 import java.util.{Date, UUID}
+import scala.slick.lifted.TableQuery
+import org.apache.commons.lang3.RandomStringUtils
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,7 +36,7 @@ trait Users {
     session.get(LOGIN_KEY) match {
       case Some(login) =>
         println(s"found login in session $login")
-        Some(Profile(session.get(USER_ID).get, session.get(LOGIN_KEY).get, "", session.get(USER_NAME).get, None, None))
+        Some(Profile(session.get(USER_ID).get, session.get(LOGIN_KEY).get, "", "", session.get(USER_NAME).get, None, None))
       case None =>
         println("No login in session found")
         None
@@ -62,7 +64,7 @@ object ProfileController extends Controller with Users with Secured {
         ),
       "name" -> nonEmptyText
     )
-      ((id, login, passwords, name) => Profile(id.getOrElse(LocalIdGenerator.generateProfileId), login, passwords._1, name, None, None))
+      ((id, login, passwords, name) => Profile(id.getOrElse(LocalIdGenerator.generateProfileId), login, passwords._1, RandomStringUtils.random(2), name, None, None))
       ((profile: Profile) => {
         Some((Some(profile.id), profile.login, (profile.password, ""), profile.name))
       }) verifying(Messages("error.login.alreadyexist"), profile => Profile.findUserByLogin(profile.login).isEmpty)
@@ -76,7 +78,7 @@ object ProfileController extends Controller with Users with Secured {
       "gender" -> optional(text),
       "birthday" -> optional(text.verifying(Constraints.pattern( """(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])""".r, "Date Constraint", Messages("error.myacct.birthday"))))
     )
-      ((id, login, name, gender, birthday) => Profile(id.getOrElse(LocalIdGenerator.generateProfileId), login, "", name, gender, AppHelper.convertDateFromText(birthday)))
+      ((id, login, name, gender, birthday) => Profile(id.getOrElse(LocalIdGenerator.generateProfileId), login, "", "", name, gender, AppHelper.convertDateFromText(birthday)))
       ((profile: Profile) => {
         Some((Some(profile.id), profile.login, profile.name, profile.gender, AppHelper.convertDateToText(profile.birthDay)))
       }) //verifying("User with the same loign already exists", profile => ProfileService.findUserByLogin(profile.login).isEmpty)
@@ -171,7 +173,7 @@ object ProfileController extends Controller with Users with Secured {
       },
       profile => {
         val oldProfile = Profile.findUserByLogin(profile.login).get
-        val newProfile: Profile = Profile(profile.id, profile.login, oldProfile.password, profile.name, profile.gender, profile.birthDay)
+        val newProfile: Profile = Profile(profile.id, profile.login, oldProfile.password, oldProfile.pwdSalt, profile.name, profile.gender, profile.birthDay)
         Profile.updateUser(newProfile)
         Redirect(routes.ProfileController.myAccount())
       }
@@ -292,14 +294,42 @@ object ProfileController extends Controller with Users with Secured {
             case Some(mailCode) if mailCode == code =>
               Redirect(routes.ProfileController.changePassword()).withSession(request.session - PWD_MAIL_CODE)
             case _ =>
-              Redirect(routes.ProfileController.passwordManagement()).flashing("verify.result" -> "您输入的验证码不匹配,或者该验证码已经使用过，请重新输入")
+              Redirect(routes.ProfileController.passwordManagement()).flashing("verify.result" -> Messages("pwdmgt.code.verify.fail"))
           }
         }
       )
   }
 
-  def changePassword = isAuthenticated{
+  def changePassword = isAuthenticated {
     implicit request =>
-      Ok(html.myaccount.passwordchange())
+      Ok(html.myaccount.passwordchange(passwordForm))
+  }
+
+  val passwordForm:Form[(String, String)] = Form(
+    tuple("mainPassword" -> nonEmptyText(),
+      "confirmPassword" -> nonEmptyText()
+    ).verifying(Messages("error.password.notmatch"), passwords => passwords._1 == passwords._2)
+  )
+
+  def updatePassword = isAuthenticated {
+    implicit request =>
+      passwordForm.bindFromRequest.fold(
+        formWithErrors => {
+          BadRequest(html.myaccount.passwordchange(formWithErrors))
+        },
+        form => {
+          DBHelper.database.withTransaction{
+            implicit session =>
+              val userId = request.session.get(USER_ID).get
+              Profile.updateProfilePassword(userId, form._1)
+          }
+          Redirect(routes.ProfileController.updatePasswordSucceed())
+        }
+      )
+  }
+
+  def updatePasswordSucceed = isAuthenticated{
+    implicit request =>
+      Ok(html.myaccount.updatepwdsuccess())
   }
 }

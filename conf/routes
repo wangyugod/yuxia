@@ -20,6 +20,8 @@ GET     /myaccount/pwdmgt           controllers.ProfileController.passwordManage
 POST    /myaccount/pwdmgt/mailcode  controllers.ProfileController.sendMailVerificationCode
 POST    /myaccount/pwdmgt           controllers.ProfileController.verifyPwdChangeMailCode
 GET     /myaccount/pwdmgt/form      controllers.ProfileController.changePassword
+POST    /myaccount/pwdmgt/update    controllers.ProfileController.updatePassword
+GET     /myaccount/pwdmgt/success   controllers.ProfileController.updatePasswordSucceed
 GET     /signout                    controllers.ProfileController.signout
 GET     /merch/login                controllers.Merchandise.login
 POST    /merch/login                controllers.Merchandise.authenticate

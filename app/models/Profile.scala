@@ -5,7 +5,7 @@ import java.sql.Date
 import play.api.db.DB
 import play.api.Play.current
 import scala.Predef._
-import util.DBHelper
+import util.{Encoder, DBHelper}
 import play.api.{Logger, Play}
 
 
@@ -17,7 +17,7 @@ import play.api.{Logger, Play}
  * To change this template use File | Settings | File Templates.
  */
 
-case class Profile(id: String, login: String, password: String, name: String, gender: Option[String], birthDay: Option[Date]) {
+case class Profile(id: String, login: String, password: String, pwdSalt: String, name: String, gender: Option[String], birthDay: Option[Date]) {
   lazy val defaultAddress: Option[Address] = DBHelper.database.withSession {
     implicit session =>
       Profile.findDefaultAddress(id)
@@ -44,20 +44,23 @@ class Profiles(tag: Tag) extends Table[Profile](tag, "user") {
 
   def password = column[String]("password")
 
+  def pwdSalt = column[String]("pwd_salt")
+
   def name = column[String]("name")
 
   def gender = column[Option[String]]("gender")
 
   def birthday = column[Option[Date]]("birthday")
 
-  def * = (id, login, password, name, gender, birthday) <>(Profile.tupled, Profile.unapply)
+  def * = (id, login, password, pwdSalt, name, gender, birthday) <>(Profile.tupled, Profile.unapply)
 }
 
-object Profile extends ((String, String, String, String, Option[String], Option[Date]) => Profile) {
+object Profile extends ((String, String, String, String, String, Option[String], Option[Date]) => Profile) {
   private val profileQuery = TableQuery[Profiles]
 
   def createUser(user: Profile) = DBHelper.database.withTransaction {
     implicit session =>
+      user.copy(password = Encoder.encodeSHA(user.password + user.pwdSalt))
       profileQuery.insert(user)
   }
 
@@ -68,8 +71,13 @@ object Profile extends ((String, String, String, String, Option[String], Option[
 
   def authenticateUser(login: String, password: String) = DBHelper.database.withSession {
     implicit session =>
-      val result = for (p <- profileQuery if (p.login === login && p.password === password)) yield p
-      result.firstOption()
+      val result = for (p <- profileQuery if (p.login === login)) yield p
+      result.firstOption() match {
+        case Some(user) if (Encoder.encodeSHA(password + user.pwdSalt) == user.password) =>
+          Some(user)
+        case _ =>
+          None
+      }
   }
 
   def findUserByLogin(login: String): Option[Profile] = DBHelper.database.withSession {
@@ -110,6 +118,12 @@ object Profile extends ((String, String, String, String, Option[String], Option[
         }
       }
     }
+  }
+
+  def updateProfilePassword(userId: String, password: String)(implicit session: Session) = {
+    val user = Profile.findUserById(userId).get
+    val newPassword = Encoder.encodeSHA(password + user.pwdSalt)
+    profileQuery.where(_.id === userId).update(user.copy(password = newPassword))
   }
 
   def findUserOrders(userId: String)(implicit session: Session) = {
