@@ -228,9 +228,6 @@ fieldset > dl .error{
 #store_search #store_searchStoreSelect{
   margin-left:20px;
 }
-#store_search span.store_smallButton input#store_searchSubmit:hover{
-  background:url(/crsdocroot/content/images/atghome/search_button.png) no-repeat scroll right bottom transparent;
-}
 
 
 #topSection .searchBox{
@@ -534,6 +531,49 @@ select, input, textarea {
     display: none;
 }
 
+/*Home Page*/
+/*Slider*/
+.gc-firstScreen {
+    position: relative;
+    height: 410px;
+}
+.gc-slider {
+    height: 410px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+}
+.gc-slider .slider-trigger {
+    text-align: center;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    z-index: 3;
+    padding: 10px 0;
+    height: 16px;
+    font-size: 0;
+}
+.gc-slider .slider-wrap .item {
+    height: 410px;
+    width: 100%;
+    left: 0;
+    top: 0;
+    position: absolute;
+    overflow: hidden;
+}
+.gc-slider .slider-trigger a {
+    display: inline-block;
+    margin: 0 3px;
+    background: #CCC;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
+.gc-slider .slider-trigger a.curr {
+    background: #da324d;
+}
+
 #myaccount{
     float: left;
     position: relative;
@@ -768,7 +808,7 @@ a:link, a:visited {
     z-index: 6;
     height: 40px;
     padding-left: 210px;
-    margin-bottom: 10px;
+    /*margin-bottom: 10px;*/
     background: #E4393C;
 }
 

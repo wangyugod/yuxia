@@ -48,8 +48,9 @@ object Global extends GlobalSettings {
 //      TableQuery[PriceInfoRepo].ddl.create
 //      TableQuery[PaymentGroupRepo].ddl.create
 //      TableQuery[ShippingGroupRepo].ddl.create
-        TableQuery[IdGenerationRepo].ddl.create
-
+//        TableQuery[IdGenerationRepo].ddl.create
+        TableQuery[PromotionBannerRepo].ddl.create
+        TableQuery[PromotionBannerItemRepo].ddl.create
 //      CategoryCategories.ddl.create
 
       /*if (Query(Profiles).list().isEmpty){

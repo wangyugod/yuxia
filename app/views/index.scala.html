@@ -1,7 +1,62 @@
 @(message: String, userList:Seq[Profile])(implicit user:Option[Profile])
 
 @main(Messages("site.name"), user) {
-
+<div class="gc-firstScreen">
+    <div id="gcSlider" class="gc-slider ui-switchable-focus" clstag="fashion|keycount|fz|jdtu">
+        <div class="slider-wrap">
+            <ul style="position: relative;">
+                @for((pb, idx) <- PromotionBanner.findPromotionBannerItemsByName(PromotionBanner.HOME_PAGE_SLIDER).zipWithIndex){
+                <li class="item ui-slider-item @(if(idx == 0) "selected")" style="background-color: rgb(254, 238, 241); position: absolute; @(if(idx == 0) "z-index: 1; opacity: 1;" else  "z-index: 0; opacity: 0;")">
+                    <div class="i-wrap">
+                        <div class="i-inner">
+                            <a target="_blank" class="i-link" href="@pb.link"> <img data-img="1" class="err-product" src="@pb.imageUrl" width="1210" height="410" alt=""> </a>
+                        </div>
+                    </div>
+                </li>
+                }
+            </ul>
+        </div>
+        <div class="slider-trigger">
+            @for((pb, idx) <- PromotionBanner.findPromotionBannerItemsByName(PromotionBanner.HOME_PAGE_SLIDER).zipWithIndex){
+            <a class="ui-slider-trigger @(if(idx == 0) "curr")" href="javascript:void(0)"></a>
+            }
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function slideSwitch(){
+        var current = $("#gcSlider li.selected")
+        var next = current.next().length ? current.next() : $("#gcSlider li:first");
+        showSlide(next.index());
+    }
+    function showSlide(idx){
+        var sliders = $("#gcSlider li")
+        sliders.each(function(index){
+            if(index == idx){
+                $(this).css({opacity:1.0, zIndex: 1.0}).addClass("selected");
+            } else {
+                $(this).css({opacity:0.0, zIndex:0.0}).removeClass("selected");
+            }
+        });
+        $("#gcSlider a.ui-slider-trigger").each(function(index){
+            if(index == idx){
+                $(this).addClass("curr");
+            } else {
+                $(this).removeClass("curr");
+            }
+        });
+    }
+    $(function(){
+        $("#gcSlider a.ui-slider-trigger").each(
+            function(idx){
+                $(this).bind('click', function(){
+                    showSlide(idx);
+                })
+            }
+        )
+        setInterval("slideSwitch()", 5000);
+    })
+</script>
 <p>This is home page</p>
 @for(user <- userList){
 <br>
