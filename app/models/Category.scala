@@ -244,6 +244,10 @@ object Product extends ((String, String, String, String, Option[Date], Option[Da
       TableQuery[Skus].where(_.parentProduct === id).delete
       TableQuery[Products].where(_.id === id).delete
   }
+
+  def listAll(implicit session: Session) = {
+    TableQuery[Products].list()
+  }
 }
 
 object Category extends ((String, String, String, String, Boolean) => Category) {

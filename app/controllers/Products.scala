@@ -72,6 +72,7 @@ object Products extends Controller with Merchants with MerchSecured {
     }
   }
 
+
   def get(id: String) = Action {
     implicit request => {
       val product = Product.findById(id)

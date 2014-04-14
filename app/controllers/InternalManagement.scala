@@ -4,11 +4,15 @@ import play.api.mvc._
 import play.api.data.Form
 import play.api.data.Forms._
 import scala.Some
-import models.{LocalIdGenerator, Area, InternalUser}
+import models._
 import views.html
 import play.api.i18n.Messages
 import java.sql.Timestamp
 import play.api.Logger
+import util.{AppHelper, DBHelper}
+import scala.Some
+import java.util.Date
+import play.api.libs.json.{JsString, JsObject, JsArray}
 
 /**
  * Created with IntelliJ IDEA.
@@ -58,7 +62,7 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
       "detail" -> nonEmptyText,
       "parentAreaId" -> optional(text)
     )((id, name, detail, parentAreaId) => Area(id.getOrElse(LocalIdGenerator.generateAreaId()), name, detail, parentAreaId, new Timestamp(new java.util.Date().getTime())))(
-      (area: Area) => Some(Some(area.id), area.name, area.detail, area.parentAreaId))
+        (area: Area) => Some(Some(area.id), area.name, area.detail, area.parentAreaId))
 
   )
 
@@ -117,7 +121,7 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
     }
   }
 
-  def modifyArea = Action {
+  def modifyArea = isAuthenticated {
     implicit request => {
       areaForm.bindFromRequest().fold(
         formWithErrors => {
@@ -133,6 +137,74 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
         }
       )
     }
+  }
+
+  def promoBannerList = isAuthenticated {
+    implicit request =>
+      Ok(html.admin.promobanner(PromotionBanner.promotionBannerList))
+  }
+
+  val pbForm = Form(
+    mapping(
+      "id" -> optional(text),
+      "name" -> nonEmptyText
+    )((id, name) => PromotionBanner(id.getOrElse(LocalIdGenerator.generatePbId()), name))
+      ((pb: PromotionBanner) => Some(Some(pb.id), pb.name))
+  )
+
+  val pbItemForm = Form(
+    tuple(
+      "id" -> optional(text),
+      "isProductPromo" -> optional(text),
+      "description" -> optional(text),
+      "imageUrl" -> nonEmptyText,
+      "link" -> optional(text),
+      "promotionBannerId" -> nonEmptyText,
+      "productIds" -> optional(text)
+    )
+  )
+
+  def createPromoBanner = isAuthenticated {
+    implicit request =>
+      pbForm.bindFromRequest().fold(
+        formWithErrors => {
+          BadRequest(html.admin.promobanner(PromotionBanner.promotionBannerList))
+        },
+        pb => {
+          DBHelper.database.withTransaction {
+            implicit session =>
+              PromotionBanner.createOrUpdatePromotionBanner(pb)
+          }
+          Redirect(routes.InternalManagement.promoBannerList())
+        }
+      )
+  }
+
+  def createOrUpdatePromoBannerItem = isAuthenticated {
+    implicit request =>
+      pbItemForm.bindFromRequest().fold(
+        formWithErrors => {
+          BadRequest(html.admin.promobanner(PromotionBanner.promotionBannerList))
+        },
+        pbItem => {
+          DBHelper.database.withTransaction {
+            implicit session =>
+            //              PromotionBanner.createOrUpdatePBItem(pbItem)
+          }
+          Redirect(routes.InternalManagement.promoBannerList())
+        }
+      )
+  }
+
+  def listProducts = isAuthenticated {
+    implicit request =>
+      val products = DBHelper.database.withSession {
+        implicit session =>
+          Product.listAll.map(
+            product => JsObject(List("id" -> JsString(product.id), "name" -> JsString(product.name), "url" -> JsString(AppHelper.productImage(product).url)))
+          )
+      }
+      Ok(JsArray(products))
   }
 
 

@@ -38,9 +38,11 @@ object IdGeneration extends ((String, Int, Int, Int, String, String) => IdGenera
   val COMMERCE_ITEM = "commerce_item"
   val PRICE = "price"
   val PAYMENT_GROUP = "payment_group"
+  val PROMO_BANNER = "promo_banner"
+  val PROMO_BANNER_ITEM = "promo_banner_item"
   val INITIAL = 100000
   val STEP = 1
-  val prefixMap = Map(SHIPPING_GROUP -> "sg", ORDER -> "o", PROFILE -> "p", PRODUCT -> "pd", CATEGORY -> "cat", SKU -> "sku", ADDRESS -> "addr", AREA -> "area", MERCHANT -> "mc", COMMERCE_ITEM -> "ci", PRICE -> "pi", PAYMENT_GROUP -> "pg")
+  val prefixMap = Map(SHIPPING_GROUP -> "sg", ORDER -> "o", PROFILE -> "p", PRODUCT -> "pd", CATEGORY -> "cat", SKU -> "sku", ADDRESS -> "addr", AREA -> "area", MERCHANT -> "mc", COMMERCE_ITEM -> "ci", PRICE -> "pi", PAYMENT_GROUP -> "pg", PROMO_BANNER -> "pb", PROMO_BANNER_ITEM -> "pbi")
 
   def getNextId(key: String) = DBHelper.database.withTransaction {
     implicit session =>
@@ -48,7 +50,7 @@ object IdGeneration extends ((String, Int, Int, Int, String, String) => IdGenera
       idGenQuery.where(_.key === key).firstOption match {
         case Some(idGenerator) =>
           val nextGen = idGenerator.copy(sequence = idGenerator.sequence + idGenerator.step)
-          if(log.isDebugEnabled)
+          if (log.isDebugEnabled)
             log.debug("new password is " + nextGen.generatePassword)
           idGenQuery.where(_.id === idGenerator.id).update(nextGen)
           nextGen.generatePassword
@@ -136,7 +138,27 @@ object PaymentGroupIdGenerator extends IdGenerator {
   }
 }
 
+object PromotionBannerIdGenerator extends IdGenerator {
+  override def generateId() = this.synchronized {
+    IdGeneration.getNextId(IdGeneration.PROMO_BANNER)
+  }
+}
+
+object PromotionBannerItemIdGenerator extends IdGenerator {
+  override def generateId() = this.synchronized {
+    IdGeneration.getNextId(IdGeneration.PROMO_BANNER_ITEM)
+  }
+}
+
 object LocalIdGenerator {
+
+  def generatePbId() = {
+    IdGeneration.getNextId(IdGeneration.PROMO_BANNER)
+  }
+
+  def generatePbiId() = {
+    IdGeneration.getNextId(IdGeneration.PROMO_BANNER_ITEM)
+  }
 
   def generateProfileId() = {
     ProfileIdGenerator.generateId()

@@ -50,6 +50,10 @@ POST    /admin/home                 controllers.InternalManagement.update
 GET     /admin/logout               controllers.InternalManagement.logout
 GET     /admin/areas                controllers.InternalManagement.areaList
 POST    /admin/areas                controllers.InternalManagement.modifyArea
+GET     /admin/promobanners         controllers.InternalManagement.promoBannerList
+POST    /admin/promobanner          controllers.InternalManagement.createPromoBanner
+POST    /admin/pbitem               controllers.InternalManagement.createOrUpdatePromoBannerItem
+GET     /admin/product/list         controllers.InternalManagement.listProducts
 GET     /area/root                  controllers.Addresses.initAreaTrees
 GET     /area/child/:id             controllers.Addresses.childAreas(id)
 DELETE  /area/delete/:id            controllers.InternalManagement.deleteArea(id)

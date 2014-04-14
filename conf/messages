@@ -150,6 +150,13 @@ area.new.btn=新 增
 area.update.btn=修改
 area.delete.btn=删除
 area.delete.cfmsg=您确定删除区域{0}吗？
+admin.promobanner.title=促销管理
+promobanner.name.label=标题：
+promobanner.description.label=描述：
+promobanner.link.label=链接：
+promobanner.image.label=图片：
+
+
 
 
 #Address Province

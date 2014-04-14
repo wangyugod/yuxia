@@ -1,0 +1,225 @@
+@(pbList: List[PromotionBanner])(implicit user: Option[InternalUser])
+
+@import helper._
+@adminbase(Messages("admin.promobanner.title"), user){
+
+<div class="o-mt">
+    <h2>@Messages("admin.promobanner.title")</h2>
+</div>
+<div class="o-mb">
+    <a href="javascript:void(0)" onclick="javascript: showPbForm()" class="btn btn-7"><s></s>新增促销</a>
+</div>
+<div class="m m5" id="promoBannerList">
+    <div class="mc">
+        <div class="tb-void">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tbody>
+                <tr>
+                    <th width="20%">促销图片</th>
+                    <th width="30%">描述</th>
+                    <th width="20%">相关产品</th>
+                    <th width="15%">时间</th>
+                    <th width="15%">操作</th>
+                </tr>
+                </tbody>
+                <tbody id="tb-">
+                @for(pb <- pbList){
+                <tr class="tr-th">
+                    <td colspan="6">
+                <span class="tcol1">促销标题:
+                    <a name="orderIdLinks" target="_blank" href="javascript:void(0)" onclick="showPbForm('@pb.id', '@pb.name')" >@pb.name</a></span>
+                        <a href="javascript:void(0)" onclick="javascript: showPbItemForm()" class="btn btn-7"><s></s>添加</a>
+                    </td>
+                </tr>
+
+                <tr id="track1129612684" oty="0,4" class="tr-td">
+                    <td>
+                        <div class="img-list">
+
+                            <a href="" class="img-box" target="_blank">
+                                <img title="" width="50" height="50" src="">
+                            </a>
+                        </div>
+                    </td>
+                    <td><div class="u-name"></div></td>
+                    <td>
+                        <span class="ftx-03">fdsafds</span>
+                    </td>
+
+                    <td><span class="ftx-03">fdsafs</span></td>
+
+                    <td id="operate1129612684" class="order-doi" width="100">
+
+                        <span id="pay-button-1129612684" state=""></span>
+                        <a target="_blank" href="" >查看</a><span id="order_comment"></span>
+
+                    </td>
+                </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <div id="popPbForm" class="thickbox" style="display: none">
+            <div class="thickcon" >
+                <div class="mc">
+                    @form(routes.InternalManagement.createPromoBanner){
+                    <input type="hidden" name="id" id="pbId"/>
+                    <div class="form" id="pbPanel">
+                        <div class="item">
+                            <span class="label"><em>*</em>@Messages("promobanner.name.label")</span>
+                            <div class="fl">
+                                <input id="pbName" name="name" type="text" class="text" style="width: 200px" maxlength="20">
+                            </div>
+                            <div class="clr"></div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div id="popPbItemForm" class="thickbox" style="display: none">
+            <div class="thickcon" >
+                <div class="mc">
+                    @form(routes.InternalManagement.createOrUpdatePromoBannerItem,  'enctype -> "multipart/form-data"){
+                    <input type="hidden" name="id" id="pbiId"/>
+                    <input type="hidden" name="promotionBannerId" id="promotionBannerId"/>
+                    <input type="hidden" name="productIds" id="productIds"/>
+                    <input type="hidden" name="imageUrl" id="imageUrl"/>
+                    <div class="form" id="pbiPanel">
+                        <div class="item">
+                            <span class="label"><em>*</em>产品促销：</span>
+                            <div class="fl">
+                                <input type="radio" name="isProductPromo" id="isProductPromo0" value="true" checked ><label for="isProductPromo0">&nbsp;是&nbsp;</label>
+                                <input type="radio" name="isProductPromo" id="isProductPromo1" value="false" ><label for="isProductPromo1">&nbsp;否&nbsp;</label>
+                            </div>
+                            <div class="clr"></div>
+                        </div>
+                        <div id="nonProductPromo" style="display:none">
+                        <div class="item">
+                            <span class="label"><em>*</em>@Messages("promobanner.description.label")</span>
+                            <div class="fl">
+                                <input id="pbiDescription" name="description" type="text" class="text" maxlength="20">
+                            </div>
+                            <div class="clr"></div>
+                        </div>
+                        <div class="item">
+                            <span class="label"><em>*</em>@Messages("promobanner.image.label")</span>
+                            <div class="fl">
+                                <input id="imageName" name="imageName" type="text" class="text" maxlength="20">
+                                <input id="pbiImage" name="image" type="file" class="text" maxlength="20">
+                            </div>
+                            <div class="clr"></div>
+                        </div>
+                        <div class="item">
+                            <span class="label"><em>*</em>@Messages("promobanner.link.label")</span>
+                            <div class="fl">
+                                <input id="pbiLink" name="link" type="text" class="text" maxlength="20">
+                            </div>
+                            <div class="clr"></div>
+                        </div>
+                        </div>
+                        <div id="productPromo" style="display: none">
+                            <table cellpadding="0" id="pbitemTable" cellspacing="0" width="100%">
+                                <tbody>
+                                <!--<tr>
+                                    <td style="width: 10%">
+                                        <input type="checkbox" value="ffda">
+                                    </td>
+                                    <td style="width: 20%">123123123</td>
+                                    <td style="width: 30%">
+                                        <div class="img-list">
+                                            <a class="img-box" target="_blank" href="">
+                                                <img width="50" height="50" src="" title="fdafda">
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td style="width: 40%">
+                                        <div class="al fl">
+                                            <a class="flk13" target="_blank" href="" > dfsafdsafsa</a>
+                                        </div>
+                                        <div class="clr"></div>
+                                    </td>
+                                </tr>-->
+                                </tbody></table>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(function(){
+            productPromoSwitch();
+            $("#pbiImage").change(function(e){
+                $("#imageName").val($(this).val())
+            })
+            $("input:radio[name='isProductPromo']").change(productPromoSwitch)
+        })
+
+        function productPromoSwitch(){
+            if($("#isProductPromo1").is(":checked")){
+                $("#nonProductPromo").show()
+                $("#productPromo").hide()
+            } else if($("#isProductPromo0").is(":checked")) {
+                $("#productPromo").show()
+                if($("#productPromo tr").length == 0){
+                    $.ajax({
+                        async:true,
+                        url:"/admin/product/list",
+                        type:"GET",
+                        success: function(result){
+                            console.log("result is " + result)
+                            var items = new Array();
+                            $.each(result, function(index, element){
+                                var item = "<tr><td style='width:10%'><input type='checkbox' value=''" + element.id + "'></td><td style='width: 30%'>" + element.id + "</td><td style='width: 20%'><div class='img-list'><img width='50' height='50' src='" + element.url + "'></div></td><td style='width: 40%'>" + element.name + "</td></tr>"
+                                items.push(item)
+                                $('#pbitemTable > tbody:last').append(items.join(""))
+                            })
+                        }
+                    });
+                }
+                $("#nonProductPromo").hide()
+            }
+        }
+        function showPbForm(id, name){
+            if(id && name){
+                $("#pbId").val(id);
+                $("#pbName").val(name);
+            }
+            $("#popPbForm").dialog({
+                title: "@Messages("area.mgt.title")",
+                width: 400,
+                height: 200,
+                modal:true,
+                buttons:{"@Messages("ok.button")": function(){
+                    $('form').submit();
+                    $(this).dialog("close");
+                },
+                "@Messages("cancel.button")": function() {
+                    $('#pbId').val("");
+                    $('#pbName').val("");
+                    $(this).dialog( "close" );
+                }}
+        })
+        }
+        function showPbItemForm(promoBannerId){
+
+            $("#popPbItemForm").dialog({
+                title: "@Messages("area.mgt.title")",
+                width: 760,
+                height:600,
+                modal:true,
+                buttons:{"@Messages("ok.button")": function(){
+                    $('form').submit();
+                    $(this).dialog("close");
+                },
+                "@Messages("cancel.button")": function() {
+                    $('#pbId').val("");
+                    $('#pbName').val("");
+                    $(this).dialog( "close" );
+                }}
+        })
+        }
+    </script>
+}
