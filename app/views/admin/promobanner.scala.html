@@ -28,33 +28,33 @@
                     <td colspan="6">
                 <span class="tcol1">促销标题:
                     <a name="orderIdLinks" target="_blank" href="javascript:void(0)" onclick="showPbForm('@pb.id', '@pb.name')" >@pb.name</a></span>
-                        <a href="javascript:void(0)" onclick="javascript: showPbItemForm()" class="btn btn-7"><s></s>添加</a>
+                        <a href="javascript:void(0)" onclick="javascript: showPbItemForm('@pb.id')" class="btn btn-7"><s></s>添加</a>
                     </td>
                 </tr>
-
+                @for(pbi <- pb.pbItems){
                 <tr id="track1129612684" oty="0,4" class="tr-td">
                     <td>
                         <div class="img-list">
-
-                            <a href="" class="img-box" target="_blank">
-                                <img title="" width="50" height="50" src="">
+                            <a href="@pbi.link" class="img-box" target="_blank">
+                                <img title="" width="50" height="50" src="@pbi.imageUrl">
                             </a>
                         </div>
                     </td>
-                    <td><div class="u-name"></div></td>
+                    <td><div class="u-name">@pbi.description</div></td>
                     <td>
-                        <span class="ftx-03">fdsafds</span>
+                        <span class="ftx-03">@(if (pbi.product.isDefined) pbi.product.get.name)</span>
                     </td>
 
-                    <td><span class="ftx-03">fdsafs</span></td>
+                    <td><span class="ftx-03">@pbi.lastModifiedTime</span></td>
 
                     <td id="operate1129612684" class="order-doi" width="100">
 
                         <span id="pay-button-1129612684" state=""></span>
-                        <a target="_blank" href="" >查看</a><span id="order_comment"></span>
+                        <a target="_blank" href="javascript:void(0)" onclick="removePbItem('@pbi.id')" >删除</a><span id="order_comment"></span>
 
                     </td>
                 </tr>
+                }
                 }
                 </tbody>
             </table>
@@ -80,7 +80,7 @@
         <div id="popPbItemForm" class="thickbox" style="display: none">
             <div class="thickcon" >
                 <div class="mc">
-                    @form(routes.InternalManagement.createOrUpdatePromoBannerItem,  'enctype -> "multipart/form-data"){
+                    @form(routes.InternalManagement.createOrUpdatePromoBannerItem,  'enctype -> "multipart/form-data", 'id -> "pbiForm"){
                     <input type="hidden" name="id" id="pbiId"/>
                     <input type="hidden" name="promotionBannerId" id="promotionBannerId"/>
                     <input type="hidden" name="productIds" id="productIds"/>
@@ -121,26 +121,8 @@
                         <div id="productPromo" style="display: none">
                             <table cellpadding="0" id="pbitemTable" cellspacing="0" width="100%">
                                 <tbody>
-                                <!--<tr>
-                                    <td style="width: 10%">
-                                        <input type="checkbox" value="ffda">
-                                    </td>
-                                    <td style="width: 20%">123123123</td>
-                                    <td style="width: 30%">
-                                        <div class="img-list">
-                                            <a class="img-box" target="_blank" href="">
-                                                <img width="50" height="50" src="" title="fdafda">
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td style="width: 40%">
-                                        <div class="al fl">
-                                            <a class="flk13" target="_blank" href="" > dfsafdsafsa</a>
-                                        </div>
-                                        <div class="clr"></div>
-                                    </td>
-                                </tr>-->
-                                </tbody></table>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     }
@@ -157,6 +139,17 @@
             $("input:radio[name='isProductPromo']").change(productPromoSwitch)
         })
 
+        function removePbItem(pbiId){
+            $.ajax({
+                async:false,
+                url:"/admin/pbitem/" + pbiId,
+                type:"DELETE",
+                success: function(result){
+                    document.location.href = "@routes.InternalManagement.promoBannerList()";
+                }
+            });
+        }
+
         function productPromoSwitch(){
             if($("#isProductPromo1").is(":checked")){
                 $("#nonProductPromo").show()
@@ -164,6 +157,7 @@
             } else if($("#isProductPromo0").is(":checked")) {
                 $("#productPromo").show()
                 if($("#productPromo tr").length == 0){
+                    console.log("prepare to insert!")
                     $.ajax({
                         async:true,
                         url:"/admin/product/list",
@@ -172,10 +166,11 @@
                             console.log("result is " + result)
                             var items = new Array();
                             $.each(result, function(index, element){
-                                var item = "<tr><td style='width:10%'><input type='checkbox' value=''" + element.id + "'></td><td style='width: 30%'>" + element.id + "</td><td style='width: 20%'><div class='img-list'><img width='50' height='50' src='" + element.url + "'></div></td><td style='width: 40%'>" + element.name + "</td></tr>"
+                                console.log("current idx: " + index + " ele:" + element.id)
+                                var item = "<tr><td style='width:10%'><input type='checkbox' value='" + element.id + "'></td><td style='width: 30%'>" + element.id + "</td><td style='width: 20%'><div class='img-list'><img width='50' height='50' src='" + element.url + "'></div></td><td style='width: 40%'>" + element.name + "</td></tr>"
                                 items.push(item)
-                                $('#pbitemTable > tbody:last').append(items.join(""))
                             })
+                            $('#pbitemTable > tbody:last').append(items.join(""))
                         }
                     });
                 }
@@ -204,19 +199,33 @@
         })
         }
         function showPbItemForm(promoBannerId){
-
+            $('#pbitemTable input:checked').each(function(){
+                $('#pbiId').val("");
+                $('#pbiDescription').val("")
+                $('#pbiLink').val("")
+                $('#productIds').val("")
+                $('#imageUrl').val("")
+                $(this).attr('checked', false)
+            })
+            $("#promotionBannerId").val(promoBannerId)
             $("#popPbItemForm").dialog({
                 title: "@Messages("area.mgt.title")",
                 width: 760,
                 height:600,
                 modal:true,
                 buttons:{"@Messages("ok.button")": function(){
-                    $('form').submit();
+                if($("#isProductPromo0").is(":checked")){
+                    var selectedIds = new Array();
+                    $('#pbitemTable input:checked').each(function(){
+                        selectedIds.push($(this).val())
+                    })
+                    $("#productIds").val(selectedIds.join(","))
+                    console.log("productIds is:" + $('#productIds').val())
+                }
+                    $('#pbiForm').submit();
                     $(this).dialog("close");
                 },
                 "@Messages("cancel.button")": function() {
-                    $('#pbId').val("");
-                    $('#pbName').val("");
                     $(this).dialog( "close" );
                 }}
         })

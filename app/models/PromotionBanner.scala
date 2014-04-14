@@ -8,13 +8,24 @@ import java.sql.Timestamp
  * Created by thinkpad-pc on 14-4-1.
  */
 case class PromotionBanner(id: String, name: String) {
-  val pbItems = DBHelper.database.withSession {
+  lazy val pbItems = DBHelper.database.withSession {
     implicit session =>
       PromotionBanner.findPromotionBannerItemByPbId(id)
   }
+
 }
 
-case class PromotionBannerItem(id: String,description: Option[String], imageUrl: String, link: Option[String], promotionBannerId: String, productId: Option[String], lastModifiedTime: Timestamp)
+case class PromotionBannerItem(id: String, description: Option[String], imageUrl: String, link: Option[String], promotionBannerId: String, productId: Option[String], lastModifiedTime: Timestamp) {
+  lazy val product = productId match {
+    case Some(pid) =>
+      DBHelper.database.withSession {
+        implicit session =>
+          Product.findById(pid)
+      }
+    case _ =>
+      None
+  }
+}
 
 class PromotionBannerRepo(tag: Tag) extends Table[PromotionBanner](tag, "promo_banner") {
   def id = column[String]("id", O.PrimaryKey)
@@ -45,31 +56,32 @@ class PromotionBannerItemRepo(tag: Tag) extends Table[PromotionBannerItem](tag, 
 
 object PromotionBanner extends ((String, String) => PromotionBanner) {
   val HOME_PAGE_SLIDER = "HomePageMainSlider"
+  private val pbRepo = TableQuery[PromotionBannerRepo]
+  private val pbItemRepo = TableQuery[PromotionBannerItemRepo]
 
   def findPromotionBannerItemsByName(name: String) = DBHelper.database.withSession {
     implicit session =>
-      TableQuery[PromotionBannerRepo].filter(_.name === name).firstOption match {
+      pbRepo.filter(_.name === name).firstOption match {
         case Some(promoBanner) =>
-          TableQuery[PromotionBannerItemRepo].filter(_.promoBannerId === promoBanner.id).list()
+          pbItemRepo.filter(_.promoBannerId === promoBanner.id).list()
         case _ =>
           Nil
       }
   }
 
   def findPromotionBannerItemByPbId(id: String)(implicit session: Session) = {
-    TableQuery[PromotionBannerItemRepo].where(_.promoBannerId === id).list()
+    pbItemRepo.where(_.promoBannerId === id).list()
   }
 
   def promotionBannerList = DBHelper.database.withSession {
     implicit session =>
-      TableQuery[PromotionBannerRepo].list()
+      pbRepo.list()
   }
 
   def createOrUpdatePromotionBanner(pb: PromotionBanner)(implicit session: Session) = {
-    val pbRepo = TableQuery[PromotionBannerRepo]
     pbRepo.where(_.id === pb.id).firstOption match {
       case Some(existedPb) =>
-        if(existedPb.name != pb.name)
+        if (existedPb.name != pb.name)
           pbRepo.where(_.id === pb.id).update(pb)
       case _ =>
         pbRepo.insert(pb)
@@ -77,13 +89,25 @@ object PromotionBanner extends ((String, String) => PromotionBanner) {
   }
 
   def createOrUpdatePBItem(pbItem: PromotionBannerItem)(implicit session: Session) = {
-    val pbiRepo = TableQuery[PromotionBannerItemRepo]
-    pbiRepo.where(_.id === pbItem.id).firstOption match{
+    pbItemRepo.where(_.id === pbItem.id).firstOption match {
       case Some(existedPbItem) =>
-        pbiRepo.where(_.id === pbItem.id).update(pbItem)
+        pbItemRepo.where(_.id === pbItem.id).update(pbItem)
       case _ =>
-        pbiRepo.insert(pbItem)
+        pbItemRepo.where(_.productId isNotNull).where(_.productId === pbItem.productId).where(_.promoBannerId === pbItem.promotionBannerId).firstOption match {
+          case Some(existedPbItem) =>
+            pbItemRepo.where(_.id === existedPbItem.id).update(pbItem.copy(id = existedPbItem.id))
+          case _ =>
+            pbItemRepo.insert(pbItem)
+        }
     }
+  }
+
+  def deletePromotionBannerItem(pbItemId: String)(implicit session: Session) = {
+    pbItemRepo.where(_.id === pbItemId).delete
+  }
+
+  def deletePromotionBanner(pbId: String)(implicit session: Session) = {
+    pbRepo.where(_.id === pbId).delete
   }
 
 

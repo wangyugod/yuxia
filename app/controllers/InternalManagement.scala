@@ -3,7 +3,6 @@ package controllers
 import play.api.mvc._
 import play.api.data.Form
 import play.api.data.Forms._
-import scala.Some
 import models._
 import views.html
 import play.api.i18n.Messages
@@ -13,6 +12,7 @@ import util.{AppHelper, DBHelper}
 import scala.Some
 import java.util.Date
 import play.api.libs.json.{JsString, JsObject, JsArray}
+import java.io.File
 
 /**
  * Created with IntelliJ IDEA.
@@ -157,7 +157,7 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
       "id" -> optional(text),
       "isProductPromo" -> optional(text),
       "description" -> optional(text),
-      "imageUrl" -> nonEmptyText,
+      "imageUrl" -> optional(text),
       "link" -> optional(text),
       "promotionBannerId" -> nonEmptyText,
       "productIds" -> optional(text)
@@ -180,20 +180,49 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
       )
   }
 
-  def createOrUpdatePromoBannerItem = isAuthenticated {
+  def createOrUpdatePromoBannerItem = Action(parse.multipartFormData) {
     implicit request =>
       pbItemForm.bindFromRequest().fold(
         formWithErrors => {
+          log.debug("bad form:" + formWithErrors)
           BadRequest(html.admin.promobanner(PromotionBanner.promotionBannerList))
         },
         pbItem => {
           DBHelper.database.withTransaction {
             implicit session =>
-            //              PromotionBanner.createOrUpdatePBItem(pbItem)
+              pbItem._2 match {
+                case Some("true") =>
+                  if (pbItem._7.isDefined) {
+                    pbItem._7.get.split(",").foreach(
+                      (id: String) => {
+                        val product = Product.findById(id).get
+                        PromotionBanner.createOrUpdatePBItem(PromotionBannerItem(LocalIdGenerator.generatePbiId(), Some(product.name), AppHelper.productImage(product).url, Some(routes.Browse.productDetail(id).url), pbItem._6, Some(id), new Timestamp(new Date().getTime)))
+                      }
+                    )
+                  }
+                case _ =>
+                  val pbiId = pbItem._1.getOrElse(LocalIdGenerator.generatePbiId())
+                  request.body.file("image").map {
+                    file => {
+                      val dir: String = AppHelper.promoImageDir
+                      file.ref.moveTo(new File(dir + pbiId + ".jpg"), true)
+                    }
+                  }
+                  PromotionBanner.createOrUpdatePBItem(PromotionBannerItem(pbItem._1.getOrElse(LocalIdGenerator.generatePbiId()), pbItem._3, AppHelper.promoImage(pbiId + ".jpg").url, pbItem._5, pbItem._6, None, new Timestamp(new Date().getTime)))
+              }
           }
           Redirect(routes.InternalManagement.promoBannerList())
         }
       )
+  }
+
+  def deletePromoBannerItem(pbiId: String) = isAuthenticated{
+    implicit request =>
+      DBHelper.database.withTransaction{
+        implicit session =>
+          PromotionBanner.deletePromotionBannerItem(pbiId)
+      }
+      Redirect(routes.InternalManagement.promoBannerList())
   }
 
   def listProducts = isAuthenticated {

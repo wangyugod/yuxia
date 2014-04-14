@@ -42,6 +42,10 @@ object AppHelper {
     Play.application.path.getPath + "\\" + Play.current.configuration.getString("prod.image.dir").get
   }
 
+  def promoImageDir = {
+    Play.application.path.getPath + "\\" + Play.current.configuration.getString("promo.image.dir").get
+  }
+
   def displayPrice(priceRange: (BigDecimal, BigDecimal)) = {
     priceRange match {
       case (x, y) if x == y => Messages("srp.price.single", x)
@@ -53,6 +57,10 @@ object AppHelper {
 
   def productImage(product: Product) = {
     controllers.routes.Assets.at("images/product/" + product.imageUrl)
+  }
+
+  def promoImage(imageName: String) = {
+    controllers.routes.Assets.at("images/promo/" + imageName)
   }
 
   def maskMail(email: String) = {
