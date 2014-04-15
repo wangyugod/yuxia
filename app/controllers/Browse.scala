@@ -4,8 +4,8 @@ import play.api.mvc._
 import play.api._
 import views.html
 import models.Product
-import util.SearchHelper
-import play.api.libs.json.{JsObject, Json}
+import util.{DBHelper, SearchHelper}
+import play.api.libs.json.{JsString, JsObject, Json}
 import vo.SearchResult
 
 /**
@@ -36,7 +36,7 @@ object Browse extends Controller with Users {
     }
   }
 
-  def categoryLanding(id: String) = Action{
+  def categoryLanding(id: String) = Action {
     implicit request => {
       val fqMap = request.getQueryString("area") match {
         case Some(areaId) => Map("area.id" -> areaId)
@@ -44,6 +44,16 @@ object Browse extends Controller with Users {
       }
       val searchResult = SearchResult(SearchHelper.query(SearchHelper.PRODUCT_SEARCH, "cat.id", id, fqMap, request))
       Ok(html.browse.category("Search Result Page", searchResult))
+    }
+  }
+
+  def selectSku(id: String) = Action {
+    implicit request => {
+      val sku = DBHelper.database.withSession {
+        implicit session =>
+          Product.findSkuById(id).get
+      }
+      Ok(JsObject(List("skuId" -> JsString(sku.id), "price" -> JsString(sku.price.toString()))))
     }
   }
 }

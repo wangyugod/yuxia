@@ -10,7 +10,7 @@
             <li id="summary-price">
                 <div class="dt">@Messages("pdp.price.label")</div>
                 <div class="dd" id="itemPrice">
-                    <strong class="p-price" id="jd-price">@util.AppHelper.displayPrice(product.priceRange)</strong></div>
+                    <strong class="p-price" id="sku-price">@util.AppHelper.displayPrice(product.priceRange)</strong></div>
             </li>
             <li id="summary-rating">
                 <div class="dt">@Messages("pdp.rating.label")</div>
@@ -91,7 +91,15 @@
         $("#selectedSku").text(skuId);
         $(".selected").removeClass("selected");
         $("#slink_" + skuId).parent().addClass("selected");
-
+        $.ajax({
+            async: true,
+            url: "/sku/select/"+skuId,
+            type: "GET",
+            success: function(result){
+                console.log("result is:" + result)
+                $("#sku-price").text(result.price)
+            }
+        })
     }
     function addToCart() {
         var skuId = $("#selectedSku").text();

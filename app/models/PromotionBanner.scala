@@ -56,6 +56,8 @@ class PromotionBannerItemRepo(tag: Tag) extends Table[PromotionBannerItem](tag, 
 
 object PromotionBanner extends ((String, String) => PromotionBanner) {
   val HOME_PAGE_SLIDER = "HomePageMainSlider"
+  val TODAY_RECOMMENDATION = "TodayRecommendation"
+  val HOME_PAGE_BEST_SALES = "HomePageBestSales"
   private val pbRepo = TableQuery[PromotionBannerRepo]
   private val pbItemRepo = TableQuery[PromotionBannerItemRepo]
 

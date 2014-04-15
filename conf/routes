@@ -41,6 +41,7 @@ DELETE  /merch/prod/:id             controllers.Products.delete(id)
 GET     /merch/service              controllers.Merchandise.serviceInfo
 POST    /merch/service              controllers.Merchandise.updateServiceInfo
 GET     /prod/:id                   controllers.Browse.productDetail(id)
+GET     /sku/select/:id             controllers.Browse.selectSku(id)
 GET     /search                     controllers.Browse.searchByKeyword
 GET     /category/:id               controllers.Browse.categoryLanding(id)
 GET     /admin/login                controllers.InternalManagement.login

@@ -574,6 +574,204 @@ select, input, textarea {
     background: #da324d;
 }
 
+.tjnomargin {
+    margin: 0 0 10px;
+}
+.tuijian {
+    width: 1210px;
+    margin: 0 auto 10px;
+}
+.tuijian .sort .fenlei {
+    padding-left: 0;
+    background: 0 0;
+}
+.tuijian .fenlei {
+    color: #e3393c;
+    position: absolute;
+    top: 4px;
+    _top: 3px;
+    left: 0;
+}
+.tuijian h2.sort {
+    border-bottom: 0;
+    margin: 0 auto;
+    padding: 0 0 10px;
+    position: relative;
+    height: 30px;
+    font-size: 18px;
+    font-family: microsoft yahei;
+}
+#mscroll {
+    height: 276px;
+}
+.tscroll {
+    position: relative;
+    border: 1px solid #dad9d9;
+    border-top: 2px solid #bfbfbf;
+    width: 1210px;
+    margin: 0 auto;
+    height: 260px;
+    overflow: hidden;
+    background: #fff;
+}
+#mscroll-list ul.brand li {
+    z-index: 2;
+}
+#mscroll-list .brand li {
+    border: 0;
+    border-right: 1px solid #d8d7d7;
+    height: 276px;
+    width: 302px;
+    margin: 0;
+    overflow: hidden;
+}
+.brand li {
+    float: left;
+    border: 1px solid #d9d8d8;
+    width: 321px;
+    height: 320px;
+    overflow: hidden;
+    margin-right: 10px;
+    position: relative;
+    background: #fff;
+}
+.brand li {
+    transition: border-color .3s;
+    -moz-transition: border-color .3s;
+    -webkit-transition: border-color .3s;
+    -o-transition: border-color .3s;
+}
+#mscroll-list .brand li .href-wrap {
+    height: 276px;
+    width: 328px;
+}
+a.href-wrap {
+    display: block;
+    width: 321px;
+    height: 325px;
+    overflow: hidden;
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    left: 0;
+    background: url(i/giftu.gif) repeat;
+    cursor: pointer;
+}
+ul.brand li .p-img {
+    position: relative;
+    margin: 0 auto;
+    width: 277px;
+    padding-top: 20px;
+}
+#mscroll-list .brand li img {
+    width: 251px;
+    height: 167px;
+}
+img {
+    vertical-align: middle;
+}
+#mscroll-list .brand li .p-img {
+    padding: 0;
+    width: 251px;
+    margin: 20px 22px 0;
+}
+#mscroll-list .brand li .p-name {
+    height: 17px;
+    line-height: 17px;
+    width: 251px;
+    overflow: hidden;
+    margin: 5px 22px 0;
+}
+.brand li div.p-name {
+    font-family: microsoft yahei;
+    line-height: 21px;
+    margin: 10px 22px 0;
+    height: 42px;
+    overflow: hidden;
+    color: #666;
+}
+#mscroll-list .brand li .p-price {
+    width: 251px;
+    margin: 0 22px;
+    _margin-top: -8px;
+    _position: relative;
+}
+ul.brand li .p-price {
+    margin: 10px 20px 0;
+    height: 40px;
+    _margin: 2px 20px 0;
+}
+.brand li .p-price {
+    font-size: 14px;
+    overflow: hidden;
+    position: relative;
+    margin: 15px 0;
+}
+.p-price {
+    color: #999;
+}
+#mscroll-list .brand li .p-price .left {
+    width: 144px;
+    height: 40px;
+    margin-top: 0;
+    margin-right: 0;
+}
+.brand li .p-price .left {
+    line-height: 15px;
+    width: 174px;
+    overflow: hidden;
+    float: left;
+}
+.brand li .p-price .col {
+    color: #E4393C;
+    font-weight: 700;
+}
+#mscroll-list .brand li .p-price .size {
+    font-size: 30px;
+}
+.brand li .p-price .size {
+    font-family: Verdana;
+    font-size: 36px;
+    font-weight: 700;
+    font-family: verdana;
+}
+#mscroll-list .brand li .p-price .block {
+    font-size: 12px;
+    margin-top: 3px;
+}
+.brand li .p-price .block {
+    font-weight: 400;
+    color: #e3393c;
+    font-size: 14px;
+    font-family: microsoft yahei;
+    padding-top: 3px;
+}
+.block {
+    display: block;
+    overflow: hidden;
+}
+#mscroll-list .brand li .p-price .left .block del {
+    font-size: 12px;
+    font-family: verdana;
+}
+.brand li .p-price del {
+    color: #999;
+    font-weight: 400;
+    display: block;
+    padding-top: 2px;
+    font-family: verdana;
+}
+del {
+    text-decoration: line-through;
+}
+#mscroll-list .p-price strong {
+    float: left;
+    margin-right: 5px;
+    font-family: verdana;
+    font-size: 14px;
+    color: #E4393C;
+}
+/*My Account Style*/
 #myaccount{
     float: left;
     position: relative;
@@ -1298,6 +1496,22 @@ a {
     border: 1px solid #ffbdbe;
 }
 
+#mscroll-list .brand li .p-price .right {
+    font-size: 12px;
+    font-family: "\5b8b\4f53";
+    width: 106px;
+}
+#mscroll-list .brand li .p-price .right .fmv {
+    font-family: verdana;
+}
+.brand li .p-price .right {
+    width: 106px;
+    text-align: right;
+    color: #999;
+    overflow: hidden;
+    float: right;
+    _margin-top: 5px;
+}
 /*My Account*/
 .m, .sm {
     margin-bottom: 10px;

@@ -23,6 +23,74 @@
         </div>
     </div>
 </div>
+
+<div class="tuijian tjnomargin">
+    <h2 class="sort rootsort">
+        <a class="fenlei" href="">今日特价</a>
+    </h2>
+    <div id="mscroll" class="tscroll">
+        <div id="mscroll-list" class="list" style="position: relative; width: 1210px; height: 276px; overflow: hidden;">
+            <ul class="brand" style="position: absolute; width: 2970px; height: 276px; top: 0px; left: 0px;">
+                @for((pb, idx)<- PromotionBanner.findPromotionBannerItemsByName(PromotionBanner.TODAY_RECOMMENDATION).zipWithIndex){
+                <li>
+                    <a class="href-wrap clearfix" target="_blank" href="@pb.link"></a>
+                    <div class="p-img">
+                        <img width="251" height="167" data-img="1" src="@pb.imageUrl" class="err-product">
+                    </div>
+                    <div class="p-name" title="@pb.description">
+                        <a class="hrefname" target="_blank" title="@pb.product.get.name" href="@pb.link">@pb.description</a>
+                    </div>
+                    <div class="p-price">
+                        <div class="left">
+                             <span class="col block">
+                                <del>@util.AppHelper.displayPrice(pb.product.get.listPriceRange)</del>
+                             </span>
+                            <strong>@util.AppHelper.displayPrice(pb.product.get.priceRange)</strong>
+                        </div>
+                        <div class="right">
+                            <br><span class="fmv">8584</span>人已买
+                        </div>
+                    </div>
+                </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="tuijian tjnomargin">
+    <h2 class="sort rootsort">
+        <a class="fenlei" href="">热卖商品</a>
+    </h2>
+    <div id="mscroll" class="tscroll">
+        <div id="mscroll-list" class="list" style="position: relative; width: 1210px; height: 276px; overflow: hidden;">
+            <ul class="brand" style="position: absolute; width: 2970px; height: 276px; top: 0px; left: 0px;">
+                @for((pb, idx)<- PromotionBanner.findPromotionBannerItemsByName(PromotionBanner.HOME_PAGE_BEST_SALES).zipWithIndex){
+                <li>
+                    <a class="href-wrap clearfix" target="_blank" href="@pb.link"></a>
+                    <div class="p-img">
+                        <img width="251" height="167" data-img="1" src="@pb.imageUrl" class="err-product">
+                    </div>
+                    <div class="p-name" title="@pb.description">
+                        <a class="hrefname" target="_blank" title="@pb.product.get.name" href="@pb.link">@pb.description</a>
+                    </div>
+                    <div class="p-price">
+                        <div class="left">
+                             <span class="col block">
+                                <del>@util.AppHelper.displayPrice(pb.product.get.listPriceRange)</del>
+                             </span>
+                            <strong>@util.AppHelper.displayPrice(pb.product.get.priceRange)</strong>
+                        </div>
+                        <div class="right">
+                            <br><span class="fmv">8584</span>人已买
+                        </div>
+                    </div>
+                </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
     function slideSwitch(){
         var current = $("#gcSlider li.selected")
@@ -57,15 +125,7 @@
         setInterval("slideSwitch()", 5000);
     })
 </script>
-<p>This is home page</p>
-@for(user <- userList){
-<br>
-<p>@user.id</p>
-<p>@user.login</p>
-<p>@user.name</p>
-<p>@user.birthDay</p>
-<br>
-}
+
 
 }
 
