@@ -29,6 +29,7 @@
                 <span class="tcol1">促销标题:
                     <a name="orderIdLinks" target="_blank" href="javascript:void(0)" onclick="showPbForm('@pb.id', '@pb.name')" >@pb.name</a></span>
                         <a href="javascript:void(0)" onclick="javascript: showPbItemForm('@pb.id')" class="btn btn-7"><s></s>添加</a>
+                        <a href="javascript:void(0)" onclick="javascript: removePromoBanner('@pb.id')" class="btn btn-7"><s></s>删除</a>
                     </td>
                 </tr>
                 @for(pbi <- pb.pbItems){
@@ -143,6 +144,17 @@
             $.ajax({
                 async:false,
                 url:"/admin/pbitem/" + pbiId,
+                type:"DELETE",
+                success: function(result){
+                    document.location.href = "@routes.InternalManagement.promoBannerList()";
+                }
+            });
+        }
+
+        function removePromoBanner(pbId){
+            $.ajax({
+                async:false,
+                url:"/admin/promobanner/" + pbId,
                 type:"DELETE",
                 success: function(result){
                     document.location.href = "@routes.InternalManagement.promoBannerList()";

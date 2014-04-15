@@ -55,6 +55,7 @@ POST    /admin/promobanner          controllers.InternalManagement.createPromoBa
 POST    /admin/pbitem               controllers.InternalManagement.createOrUpdatePromoBannerItem
 GET     /admin/product/list         controllers.InternalManagement.listProducts
 DELETE  /admin/pbitem/:id           controllers.InternalManagement.deletePromoBannerItem(id)
+DELETE  /admin/promobanner/:id      controllers.InternalManagement.deletePromoBanner(id)
 GET     /area/root                  controllers.Addresses.initAreaTrees
 GET     /area/child/:id             controllers.Addresses.childAreas(id)
 DELETE  /area/delete/:id            controllers.InternalManagement.deleteArea(id)

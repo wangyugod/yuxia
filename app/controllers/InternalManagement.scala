@@ -216,11 +216,20 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
       )
   }
 
-  def deletePromoBannerItem(pbiId: String) = isAuthenticated{
+  def deletePromoBannerItem(pbiId: String) = isAuthenticated {
     implicit request =>
-      DBHelper.database.withTransaction{
+      DBHelper.database.withTransaction {
         implicit session =>
           PromotionBanner.deletePromotionBannerItem(pbiId)
+      }
+      Redirect(routes.InternalManagement.promoBannerList())
+  }
+
+  def deletePromoBanner(pbId: String) = isAuthenticated {
+    implicit request =>
+      DBHelper.database.withTransaction {
+        implicit session =>
+          PromotionBanner.deletePromotionBanner(pbId)
       }
       Redirect(routes.InternalManagement.promoBannerList())
   }

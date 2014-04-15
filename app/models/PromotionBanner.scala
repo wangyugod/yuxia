@@ -106,7 +106,9 @@ object PromotionBanner extends ((String, String) => PromotionBanner) {
     pbItemRepo.where(_.id === pbItemId).delete
   }
 
+
   def deletePromotionBanner(pbId: String)(implicit session: Session) = {
+    pbItemRepo.where(_.promoBannerId === pbId).delete
     pbRepo.where(_.id === pbId).delete
   }
 
