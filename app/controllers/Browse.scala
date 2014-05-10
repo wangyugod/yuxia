@@ -2,11 +2,13 @@ package controllers
 
 import play.api.mvc._
 import play.api._
+import play.api.Play.current
 import views.html
-import models.Product
+import models.{Sku, Product}
 import util.{DBHelper, SearchHelper}
 import play.api.libs.json.{JsString, JsObject, Json}
 import vo.SearchResult
+import play.api.cache.Cache
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,10 +22,16 @@ object Browse extends Controller with Users {
 
   def productDetail(id: String) = Action {
     implicit request => {
-      val product = Product.findById(id)
-      product match {
-        case Some(p) => Ok(html.browse.pdp(p))
-        case _ => Redirect(routes.Application.pageNotFound())
+      Cache.get(id) match {
+        case Some(prod: Product) =>
+          Ok(html.browse.pdp(prod))
+        case _ =>
+          Product.findById(id) match {
+            case Some(p) =>
+              Cache.set(id, p)
+              Ok(html.browse.pdp(p))
+            case _ => Redirect(routes.Application.pageNotFound())
+          }
       }
     }
   }
@@ -51,9 +59,25 @@ object Browse extends Controller with Users {
     implicit request => {
       val sku = DBHelper.database.withSession {
         implicit session =>
-          Product.findSkuById(id).get
+          Cache.get(id) match {
+            case Some(sku: Sku) =>
+              if (log.isDebugEnabled)
+                log.debug("fetch sku " + id + " from cache")
+              sku
+            case _ =>
+              val sku = Product.findSkuById(id).get
+              if (log.isDebugEnabled)
+                log.debug("set sku " + id + " to cache")
+              Cache.set(id, sku)
+              sku
+          }
       }
       Ok(JsObject(List("skuId" -> JsString(sku.id), "price" -> JsString(sku.price.toString()))))
     }
+  }
+
+  def wantToEat() = Action{
+    implicit request =>
+      Ok(html.browse.wanttoeat("I want to Eat"))
   }
 }

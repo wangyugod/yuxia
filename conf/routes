@@ -22,6 +22,7 @@ POST    /myaccount/pwdmgt           controllers.ProfileController.verifyPwdChang
 GET     /myaccount/pwdmgt/form      controllers.ProfileController.changePassword
 POST    /myaccount/pwdmgt/update    controllers.ProfileController.updatePassword
 GET     /myaccount/pwdmgt/success   controllers.ProfileController.updatePasswordSucceed
+GET     /myaccount/usercredit       controllers.ProfileController.userCredits
 GET     /signout                    controllers.ProfileController.signout
 GET     /merch/login                controllers.Merchandise.login
 POST    /merch/login                controllers.Merchandise.authenticate
@@ -70,7 +71,7 @@ POST    /order/checkout/sg          controllers.CheckoutController.updateShippin
 DELETE  /order/sg/delete/:addressId     controllers.CheckoutController.removeShippingAddress(addressId)
 GET     /order/thankyou             controllers.CheckoutController.thankYou
 POST    /order/checkout             controllers.CheckoutController.submitOrder
-
+GET     /wanttoeat                  controllers.Browse.wantToEat
 
 
 # Map static resources from the /public folder to the /assets URL path

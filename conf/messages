@@ -33,6 +33,10 @@ topbar.login.label=[登录]
 topbar.logout.label=[退出]
 topbar.hello.label=您好，{0}
 
+#Top Nav
+topnav.wanttoeat.title=我想要吃
+
+
 #My Account
 myaccount.title=我的账户
 my.site.name=我的雨侠
@@ -58,7 +62,8 @@ order.review.message=订单已经完成，感谢您在京东商城购物，欢�
 pwdmgt.mail.code=密码修改验证码: {0}
 pwdmgt.mail.title=雨峡网密码修改验证
 pwdmgt.code.verify.fail=您输入的验证码不匹配,或者该验证码已经使用过，请重新输入
-
+user.credit.detail=本次积分由订单{0}成功完成获得
+myacct.credits.title=我的积分
 
 
 #merchandise

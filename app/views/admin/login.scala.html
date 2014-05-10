@@ -3,7 +3,7 @@
 
 <html>
 <head>
-    <title>@Messages("site.login.title")</title>
+    <title>@Messages("admin.site.title")</title>
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/base.css")">
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/component.css")">
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/layout.css")">
@@ -27,7 +27,7 @@
                     <label id="login_error" class="error">@Messages(form.error("login").get.message)</label>
                     <script type="text/javascript">
                         $(function(){
-                        $('#login').addClass("highlight2");
+                            $('#login').addClass("highlight2");
                         });
                     </script>
                     }
@@ -73,7 +73,6 @@
         </div>
     </div>
 </div>
-
 }
 
 </body>

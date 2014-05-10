@@ -10,6 +10,7 @@ import util.{DBHelper}
 import java.util.Date
 import play.api.Logger
 import play.api.i18n.Messages
+import scala.slick.lifted
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,7 +19,7 @@ import play.api.i18n.Messages
  * Time: 11:08 PM
  * To change this template use File | Settings | File Templates.
  */
-case class Order(id: String, profileId: String, state: Int, priceId: Option[String], createdTime: Timestamp, modifiedTime: Timestamp) {
+case class Order(id: String, profileId: String, state: Int, priceId: Option[String], processFlag: Int, createdTime: Timestamp, modifiedTime: Timestamp) {
   val log = Logger(this.getClass)
 
   lazy val commerceItems = DBHelper.database.withSession {
@@ -61,9 +62,12 @@ case class Order(id: String, profileId: String, state: Int, priceId: Option[Stri
 }
 
 case class CommerceItem(id: String, skuId: String, orderId: String, priceId: String, quantity: Int, createdTime: Timestamp) {
-  lazy val sku = Product.findSkuById(skuId).get
+  lazy val sku = DBHelper.database.withSession {
+    implicit session =>
+      Product.findSkuById(skuId).get
+  }
   lazy val priceInfo = DBHelper.database.withSession {
-    implicit ss: Session =>
+    implicit session =>
       TableQuery[PriceInfoRepo].where(_.id === priceId).first()
   }
 
@@ -93,7 +97,9 @@ class OrderRepo(tag: Tag) extends Table[Order](tag, "order") {
 
   def modifiedTime = column[Timestamp]("modified_time")
 
-  def * = (id, profileId, state, priceId, createdTime, modifiedTime) <>(Order.tupled, Order.unapply)
+  def processFlag = column[Int]("process_flag")
+
+  def * = (id, profileId, state, priceId, processFlag, createdTime, modifiedTime) <>(Order.tupled, Order.unapply)
 
 }
 
@@ -161,6 +167,20 @@ object OrderState {
   def getOrderStateDesc(key: Int) = orderStateMap.get(key).get
 }
 
+/**
+ * Order Process Flag enumeration, it is a property of Order entity
+ */
+object OrderProcessFlag {
+  //Initialization Flag
+  val INITIAL_FLAG = 0
+  //Stands for product is counted
+  val PRODUCT_COUNT_FLAG = 1
+  //Profile Points is calculated
+  val PROFILE_POINT_FLAG = 2
+  //Both Product Count and Profile Points is calculated
+  val DONE_FLAG = 3
+}
+
 object PaymentType {
   val REACH_DEBIT: Int = 0
   val STORE_CREDIT: Int = 1
@@ -169,11 +189,13 @@ object PaymentType {
   def getPaymentTypeDesc(key: Int) = paymentMap.get(key).get
 }
 
-object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp) => Order) {
+object Order extends ((String, String, Int, Option[String], Int, Timestamp, Timestamp) => Order) {
   val log = Logger(this.getClass)
 
+  val orderRepo = TableQuery[OrderRepo]
+
   def findOrderById(orderId: String)(implicit session: Session) = {
-    TableQuery[OrderRepo].filter(_.id === orderId).firstOption
+    orderRepo.filter(_.id === orderId).firstOption
   }
 
   def fetchCommerceItems(order: Order)(implicit session: Session) = {
@@ -208,11 +230,13 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
       case _ => {
         val priceInfoId = LocalIdGenerator.generatePriceInfoId()
         priceInfoRepo.insert(PriceInfo(priceInfoId, listPrice, actualPrice, None))
-        TableQuery[OrderRepo].where(_.id === order.id).update(Order(order.id, order.profileId, order.state, Some(priceInfoId), order.createdTime, new Timestamp(new Date().getTime)))
+        orderRepo.where(_.id === order.id).update(Order(order.id, order.profileId, order.state, Some(priceInfoId), OrderProcessFlag.INITIAL_FLAG, order.createdTime, new Timestamp(new Date().getTime)))
       }
     }
     log.debug("price order done!")
   }
+
+  override def finalize(): Unit = super.finalize()
 
   /**
    * Add SKU to order, if order already contain this SKU, merge it, otherwise add new commerceItem
@@ -225,7 +249,6 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
   def addItem(profileId: String, orderId: Option[String], skuId: String, quantity: Int) =
     DBHelper.database.withSession {
       implicit session =>
-        val orderRepo = TableQuery[OrderRepo]
         val priceInfoRepo = TableQuery[PriceInfoRepo]
         val ciRepo = TableQuery[CommerceItemRepo]
         session.withTransaction {
@@ -266,10 +289,10 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
 
 
   def create(profileId: String) = {
-    val order = Order(LocalIdGenerator.generateOrderId(), profileId, OrderState.INITIAL, None, new Timestamp(new Date().getTime()), new Timestamp(new Date().getTime()))
+    val order = Order(LocalIdGenerator.generateOrderId(), profileId, OrderState.INITIAL, None, OrderProcessFlag.INITIAL_FLAG, new Timestamp(new Date().getTime()), new Timestamp(new Date().getTime()))
     DBHelper.database.withTransaction {
       implicit ss: Session =>
-        TableQuery[OrderRepo].insert(order)
+        orderRepo.insert(order)
         val profile = Profile.findUserById(profileId).get
         profile.defaultAddress match {
           case Some(address) =>
@@ -320,7 +343,32 @@ object Order extends ((String, String, Int, Option[String], Timestamp, Timestamp
     val newOrder = order.copy(state = OrderState.SUBMITTED, modifiedTime = new Timestamp(new Date().getTime))
     if (log.isDebugEnabled)
       log.debug(s"new order is $newOrder")
-    TableQuery[OrderRepo].where(_.id === orderId).update(newOrder)
+    orderRepo.where(_.id === orderId).update(newOrder)
+  }
+
+  def countProduct(order: Order)(implicit session: Session) = {
+    val items = fetchCommerceItems(order)
+    val productVolumeRepo = TableQuery[ProductSalesVolumeRepo]
+    for (item <- items) {
+      val sku = Product.findSkuById(item.skuId).get
+      val productVolume = ProductSalesVolume(sku.productId, item.quantity, new Timestamp(new Date().getTime))
+      if(log.isDebugEnabled)
+        log.debug("current item:" + item.id + " productId:" + sku.productId + " quantity:" + item.quantity)
+      productVolumeRepo.where(_.productId === productVolume.productId).firstOption match {
+        case Some(existedPv) =>
+          productVolumeRepo.where(_.productId === productVolume.productId).update(productVolume.copy(volume = existedPv.volume + productVolume.volume))
+        case _ =>
+          productVolumeRepo.insert(productVolume)
+      }
+    }
+  }
+
+  def fetchOrderToBeProcessed(state: Int)(implicit session: Session) = {
+    orderRepo.where(_.state === state).where(_.processFlag < OrderProcessFlag.DONE_FLAG).list()
+  }
+
+  def updateOrder(order: Order)(implicit session: Session) = {
+    orderRepo.where(_.id === order.id).update(order)
   }
 
 }

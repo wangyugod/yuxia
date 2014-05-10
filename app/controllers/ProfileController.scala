@@ -328,6 +328,18 @@ object ProfileController extends Controller with Users with Secured {
       )
   }
 
+  def userCredits = isAuthenticated{
+    implicit request =>
+      val userId = request.session.get(USER_ID).get
+      val creditDetails = DBHelper.database.withSession{
+        implicit session =>
+          ProfileCreditPoints.findUserCreditDetails(userId)
+      }
+      if(log.isDebugEnabled)
+        log.debug(s"credit detail list for user $userId is $creditDetails")
+      Ok(html.myaccount.usercredits(creditDetails))
+  }
+
   def updatePasswordSucceed = isAuthenticated{
     implicit request =>
       Ok(html.myaccount.updatepwdsuccess())

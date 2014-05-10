@@ -1,9 +1,17 @@
 
+import actors.OrderProcessActor
+import actors.OrderProcessActor.Start
+import akka.actor.Props
 import models.CategoryCategory
 import java.sql.Date
 import models._
 import play.api.db.DB
 import play.api.GlobalSettings
+import play.api.libs.concurrent.Akka
+import play.Logger
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext
+import ExecutionContext.Implicits.global
 
 // Use H2Driver to connect to an H2 database
 
@@ -28,30 +36,35 @@ object Global extends GlobalSettings {
       //Initialize Profile Tables
       //Profiles.ddl.create
       //Merchants.ddl.create
-//      Products.ddl.drop
-//      Products.ddl.create
+      //      Products.ddl.drop
+      //      Products.ddl.create
       //Skus.ddl.drop
-//      Skus.ddl.create
+      //      Skus.ddl.create
       //MerchantAdvInfos.ddl.create
-//      Addresses.ddl.create
-    //  UserAddresses.ddl.drop
-//      UserAddresses.ddl.create
+      //      Addresses.ddl.create
+      //  UserAddresses.ddl.drop
+      //      UserAddresses.ddl.create
       //ProductCategories.ddl.create
-//      Categories.ddl.create
-//      CategoryCategories.ddl.drop
-//      InternalUsers.ddl.create
-//      Areas.ddl.create
-//      MerchantServiceInfos.ddl.create
-//      MerchantShippingScopes.ddl.create
-//      TableQuery[OrderRepo].ddl.create
-//      TableQuery[CommerceItemRepo].ddl.create
-//      TableQuery[PriceInfoRepo].ddl.create
-//      TableQuery[PaymentGroupRepo].ddl.create
-//      TableQuery[ShippingGroupRepo].ddl.create
-//        TableQuery[IdGenerationRepo].ddl.create
-        TableQuery[PromotionBannerRepo].ddl.create
-        TableQuery[PromotionBannerItemRepo].ddl.create
-//      CategoryCategories.ddl.create
+      //      Categories.ddl.create
+      //      CategoryCategories.ddl.drop
+      //      InternalUsers.ddl.create
+      //      Areas.ddl.create
+      //      MerchantServiceInfos.ddl.create
+      //      MerchantShippingScopes.ddl.create
+      //      TableQuery[OrderRepo].ddl.create
+      //      TableQuery[CommerceItemRepo].ddl.create
+      //      TableQuery[PriceInfoRepo].ddl.create
+      //      TableQuery[PaymentGroupRepo].ddl.create
+      //      TableQuery[ShippingGroupRepo].ddl.create
+      //        TableQuery[IdGenerationRepo].ddl.create
+      //        TableQuery[PromotionBannerRepo].ddl.create
+      //        TableQuery[PromotionBannerItemRepo].ddl.create
+      //        TableQuery[ProductSalesVolumeRepo].ddl.create
+      //              TableQuery[ProfileCreditPointsRepo].ddl.create
+//        TableQuery[CreditPointsDetailRepo].ddl.create
+              TableQuery[InteractiveEventRepo].ddl.create
+              TableQuery[InteractiveEventReplyRepo].ddl.create
+      //      CategoryCategories.ddl.create
 
       /*if (Query(Profiles).list().isEmpty){
         println("Simon is emtpty yet")
@@ -75,7 +88,7 @@ object Global extends GlobalSettings {
         catcatQuery.insert(CategoryCategory("cat2", "cat21"))
         catcatQuery.insert(CategoryCategory("cat2", "cat22"))
         categoryQuery.insert(Category("cat111", "套餐11", "套餐，包含饮料", "", false))
-        categoryQuery.insert(Category("cat112", "炒饭11", "我是蛋炒饭", "", false))
+        categoryQuery.insert(Category("cat112", "炒饭11", "我是蛋炒饭"c, "", false))
         categoryQuery.insert(Category("cat113", "面食11", "这里有各种各样的面食", "", false))
         catcatQuery.insert(CategoryCategory("cat11", "cat111"))
         catcatQuery.insert(CategoryCategory("cat11", "cat112"))
@@ -86,7 +99,13 @@ object Global extends GlobalSettings {
 
   override def onStart(app: Application) {
     println("start loading")
-//    println("leaves:" + Area.allLeaveAreas())
-//    initializeTable()
+    //    println("leaves:" + Area.allLeaveAreas())
+//            initializeTable()
+    startBackendProcess(app)
+  }
+
+  def startBackendProcess(app: Application) = {
+    val orderProcessActor = Akka.system.actorOf(Props(new OrderProcessActor()))
+    Akka.system(app).scheduler.schedule(0 seconds, 1 minutes, orderProcessActor, Start)
   }
 }

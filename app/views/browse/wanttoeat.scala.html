@@ -1,0 +1,59 @@
+@(message: String)(implicit user:Option[Profile])
+@main(Messages("topnav.wanttoeat.title"), user) {
+    在这里您可以提交您想吃的食物的清单，我们会根据人气进行研发
+    <div class="w main">
+        <div class="wanttoeat">
+            <div class="o-mt">
+                <h2>馋嘴列表</h2>
+            </div>
+            <div class="o-m">
+                <div class="o-mb">
+                    <h3> <a href="#none" class="btn-6" onclick="showAddressForm()"><s></s>新 增</a></h3>
+                </div>
+                <div class="o-mc">
+                    <div class="m m4" id="divorderaddress48896010">
+                        <div class="mt">
+                            <h3>地址</h3>
+                            <div class="extra">
+                                <a class="btn-12" href="#none" id="modaddr" onclick="modifyPopup($(this))"><s></s>@Messages("area.update.btn")</a>
+                                <a class="btn-12 del" href="#none" id="deladdr" onclick="confirmDeleteAddress($(this))"><s></s>@Messages("area.delete.btn")</a>
+                                <div id="divconfirm" style="display:none">
+                                    <span>@Messages("addr.delete.cfmsg", 1)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mc">
+                            <div class="tb-0">
+                                <table cellspacing="0" cellpadding="0" border="0" width="100%">
+                                    <tbody>
+                                    <tr>
+                                        <th>@Messages("addr.contactperson.label")</th>
+                                        <td width="330" id="person">fdafdsafdsfdsa</td>
+                                        <th>&nbsp;</th>
+                                        <td>&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <th>@Messages("addr.phone.label")</th>
+                                        <td id="phone">phone_phebe</td>
+                                        <th>
+                                            &nbsp;
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>@Messages("addr.default.label")</th>
+                                        <td id="phonedd">jfkldsjfdsalfjsl</td>
+                                        <th>
+                                            &nbsp;
+                                        </th>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}

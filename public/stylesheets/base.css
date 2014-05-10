@@ -3238,3 +3238,17 @@ em {
     border: 1px solid #e6e6e6;
     border-top: none;
 }
+
+/*Want To Eat*/
+.wanttoeat{
+    width: 1210px
+}
+
+.wanttoeat .o-mt{
+    border: 1px solid #e6e6e6;
+    border-bottom: 2px solid #c30000;
+    height: 33px;
+    line-height: 33px;
+    margin-bottom: 10px;
+    margin-top: 5px;
+}

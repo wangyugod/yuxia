@@ -1,0 +1,42 @@
+@(creditDetailList: List[CreditPointsDetail])(implicit user: Option[Profile])
+
+@import helper._
+@myAccount(user){
+
+<div class="o-mt">
+    <h2>@Messages("myacct.credits.title")</h2>
+</div>
+<div class="m m5" id="order02">
+    当前积分：@user.get.userCreditPoints.get.creditPoints
+    <div class="mc">
+        <div class="tb-void">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tbody>
+                <tr>
+                    <th width="15%">明细序号</th>
+                    <th width="20%">积分数量</th>
+                    <th width="40%">描述</th>
+                    <th width="25%">发生时间</th>
+                </tr>
+                </tbody>
+                @for(creditDetail <- creditDetailList){
+                <tbody>
+                <tr id="track1129612684" oty="0,4" class="tr-td">
+                    <td>
+                        @creditDetail.id
+                    </td>
+                    <td><div class="u-name">@creditDetail.creditPoints</div></td>
+                    <td>@creditDetail.description</td>
+                    <td>
+                        <span class="ftx-03">@creditDetail.modifiedTime </span>
+                    </td>
+                </tr>
+                </tbody>
+                }
+
+            </table>
+        </div>
+    </div>
+</div>
+
+}

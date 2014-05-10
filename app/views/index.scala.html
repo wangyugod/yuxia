@@ -5,7 +5,7 @@
     <div id="gcSlider" class="gc-slider ui-switchable-focus" clstag="fashion|keycount|fz|jdtu">
         <div class="slider-wrap">
             <ul style="position: relative;">
-                @for((pb, idx) <- PromotionBanner.findPromotionBannerItemsByName(PromotionBanner.HOME_PAGE_SLIDER).zipWithIndex){
+                @for((pb, idx) <- Application.findPromotionBannerByName(PromotionBanner.HOME_PAGE_SLIDER).zipWithIndex){
                 <li class="item ui-slider-item @(if(idx == 0) "selected")" style="background-color: rgb(254, 238, 241); position: absolute; @(if(idx == 0) "z-index: 1; opacity: 1;" else  "z-index: 0; opacity: 0;")">
                     <div class="i-wrap">
                         <div class="i-inner">
@@ -17,7 +17,7 @@
             </ul>
         </div>
         <div class="slider-trigger">
-            @for((pb, idx) <- PromotionBanner.findPromotionBannerItemsByName(PromotionBanner.HOME_PAGE_SLIDER).zipWithIndex){
+            @for((pb, idx) <- Application.findPromotionBannerByName(PromotionBanner.HOME_PAGE_SLIDER).zipWithIndex){
             <a class="ui-slider-trigger @(if(idx == 0) "curr")" href="javascript:void(0)"></a>
             }
         </div>
@@ -31,7 +31,7 @@
     <div id="mscroll" class="tscroll">
         <div id="mscroll-list" class="list" style="position: relative; width: 1210px; height: 276px; overflow: hidden;">
             <ul class="brand" style="position: absolute; width: 2970px; height: 276px; top: 0px; left: 0px;">
-                @for((pb, idx)<- PromotionBanner.findPromotionBannerItemsByName(PromotionBanner.TODAY_RECOMMENDATION).zipWithIndex){
+                @for((pb, idx)<- Application.findPromotionBannerByName(PromotionBanner.TODAY_RECOMMENDATION).zipWithIndex){
                 <li>
                     <a class="href-wrap clearfix" target="_blank" href="@pb.link"></a>
                     <div class="p-img">
@@ -48,7 +48,7 @@
                             <strong>@util.AppHelper.displayPrice(pb.product.get.priceRange)</strong>
                         </div>
                         <div class="right">
-                            <br><span class="fmv">8584</span>人已买
+                            <br>已售出<span class="fmv">@pb.product.get.salesVolume</span>份
                         </div>
                     </div>
                 </li>
@@ -65,7 +65,7 @@
     <div id="mscroll" class="tscroll">
         <div id="mscroll-list" class="list" style="position: relative; width: 1210px; height: 276px; overflow: hidden;">
             <ul class="brand" style="position: absolute; width: 2970px; height: 276px; top: 0px; left: 0px;">
-                @for((pb, idx)<- PromotionBanner.findPromotionBannerItemsByName(PromotionBanner.HOME_PAGE_BEST_SALES).zipWithIndex){
+                @for((pb, idx)<- Application.findPromotionBannerByName(PromotionBanner.HOME_PAGE_BEST_SALES).zipWithIndex){
                 <li>
                     <a class="href-wrap clearfix" target="_blank" href="@pb.link"></a>
                     <div class="p-img">
@@ -82,7 +82,7 @@
                             <strong>@util.AppHelper.displayPrice(pb.product.get.priceRange)</strong>
                         </div>
                         <div class="right">
-                            <br><span class="fmv">8584</span>人已买
+                            <br>已售出<span class="fmv">@pb.product.get.salesVolume</span>份
                         </div>
                     </div>
                 </li>

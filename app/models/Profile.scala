@@ -1,12 +1,14 @@
 package models
 
 import scala.slick.driver.MySQLDriver.simple._
-import java.sql.Date
+import java.sql.{Timestamp, Date}
 import play.api.db.DB
 import play.api.Play.current
 import scala.Predef._
 import util.{Encoder, DBHelper}
 import play.api.{Logger, Play}
+import java.math.MathContext
+import play.api.i18n.Messages
 
 
 /**
@@ -21,6 +23,11 @@ case class Profile(id: String, login: String, password: String, pwdSalt: String,
   lazy val defaultAddress: Option[Address] = DBHelper.database.withSession {
     implicit session =>
       Profile.findDefaultAddress(id)
+  }
+
+  lazy val userCreditPoints = DBHelper.database.withSession {
+    implicit session =>
+      ProfileCreditPoints.findUserCreditPoints(this.id)
   }
 
   lazy val addresses = DBHelper.database.withSession {
@@ -128,5 +135,69 @@ object Profile extends ((String, String, String, String, String, Option[String],
 
   def findUserOrders(userId: String)(implicit session: Session) = {
     TableQuery[OrderRepo].filter(_.profileId === userId).filter(_.state > OrderState.INITIAL).list()
+  }
+}
+
+case class ProfileCreditPoints(userId: String, creditPoints: Int, lastModifiedTime: Timestamp)
+
+case class CreditPointsDetail(id: String, userId: String, creditPoints: Int, description: String, modifiedTime: Timestamp)
+
+class ProfileCreditPointsRepo(tag: Tag) extends Table[ProfileCreditPoints](tag, "user_credit") {
+  def userId = column[String]("user_id", O.PrimaryKey)
+
+  def creditPoints = column[Int]("credit_points")
+
+  def lastModifiedTime = column[Timestamp]("last_modified_time")
+
+  def * = (userId, creditPoints, lastModifiedTime) <>(ProfileCreditPoints.tupled, ProfileCreditPoints.unapply)
+}
+
+class CreditPointsDetailRepo(tag: Tag) extends Table[CreditPointsDetail](tag, "user_credit_detail") {
+  def id = column[String]("id", O.PrimaryKey)
+
+  def userId = column[String]("user_id")
+
+  def creditPoints = column[Int]("credit_points")
+
+  def description = column[String]("description")
+
+  def modifiedTime = column[Timestamp]("modified_time")
+
+  def * = (id, userId, creditPoints, description, modifiedTime) <>(CreditPointsDetail.tupled, CreditPointsDetail.unapply)
+}
+
+object ProfileCreditPoints extends ((String, Int, Timestamp) => ProfileCreditPoints) {
+  private val log = Logger(this.getClass)
+
+  def increaseCreditPointsByOrder(order: Order)(implicit session: Session) = {
+    val userId = order.profileId
+    val creditPoints = calculatePoints(order)
+    if (log.isDebugEnabled)
+      log.debug(s"add points $creditPoints for order $order.id")
+    findUserCreditPoints(userId) match {
+      case Some(userCreditPoints) =>
+        val userCredit = userCreditPoints.copy(creditPoints = userCreditPoints.creditPoints + creditPoints, lastModifiedTime = new Timestamp(new java.util.Date().getTime))
+        TableQuery[ProfileCreditPointsRepo].where(_.userId === userId).update(userCredit)
+      case _ =>
+        TableQuery[ProfileCreditPointsRepo].insert(ProfileCreditPoints(userId, creditPoints, new Timestamp(new java.util.Date().getTime)))
+    }
+    TableQuery[CreditPointsDetailRepo].insert(CreditPointsDetail(LocalIdGenerator.generateUserCreditDetailId(), userId, creditPoints, Messages("user.credit.detail", order.id), new Timestamp(new java.util.Date().getTime)))
+  }
+
+  /**
+   * Currently 1 yuan means 1 point
+   * @param order
+   * @return
+   */
+  def calculatePoints(order: Order) = {
+    order.priceInfo.actualPrice.intValue
+  }
+
+  def findUserCreditPoints(userId: String)(implicit session: Session) = {
+    TableQuery[ProfileCreditPointsRepo].where(_.userId === userId).firstOption
+  }
+
+  def findUserCreditDetails(userId: String)(implicit session: Session) = {
+    TableQuery[CreditPointsDetailRepo].where(_.userId === userId).list()
   }
 }
