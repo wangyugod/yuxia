@@ -1,4 +1,5 @@
-@(message: String)(implicit user:Option[Profile])
+@(interactiveEventList: List[InteractiveEvent])(implicit user:Option[Profile], flash: Flash)
+@import helper._
 @main(Messages("topnav.wanttoeat.title"), user) {
     在这里您可以提交您想吃的食物的清单，我们会根据人气进行研发
     <div class="w main">
@@ -8,12 +9,13 @@
             </div>
             <div class="o-m">
                 <div class="o-mb">
-                    <h3> <a href="#none" class="btn-6" onclick="showAddressForm()"><s></s>新 增</a></h3>
+                    <h3> <a href="#none" class="btn-6" onclick="showInteractiveEventForm()"><s></s>新 增</a></h3>
                 </div>
+                @for((event, idx) <- interactiveEventList.zipWithIndex){
                 <div class="o-mc">
                     <div class="m m4" id="divorderaddress48896010">
                         <div class="mt">
-                            <h3>地址</h3>
+                            <h3>@event.title</h3>
                             <div class="extra">
                                 <a class="btn-12" href="#none" id="modaddr" onclick="modifyPopup($(this))"><s></s>@Messages("area.update.btn")</a>
                                 <a class="btn-12 del" href="#none" id="deladdr" onclick="confirmDeleteAddress($(this))"><s></s>@Messages("area.delete.btn")</a>
@@ -27,21 +29,21 @@
                                 <table cellspacing="0" cellpadding="0" border="0" width="100%">
                                     <tbody>
                                     <tr>
-                                        <th>@Messages("addr.contactperson.label")</th>
-                                        <td width="330" id="person">fdafdsafdsfdsa</td>
+                                        <th>菜名：</th>
+                                        <td width="330" id="person">@event.name</td>
                                         <th>&nbsp;</th>
                                         <td>&nbsp;</td>
                                     </tr>
                                     <tr>
-                                        <th>@Messages("addr.phone.label")</th>
-                                        <td id="phone">phone_phebe</td>
+                                        <th>状态：</th>
+                                        <td id="phone">@event.state</td>
                                         <th>
                                             &nbsp;
                                         </th>
                                     </tr>
                                     <tr>
-                                        <th>@Messages("addr.default.label")</th>
-                                        <td id="phonedd">jfkldsjfdsalfjsl</td>
+                                        <th>详细信息：</th>
+                                        <td id="phonedd">@event.description</td>
                                         <th>
                                             &nbsp;
                                         </th>
@@ -52,8 +54,91 @@
                         </div>
                     </div>
                 </div>
+                }
             </div>
         </div>
     </div>
 
+<div id="popForm" class="thickbox" style="display: none">
+    <div class="thickcon" >
+        <div class="mc">
+            @form(routes.InteractiveEvents.createInteractiveEvent){
+            <input type="hidden" name="id" id="id"/>
+            <input type="hidden" name="userId" value="@(if(user.isDefined) user.get.id)" id="userId"/>
+            <div class="form" id="consigneePanel">
+                <div class="item">
+                    <span class="label"><em>*</em>标&nbsp;&nbsp;题：</span>
+                    <div class="fl">
+                        <input id="title" name="title" type="text" class="text" value="" style="width:300px" maxlength="20">
+                        <div class="prompt-error" id="titleError" style="display:none"><span id="petName_msg">@Messages("error.required")</span></div>
+                    </div>
+                    <div class="clr">
+                    </div>
+                </div>
+                <div class="item">
+                    <span class="label"><em>*</em>菜&nbsp;&nbsp;名：</span>
+                    <div class="fl">
+                        <input id="name" name="name" type="text" class="text" value="" maxlength="20">
+                        <div class="prompt-error" id="nameError" style="display:none"><span id="petName_msg">@Messages("error.required")</span></div>
+                    </div>
+                    <div class="clr">
+                    </div>
+                </div>
+                <div class="item">
+                    <span class="label"><em>*</em>描&nbsp;&nbsp;述：</span>
+                    <div class="fl">
+                        <label id="lblDescription"></label><textarea id="description" name="description" type="text" value="" class="text area" maxlength="50"></textarea></div>
+                    <div class="prompt-error" id="descError" style="display:none"><span id="petName_msg">@Messages("error.required")</span></div>
+                    <div class="clr">
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function showInteractiveEventForm(){
+        $("#popForm").dialog({
+            title: "我想要吃的菜品",
+            width: 760,
+            height: 400,
+            modal:true,
+            open:function(event, ui){
+                $(".ui-dialog-titlebar-close", $(this).parent()).hide();
+                $('#titleError').hide();
+                $('#nameError').hide();
+                $('#descError').hide();
+            },
+            buttons:{"@Messages("ok.button")": function(){
+                var valid = true;
+                if($('#title').val().trim() == ""){
+                    $('#titleError').show();
+                    valid = false;
+                }
+                if($('#name').val().trim() == ""){
+                    $('#nameError').show();
+                    valid = false;
+                }
+                if($('#description').val().trim() == ""){
+                    $('#descError').show();
+                    valid = false;
+                }
+
+                if(!valid)
+                    return;
+                $('form').submit();
+                $(this).dialog("close");
+            },
+                "@Messages("cancel.button")": function() {
+                    $('#id').val("");
+                    $('#userId').val("");
+                    $('#name').val("");
+                    $('#title').val("");
+                    $('#description').val("");
+                    $(this).dialog( "close" );
+                }}
+        })
+    }
+</script>
 }

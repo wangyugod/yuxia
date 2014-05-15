@@ -76,8 +76,4 @@ object Browse extends Controller with Users {
     }
   }
 
-  def wantToEat() = Action{
-    implicit request =>
-      Ok(html.browse.wanttoeat("I want to Eat"))
-  }
 }

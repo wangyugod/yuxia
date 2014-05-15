@@ -71,7 +71,8 @@ POST    /order/checkout/sg          controllers.CheckoutController.updateShippin
 DELETE  /order/sg/delete/:addressId     controllers.CheckoutController.removeShippingAddress(addressId)
 GET     /order/thankyou             controllers.CheckoutController.thankYou
 POST    /order/checkout             controllers.CheckoutController.submitOrder
-GET     /wanttoeat                  controllers.Browse.wantToEat
+GET     /wanttoeat                  controllers.InteractiveEvents.wantToEat
+POST    /interactive/create         controllers.InteractiveEvents.createInteractiveEvent
 
 
 # Map static resources from the /public folder to the /assets URL path

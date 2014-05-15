@@ -25,12 +25,10 @@ object Application extends Controller with Users {
     }
   }
 
-  def findPromotionBannerByName(pbName: String) = Cache.get(pbName) match {
-    case Some(pbList: List[PromotionBannerItem]) =>
-      if (log.isDebugEnabled)
-        log.debug(s"get pbList $pbName from cache")
-      pbList
-    case _ =>
+  def findPromotionBannerByName(pbName: String) = {
+    if (Cache.get(pbName).isDefined) {
+      Cache.get(pbName).get.asInstanceOf[List[PromotionBannerItem]]
+    } else {
       if (log.isDebugEnabled)
         log.debug(s"set pbItems $pbName to cache")
       DBHelper.database.withSession {
@@ -39,5 +37,6 @@ object Application extends Controller with Users {
           Cache.set(pbName, pbList)
           pbList
       }
+    }
   }
 }

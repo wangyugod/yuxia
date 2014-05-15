@@ -6,7 +6,7 @@ import java.sql.Timestamp
 /**
  * Created by thinkpad-pc on 14-5-2.
  */
-case class InteractiveEvent(id: String, title: String, description: String, profileId: String, state: Int, supportedQty: Int, createdTime: Timestamp, lastModifiedTime: Timestamp) {
+case class InteractiveEvent(id: String, title: String, name: String, description: String, profileId: String, state: Int, supportedQty: Int, createdTime: Timestamp, lastModifiedTime: Timestamp) {
 
 }
 
@@ -16,6 +16,8 @@ class InteractiveEventRepo(tag: Tag) extends Table[InteractiveEvent](tag, "inter
   def id = column[String]("id", O.PrimaryKey)
 
   def title = column[String]("title")
+
+  def name = column[String]("name")
 
   def description = column[String]("description")
 
@@ -29,7 +31,7 @@ class InteractiveEventRepo(tag: Tag) extends Table[InteractiveEvent](tag, "inter
 
   def lastModifiedTime = column[Timestamp]("last_modified_time")
 
-  override def * = (id, title, description, profileId, state, supportedQty, createdTime, lastModifiedTime) <>(InteractiveEvent.tupled, InteractiveEvent.unapply)
+  override def * = (id, title, name, description, profileId, state, supportedQty, createdTime, lastModifiedTime) <>(InteractiveEvent.tupled, InteractiveEvent.unapply)
 }
 
 class InteractiveEventReplyRepo(tag: Tag) extends Table[InteractiveEventReply](tag, "interactive_event_rep") {
@@ -48,10 +50,23 @@ class InteractiveEventReplyRepo(tag: Tag) extends Table[InteractiveEventReply](t
 
 
 object InteractiveEventState {
-  val RAISED_UP = 0
-  val PROCESSING = 1
-  val DONE = 2
-  val REMOVED = 3
+  val WAITING_FOR_APPROVE = 0
+  val APPROVED = 1
+  val PROCESSING = 2
+  val DONE = 3
+  val REMOVED = 4
+}
+
+object InteractiveEvent extends ((String, String, String, String, String, Int, Int, Timestamp, Timestamp) => InteractiveEvent) {
+  val ieRepo = TableQuery[InteractiveEventRepo]
+
+  def createInteractiveEvent(ie: InteractiveEvent)(implicit session: Session) = {
+    ieRepo.insert(ie)
+  }
+
+  def all()(implicit session: Session) = {
+    ieRepo.list()
+  }
 }
 
 

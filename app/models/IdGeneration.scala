@@ -41,9 +41,10 @@ object IdGeneration extends ((String, Int, Int, Int, String, String) => IdGenera
   val PROMO_BANNER = "promo_banner"
   val PROMO_BANNER_ITEM = "promo_banner_item"
   val USER_CREDIT_DETAIL = "user_credit_detail"
+  val INTERACTIVE_EVENT = "interactive_event"
   val INITIAL = 100000
   val STEP = 1
-  val prefixMap = Map(SHIPPING_GROUP -> "sg", ORDER -> "o", PROFILE -> "p", PRODUCT -> "pd", CATEGORY -> "cat", SKU -> "sku", ADDRESS -> "addr", AREA -> "area", MERCHANT -> "mc", COMMERCE_ITEM -> "ci", PRICE -> "pi", PAYMENT_GROUP -> "pg", PROMO_BANNER -> "pb", PROMO_BANNER_ITEM -> "pbi", USER_CREDIT_DETAIL -> "ucd")
+  val prefixMap = Map(SHIPPING_GROUP -> "sg", ORDER -> "o", PROFILE -> "p", PRODUCT -> "pd", CATEGORY -> "cat", SKU -> "sku", ADDRESS -> "addr", AREA -> "area", MERCHANT -> "mc", COMMERCE_ITEM -> "ci", PRICE -> "pi", PAYMENT_GROUP -> "pg", PROMO_BANNER -> "pb", PROMO_BANNER_ITEM -> "pbi", USER_CREDIT_DETAIL -> "ucd", INTERACTIVE_EVENT -> "ie")
 
   def getNextId(key: String) = DBHelper.database.withTransaction {
     implicit session =>
@@ -157,6 +158,12 @@ object UserCreditDetailIdGenerator extends IdGenerator{
   }
 }
 
+object InteractiveEventIdGenerator extends IdGenerator{
+  override def generateId() = this.synchronized{
+    IdGeneration.getNextId(IdGeneration.INTERACTIVE_EVENT)
+  }
+}
+
 object LocalIdGenerator {
 
   def generateUserCreditDetailId() = {
@@ -165,6 +172,10 @@ object LocalIdGenerator {
 
   def generatePbId() = {
     PromotionBannerIdGenerator.generateId()
+  }
+
+  def generateInteractiveEventId() = {
+    InteractiveEventIdGenerator.generateId()
   }
 
   def generatePbiId() = {

@@ -199,3 +199,6 @@ checkout.address.name.error=请您填写收货人姓名！
 checkout.address.area.error=请您选择所属区域！
 checkout.address.phone.error=请您正确填写联系电话！
 checkout.address.line.error=请您填写详细地址！
+
+#want to eat
+ie.error=请确保所有必须字段已经填写
