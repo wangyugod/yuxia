@@ -1,0 +1,23 @@
+@(rankList: List[Product])
+<div id="ranklist" class="m m2" data-widget="tabs" load="true">
+    <div class="mt">
+        <h2>热销商品排行榜</h2>
+    </div>
+    <div class="mc">
+        <ul class="tabcon" data-widget="tab-content" style="display: block;">
+            @for((product, idx) <- rankList.zipWithIndex){
+                <li class="fore1">
+                    <span>@(idx + 1)</span>
+                    <div class="p-img">
+                        <a href="@routes.Browse.productDetail(product.id)">
+                            <img data-img="1" height="50" width="50" src="@util.AppHelper.productImage(product)" class="err-product">
+                        </a>
+                    </div>
+                    <div class="p-name">
+                        <a href="@routes.Browse.productDetail(product.id)" title="@product.name">@product.name</a>
+                    </div><div class="p-price"><strong class="J-p-803682">@util.AppHelper.displayPrice(product.priceRange)</div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-@(message: String, result: vo.SearchResult)(implicit user:Option[Profile])
+@(message: String, result: vo.SearchResult, rankList: List[Product])(implicit user:Option[Profile])
 
 @main(Messages("srp.page.title"), user) {
     <div class="right-extra">
@@ -87,7 +87,7 @@
 
 
     <div class="left">
-        <span>Here is left area</span>
+        @ranklist(rankList)
     </div>
 
 }

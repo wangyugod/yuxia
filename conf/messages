@@ -202,3 +202,9 @@ checkout.address.line.error=请您填写详细地址！
 
 #want to eat
 ie.error=请确保所有必须字段已经填写
+WAITING_FOR_APPROVE=审核中
+APPROVED=审核通过
+PROCESSING=研制中
+DONE=完成
+REMOVED=已删除
+event.support.btn=我也想吃

@@ -6,16 +6,17 @@ import play.api.i18n.Messages
 import views._
 import util.DBHelper
 import play.api.Play.current
-import play.api.cache.Cache
-import play.api.Logger
+import play.api.cache.{Cached, Cache}
+import play.api.{Play, Logger}
 
 object Application extends Controller with Users {
   private val log = Logger(this.getClass)
 
-  def index = Action {
-    implicit request => {
-      val users = Profile.findAllUsers()
-      Ok(html.index(Messages("site.name"), users))
+  def index = Cached("index", Play.current.configuration.getInt("cache.ttl").getOrElse(5)) {
+    Action {
+      implicit request => {
+        Ok(html.index(Messages("site.name")))
+      }
     }
   }
 
@@ -27,7 +28,7 @@ object Application extends Controller with Users {
 
   def findPromotionBannerByName(pbName: String) = {
     if (Cache.get(pbName).isDefined) {
-      Cache.get(pbName).get.asInstanceOf[List[PromotionBannerItem]]
+      Cache.getAs[List[PromotionBannerItem]](pbName).get
     } else {
       if (log.isDebugEnabled)
         log.debug(s"set pbItems $pbName to cache")

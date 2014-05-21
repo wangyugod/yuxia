@@ -76,11 +76,9 @@
             function decreaseQuantity(obj){
                 var skuId = $(obj).attr("id").substring(4);
                 var qty = $("#qty_" + skuId).val();
-                alert("qty old is " + qty);
                 var quantityInt = parseInt(qty);
                 if(quantityInt > 1){
                     $("#qty_" + skuId).val(quantityInt - 1);
-                    alert("qty is " + $("#qty_" + skuId).val())
                     updateQuantity(skuId);
                 }
             }
@@ -98,7 +96,6 @@
             }
 
             function deleteItem(itemId){
-                alert("deleteItem");
                 $('#deleteConfirmMessage').dialog({
                     title: '@Messages("prompt.title")',
                     resizable: false,

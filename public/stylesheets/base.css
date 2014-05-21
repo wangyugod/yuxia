@@ -1080,7 +1080,75 @@ list-style: none;
 .left {
     float: left;
     width: 210px;
-    margin-right: 30px;
+    margin-top: 2px;
+}
+
+.left .m2 .mt {
+    border: 1px solid #ddd;
+    height: 28px;
+    line-height: 28px;
+    font: 14px/30px 'microsoft yahei';
+}
+
+.m1 .mt h2, .m2 .mt h2 {
+    font-weight: 400;
+}
+
+.left .mt, .right .mt {
+    background-color: #f7f7f7;
+}
+
+.left .m2 .mc {
+    border: 1px solid #ddd;
+    border-top: 0;
+}
+
+#ranklist .tabcon {
+    padding: 0 5px;
+    clear: both;
+}
+
+#ranklist .tabcon span {
+    left: -3px;
+    width: 18px;
+    height: 18px;
+    background-position: -256px -322px;
+    text-align: center;
+    color: #fff;
+    font-size: 10px;
+    color: #ddd;
+}
+
+#ranklist .tabcon span, #ranklist .tabcon .p-img {
+    position: absolute;
+    top: 8px;
+}
+
+#ranklist .tabcon .p-name {
+    height: 3em;
+}
+
+#ranklist .tabcon span{
+    background-image: url(/assets/images/newicon20140417.png);
+    background-repeat: no-repeat;
+}
+
+#ranklist .tabcon .p-img {
+    left: 15px;
+    padding: 0;
+}
+
+#ranklist .tabcon .fore1 span, #ranklist .tabcon .fore2 span, #ranklist .tabcon .fore3 span {
+    background-position: -232px -322px;
+    color: #e4393c;
+}
+
+#ranklist .tabcon li {
+    position: relative;
+    height: 50px;
+    padding: 8px 0 8px 70px;
+    zoom: 1;
+    border-top: 1px dotted #DEDEDE;
 }
 
 .right-extra {

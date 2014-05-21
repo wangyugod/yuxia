@@ -54,7 +54,10 @@ object CheckoutController extends Controller with Users with Secured {
       val orderId = request.session.get(CURR_ORDER_ID)
       if (log.isDebugEnabled)
         log.debug(s"update item $skuId quantity to $quantity")
-      Order.addItem(profileId, orderId, skuId, quantity)
+      DBHelper.database.withTransaction {
+        implicit session =>
+          Order.updateCommerceItemQuantity(profileId, orderId.get, skuId, quantity)
+      }
       Redirect(routes.CheckoutController.viewCart())
     }
   }

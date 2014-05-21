@@ -106,6 +106,7 @@ object Global extends GlobalSettings {
 
   def startBackendProcess(app: Application) = {
     val orderProcessActor = Akka.system.actorOf(Props(new OrderProcessActor()))
-    Akka.system(app).scheduler.schedule(0 seconds, 1 minutes, orderProcessActor, Start)
+    Akka.system.scheduler.schedule(0 seconds, 1 minutes, orderProcessActor, Start)
+    val promoBannerActor = Akka.system.actorOf(Props())
   }
 }

@@ -15,10 +15,9 @@
                 <div class="o-mc">
                     <div class="m m4" id="divorderaddress48896010">
                         <div class="mt">
-                            <h3>@event.title</h3>
+                            <h3>@event.title</h3>(<span style="color:red">@event.supportedQty个人想要吃</span>)
                             <div class="extra">
-                                <a class="btn-12" href="#none" id="modaddr" onclick="modifyPopup($(this))"><s></s>@Messages("area.update.btn")</a>
-                                <a class="btn-12 del" href="#none" id="deladdr" onclick="confirmDeleteAddress($(this))"><s></s>@Messages("area.delete.btn")</a>
+                                <a class="btn-12" href="#" id="support@event.id" onclick="supportEvent('@event.id')"><s></s>@Messages("event.support.btn")</a>
                                 <div id="divconfirm" style="display:none">
                                     <span>@Messages("addr.delete.cfmsg", 1)</span>
                                 </div>
@@ -36,7 +35,7 @@
                                     </tr>
                                     <tr>
                                         <th>状态：</th>
-                                        <td id="phone">@event.state</td>
+                                        <td id="phone">@Messages(InteractiveEventState.stateDescMap.get(event.state).get)</td>
                                         <th>
                                             &nbsp;
                                         </th>
@@ -138,6 +137,17 @@
                     $('#description').val("");
                     $(this).dialog( "close" );
                 }}
+        })
+    }
+
+    function supportEvent(id){
+        $.ajax({
+            async:true,
+            url:"/interactive/support/" + id,
+            type:"PUT",
+            success: function(result){
+                document.location.href = "@routes.InteractiveEvents.wantToEat()";
+            }
         })
     }
 </script>

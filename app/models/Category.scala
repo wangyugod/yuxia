@@ -274,6 +274,14 @@ object Product extends ((String, String, String, String, Option[Date], Option[Da
   def listAll(implicit session: Session) = {
     productRepo.list()
   }
+
+
+  def fetchTopSellerProducts()(implicit session: Session) = {
+    val salesRepo = TableQuery[ProductSalesVolumeRepo]
+    val topVolume = salesRepo.sortBy(_.volume.desc).take(10).list()
+    val productIds = for(vol <- topVolume) yield vol.productId
+    TableQuery[Products].where(_.id inSetBind(productIds)).list()
+  }
 }
 
 object Category extends ((String, String, String, String, Boolean) => Category) {

@@ -193,10 +193,11 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
               pbItem._2 match {
                 case Some("true") =>
                   if (pbItem._7.isDefined) {
-                    pbItem._7.get.split(",").foreach(
-                      (id: String) => {
+                    pbItem._7.get.split(",").zipWithIndex.foreach(
+                      (element: (String, Int)) => {
+                        val id = element._1
                         val product = Product.findById(id).get
-                        PromotionBanner.createOrUpdatePBItem(PromotionBannerItem(LocalIdGenerator.generatePbiId(), Some(product.name), AppHelper.productImage(product).url, Some(routes.Browse.productDetail(id).url), pbItem._6, Some(id), new Timestamp(new Date().getTime)))
+                        PromotionBanner.createOrUpdatePBItem(PromotionBannerItem(LocalIdGenerator.generatePbiId(), Some(product.name), AppHelper.productImage(product).url, Some(routes.Browse.productDetail(id).url), element._2, pbItem._6, Some(id), new Timestamp(new Date().getTime)))
                       }
                     )
                   }
@@ -208,7 +209,7 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
                       file.ref.moveTo(new File(dir + pbiId + ".jpg"), true)
                     }
                   }
-                  PromotionBanner.createOrUpdatePBItem(PromotionBannerItem(pbItem._1.getOrElse(LocalIdGenerator.generatePbiId()), pbItem._3, AppHelper.promoImage(pbiId + ".jpg").url, pbItem._5, pbItem._6, None, new Timestamp(new Date().getTime)))
+                  PromotionBanner.createOrUpdatePBItem(PromotionBannerItem(pbItem._1.getOrElse(LocalIdGenerator.generatePbiId()), pbItem._3, AppHelper.promoImage(pbiId + ".jpg").url,  pbItem._5, 0, pbItem._6, None, new Timestamp(new Date().getTime)))
               }
           }
           Redirect(routes.InternalManagement.promoBannerList())

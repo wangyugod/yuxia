@@ -70,7 +70,7 @@
     </div>
     <div id="addToCartSuccess" style="display:none">
         <span>@Messages("cart.success.message")</span>
-        <a href="">@Messages("view.cart.message")</a>
+        <a href="@routes.CheckoutController.viewCart()">@Messages("view.cart.message")</a>
     </div>
 </div>
 <script type="text/javascript">
@@ -129,19 +129,21 @@
                             type:"GET",
                             success: function(result){
                                 $('#addToCartSuccess').dialog({
-                                    title: "@Messages("prompt.title")",
+                                        title: "@Messages("prompt.title")",
                                         resizable: false,
                                         height:140,
                                         modal: true,
                                         open:function(event, ui){
-                                    $(".ui-dialog-titlebar-close", $(this).parent()).hide();
-                                    },
-                                    closeOnEscape: false,
+                                            $(".ui-dialog-titlebar-close", $(this).parent()).hide();
+                                        },
+                                        closeOnEscape: false,
                                         buttons: {
-                                    "@Messages("ok.button")": function() {
-                                        window.location.reload();
-                                        $(this).dialog( "close" );
-                                    }
+                                        "@Messages("ok.button")": function() {
+                                            console.log("location is " + window.location.href)
+//                                            window.location.reload();
+                                            window.location.href = "@routes.Browse.productDetail(product.id)?sku=" + skuId
+                                            $(this).dialog( "close" );
+                                        }
                                     }
                                 });
                             }

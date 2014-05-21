@@ -73,6 +73,7 @@ GET     /order/thankyou             controllers.CheckoutController.thankYou
 POST    /order/checkout             controllers.CheckoutController.submitOrder
 GET     /wanttoeat                  controllers.InteractiveEvents.wantToEat
 POST    /interactive/create         controllers.InteractiveEvents.createInteractiveEvent
+PUT     /interactive/support/:id    controllers.InteractiveEvents.supportEvent(id)
 
 
 # Map static resources from the /public folder to the /assets URL path

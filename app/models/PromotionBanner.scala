@@ -15,7 +15,7 @@ case class PromotionBanner(id: String, name: String) {
 
 }
 
-case class PromotionBannerItem(id: String, description: Option[String], imageUrl: String, link: Option[String], promotionBannerId: String, productId: Option[String], lastModifiedTime: Timestamp) {
+case class PromotionBannerItem(id: String, description: Option[String], imageUrl: String, link: Option[String],sequence: Int, promotionBannerId: String, productId: Option[String], lastModifiedTime: Timestamp) {
   lazy val product = productId match {
     case Some(pid) =>
       DBHelper.database.withSession {
@@ -44,13 +44,15 @@ class PromotionBannerItemRepo(tag: Tag) extends Table[PromotionBannerItem](tag, 
 
   def link = column[Option[String]]("link")
 
+  def sequence = column[Int]("sequence_number")
+
   def promoBannerId = column[String]("promo_banner_id")
 
   def productId = column[Option[String]]("product_id")
 
   def lastModifiedTime = column[Timestamp]("last_modified_time")
 
-  def * = (id, description, imageUrl, link, promoBannerId, productId, lastModifiedTime) <>(PromotionBannerItem.tupled, PromotionBannerItem.unapply)
+  def * = (id, description, imageUrl, link, sequence, promoBannerId, productId, lastModifiedTime) <>(PromotionBannerItem.tupled, PromotionBannerItem.unapply)
 }
 
 

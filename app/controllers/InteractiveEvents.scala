@@ -20,7 +20,7 @@ object InteractiveEvents extends Controller with Users with Secured {
       "title" -> nonEmptyText,
       "name" -> nonEmptyText,
       "description" -> text
-    )((id, userId, title, name, description) => InteractiveEvent(id.getOrElse(LocalIdGenerator.generateInteractiveEventId()), title, name, description, userId, InteractiveEventState.WAITING_FOR_APPROVE, 0, new Timestamp(new java.util.Date().getTime), new Timestamp(new java.util.Date().getTime)))
+    )((id, userId, title, name, description) => InteractiveEvent(id.getOrElse(LocalIdGenerator.generateInteractiveEventId()), title, name, description, userId, InteractiveEventState.WAITING_FOR_APPROVE, 1, new Timestamp(new java.util.Date().getTime), new Timestamp(new java.util.Date().getTime)))
       ((ie: InteractiveEvent) => Some((Some(ie.id), ie.profileId, ie.title, ie.name, ie.description)))
   )
 
@@ -46,6 +46,15 @@ object InteractiveEvents extends Controller with Users with Secured {
             Redirect(routes.InteractiveEvents.wantToEat())
         }
       )
+  }
+
+  def supportEvent(id: String) = Action {
+    implicit request =>
+      DBHelper.database.withTransaction {
+        implicit session =>
+          InteractiveEvent.supportEvent(id)
+      }
+      Ok
   }
 
 

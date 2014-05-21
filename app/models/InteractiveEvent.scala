@@ -55,6 +55,7 @@ object InteractiveEventState {
   val PROCESSING = 2
   val DONE = 3
   val REMOVED = 4
+  val stateDescMap = Map(WAITING_FOR_APPROVE -> "WAITING_FOR_APPROVE", APPROVED -> "APPROVED", PROCESSING -> "PROCESSING", DONE -> "DONE", REMOVED -> "REMOVED")
 }
 
 object InteractiveEvent extends ((String, String, String, String, String, Int, Int, Timestamp, Timestamp) => InteractiveEvent) {
@@ -66,6 +67,13 @@ object InteractiveEvent extends ((String, String, String, String, String, Int, I
 
   def all()(implicit session: Session) = {
     ieRepo.list()
+  }
+
+  def supportEvent(id: String)(implicit session: Session) = {
+    this.synchronized {
+      val event = ieRepo.where(_.id === id).first()
+      ieRepo.where(_.id === id).update(event.copy(supportedQty = event.supportedQty + 1))
+    }
   }
 }
 

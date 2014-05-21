@@ -246,46 +246,54 @@ object Order extends ((String, String, Int, Option[String], Int, Timestamp, Time
    * @param quantity
    * @return
    */
-  def addItem(profileId: String, orderId: Option[String], skuId: String, quantity: Int) =
-    DBHelper.database.withSession {
-      implicit session =>
-        val priceInfoRepo = TableQuery[PriceInfoRepo]
-        val ciRepo = TableQuery[CommerceItemRepo]
-        session.withTransaction {
-          if (log.isDebugEnabled)
-            log.debug(s"add new item with skuId $skuId, quantity $quantity")
-          val order = orderId match {
-            case Some(id) =>
-              log.debug(s"Found existed order with id $orderId")
-              orderRepo.where(_.id === orderId).first()
-            case None =>
-              log.debug(s"No order found, create new!")
-              create(profileId)
-          }
-          //GET SKU Price
-          val sku = Product.findSkuById(skuId) match {
-            case Some(sku) => sku
-            case None => throw new java.util.NoSuchElementException(s"SKU with id $skuId cannot be found")
-          }
-          val existedCi = order.commerceItems.filter(_.skuId == skuId).headOption
-          existedCi match {
-            case Some(ci) =>
-              //Merge existed commerceItem
-              log.debug(s"found existed commerce item")
-              val commerceItem = CommerceItem(ci.id, ci.skuId, order.id, ci.priceInfo.id, quantity, new Timestamp(new Date().getTime))
-              ciRepo.where(_.id === ci.id).update(commerceItem)
-            case _ =>
-              //Add new commerceItem
-              log.debug(s"No existed item found, add new!")
-              val priceInfo = PriceInfo(LocalIdGenerator.generatePriceInfoId(), sku.listPrice, sku.price, None)
-              val commerceItem = CommerceItem(LocalIdGenerator.generateCommerceItemId(), skuId, order.id, priceInfo.id, quantity, new Timestamp(new Date().getTime))
-              priceInfoRepo.insert(priceInfo)
-              ciRepo.insert(commerceItem)
-          }
-          Order.priceOrder(order)
-          order
+  def addItem(profileId: String, orderId: Option[String], skuId: String, quantity: Int) = DBHelper.database.withSession {
+    implicit session =>
+      val priceInfoRepo = TableQuery[PriceInfoRepo]
+      val ciRepo = TableQuery[CommerceItemRepo]
+      session.withTransaction {
+        if (log.isDebugEnabled)
+          log.debug(s"add new item with skuId $skuId, quantity $quantity")
+        val order = orderId match {
+          case Some(id) =>
+            log.debug(s"Found existed order with id $orderId")
+            orderRepo.where(_.id === orderId).first()
+          case None =>
+            log.debug(s"No order found, create new!")
+            create(profileId)
         }
-    }
+        //GET SKU Price
+        val sku = Product.findSkuById(skuId) match {
+          case Some(sku) => sku
+          case None => throw new java.util.NoSuchElementException(s"SKU with id $skuId cannot be found")
+        }
+        val existedCi = order.commerceItems.filter(_.skuId == skuId).headOption
+        existedCi match {
+          case Some(ci) =>
+            //Merge existed commerceItem
+            log.debug(s"found existed commerce item")
+            ciRepo.where(_.id === ci.id).update(ci.copy(quantity = ci.quantity + quantity))
+          case _ =>
+            //Add new commerceItem
+            log.debug(s"No existed item found, add new!")
+            val priceInfo = PriceInfo(LocalIdGenerator.generatePriceInfoId(), sku.listPrice, sku.price, None)
+            val commerceItem = CommerceItem(LocalIdGenerator.generateCommerceItemId(), skuId, order.id, priceInfo.id, quantity, new Timestamp(new Date().getTime))
+            priceInfoRepo.insert(priceInfo)
+            ciRepo.insert(commerceItem)
+        }
+        Order.priceOrder(order)
+        order
+      }
+  }
+
+  def updateCommerceItemQuantity(profileId: String, orderId: String, skuId: String, quantity: Int)(implicit session: Session) = {
+    val ciRepo = TableQuery[CommerceItemRepo]
+    val order = findOrderById(orderId).get
+    val existedCi = order.commerceItems.filter(_.skuId == skuId).head
+    log.debug(s"found existed commerce item")
+    ciRepo.where(_.id === existedCi.id).update(existedCi.copy(quantity = quantity))
+    Order.priceOrder(order)
+    order
+  }
 
 
   def create(profileId: String) = {
@@ -352,7 +360,7 @@ object Order extends ((String, String, Int, Option[String], Int, Timestamp, Time
     for (item <- items) {
       val sku = Product.findSkuById(item.skuId).get
       val productVolume = ProductSalesVolume(sku.productId, item.quantity, new Timestamp(new Date().getTime))
-      if(log.isDebugEnabled)
+      if (log.isDebugEnabled)
         log.debug("current item:" + item.id + " productId:" + sku.productId + " quantity:" + item.quantity)
       productVolumeRepo.where(_.productId === productVolume.productId).firstOption match {
         case Some(existedPv) =>
