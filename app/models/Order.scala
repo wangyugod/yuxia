@@ -61,7 +61,7 @@ case class Order(id: String, profileId: String, state: Int, priceId: Option[Stri
 
 }
 
-case class CommerceItem(id: String, skuId: String, orderId: String, priceId: String, quantity: Int, createdTime: Timestamp) {
+case class CommerceItem(id: String, skuId: String, orderId: String, priceId: String, dinnerType: Int,  quantity: Int, createdTime: Timestamp) {
   lazy val sku = DBHelper.database.withSession {
     implicit session =>
       Product.findSkuById(skuId).get
@@ -112,11 +112,13 @@ class CommerceItemRepo(tag: Tag) extends Table[CommerceItem](tag, "commerce_item
 
   def priceId = column[String]("price_id")
 
+  def dinnerType = column[Int]("dinner_type")
+
   def quantity = column[Int]("quantity")
 
   def createdTime = column[Timestamp]("created_time")
 
-  def * = (id, skuId, orderId, priceId, quantity, createdTime) <>(CommerceItem.tupled, CommerceItem.unapply)
+  def * = (id, skuId, orderId, priceId, dinnerType, quantity, createdTime) <>(CommerceItem.tupled, CommerceItem.unapply)
 
 }
 
@@ -165,6 +167,14 @@ object OrderState {
   private val orderStateMap = Map(INITIAL -> "初始化", SUBMITTED -> "已提交", COMPLETE -> "完成", CANCELLED -> "已取消")
 
   def getOrderStateDesc(key: Int) = orderStateMap.get(key).get
+}
+
+object DinnerType{
+  val BREAKFAST: Int = 0
+  val LUNCH: Int = 1
+  val SUPPER: Int = 2
+
+  val dinnerTypeMap = Map(BREAKFAST -> "早餐", LUNCH -> "午餐", SUPPER -> "晚餐")
 }
 
 /**
@@ -236,53 +246,45 @@ object Order extends ((String, String, Int, Option[String], Int, Timestamp, Time
     log.debug("price order done!")
   }
 
-  override def finalize(): Unit = super.finalize()
 
   /**
    * Add SKU to order, if order already contain this SKU, merge it, otherwise add new commerceItem
    * @param profileId
    * @param orderId
-   * @param skuId
+   * @param sku
    * @param quantity
    * @return
    */
-  def addItem(profileId: String, orderId: Option[String], skuId: String, quantity: Int) = DBHelper.database.withSession {
-    implicit session =>
-      val priceInfoRepo = TableQuery[PriceInfoRepo]
-      val ciRepo = TableQuery[CommerceItemRepo]
-      session.withTransaction {
-        if (log.isDebugEnabled)
-          log.debug(s"add new item with skuId $skuId, quantity $quantity")
-        val order = orderId match {
-          case Some(id) =>
-            log.debug(s"Found existed order with id $orderId")
-            orderRepo.where(_.id === orderId).first()
-          case None =>
-            log.debug(s"No order found, create new!")
-            create(profileId)
-        }
-        //GET SKU Price
-        val sku = Product.findSkuById(skuId) match {
-          case Some(sku) => sku
-          case None => throw new java.util.NoSuchElementException(s"SKU with id $skuId cannot be found")
-        }
-        val existedCi = order.commerceItems.filter(_.skuId == skuId).headOption
-        existedCi match {
-          case Some(ci) =>
-            //Merge existed commerceItem
-            log.debug(s"found existed commerce item")
-            ciRepo.where(_.id === ci.id).update(ci.copy(quantity = ci.quantity + quantity))
-          case _ =>
-            //Add new commerceItem
-            log.debug(s"No existed item found, add new!")
-            val priceInfo = PriceInfo(LocalIdGenerator.generatePriceInfoId(), sku.listPrice, sku.price, None)
-            val commerceItem = CommerceItem(LocalIdGenerator.generateCommerceItemId(), skuId, order.id, priceInfo.id, quantity, new Timestamp(new Date().getTime))
-            priceInfoRepo.insert(priceInfo)
-            ciRepo.insert(commerceItem)
-        }
-        Order.priceOrder(order)
-        order
-      }
+  def addItem(profileId: String, orderId: Option[String], sku: Sku, quantity: Int, dinnerType: Int)(implicit session: Session) = {
+    val priceInfoRepo = TableQuery[PriceInfoRepo]
+    val ciRepo = TableQuery[CommerceItemRepo]
+    if (log.isDebugEnabled)
+      log.debug(s"add new item with skuId $sku, quantity $quantity")
+    val order = orderId match {
+      case Some(id) =>
+        log.debug(s"Found existed order with id $orderId")
+        orderRepo.where(_.id === orderId).first()
+      case None =>
+        log.debug(s"No order found, create new!")
+        create(profileId)
+    }
+    //GET SKU Price
+    val existedCi = fetchCommerceItems(order).filter(_.skuId == sku.id).filter(_.dinnerType == dinnerType).headOption
+    existedCi match {
+      case Some(ci) =>
+        //Merge existed commerceItem
+        log.debug(s"found existed commerce item")
+        ciRepo.where(_.id === ci.id).update(ci.copy(quantity = ci.quantity + quantity))
+      case _ =>
+        //Add new commerceItem
+        log.debug(s"No existed item found, add new!")
+        val priceInfo = PriceInfo(LocalIdGenerator.generatePriceInfoId(), sku.listPrice, sku.price, None)
+        val commerceItem = CommerceItem(LocalIdGenerator.generateCommerceItemId(), sku.id, order.id, priceInfo.id, dinnerType, quantity, new Timestamp(new Date().getTime))
+        priceInfoRepo.insert(priceInfo)
+        ciRepo.insert(commerceItem)
+    }
+    Order.priceOrder(order)
+    order
   }
 
   def updateCommerceItemQuantity(profileId: String, orderId: String, skuId: String, quantity: Int)(implicit session: Session) = {

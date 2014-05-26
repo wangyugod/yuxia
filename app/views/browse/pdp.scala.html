@@ -7,17 +7,20 @@
     </div>
     <div class="clearfix" clstag="">
         <ul id="product-summary">
+            <li id="summary-list-price">
+                <div class="dt">@Messages("pdp.listprice.label")</div>
+                <div class="dd" id="itemListPrice">
+                    <span><del id="sku-list-price">@util.AppHelper.displayPrice(product.listPriceRange)</del></span>
+                </div>
+            </li>
             <li id="summary-price">
                 <div class="dt">@Messages("pdp.price.label")</div>
                 <div class="dd" id="itemPrice">
                     <strong class="p-price" id="sku-price">@util.AppHelper.displayPrice(product.priceRange)</strong></div>
             </li>
-            <li id="summary-rating">
-                <div class="dt">@Messages("pdp.rating.label")</div>
-                <div class="dd">
-                    <span class="star sa5"></span>
-                    <a href="#comment" style="float: left;">(已有494人评价)</a>
-                </div>
+            <li id="summary-ship-time">
+                <div class="dt">@Messages("pdp.shiptime.label")</div>
+                <div class="dd">@util.AppHelper.displayShipTime(product.timeRange._1,product.timeRange._2)</div>
             </li>
             <li id="summary-address-scope">
                 <div class="dt">@Messages("pdp.shipping.scope.label")</div>
@@ -40,6 +43,17 @@
                     <span id="selectedSku" style="display:none"></span>
                 </div>
             </li>
+            <li id="choose-dinner-type">
+                <div class="dt">@Messages("pdp.choose.sku.label")</div>
+                <div class="dd">
+                    @for(dinnerType <- DinnerType.dinnerTypeMap){
+                        <div class="item">
+                            <a href="javascript:void(0)" id="dt_@dinnerType._1" onclick="selectDinnerType('@dinnerType._1')">@dinnerType._2</a>
+                        </div>
+                    }
+                    <span id="selectedDinnerType" style="display:none"></span>
+                </div>
+            </li>
             <li id="choose-qty">
                 <div class="dt">购买数量：</div>
                 <div class="dd">
@@ -53,6 +67,7 @@
             <li id="choose-btns">
                 <div id="choose-btn-append" class="btnbuy">
                     <a class="btn-append " id="InitCartUrl" onclick="addToCart()" title="">加入购物车<b></b></a>
+                    <span id="cart_error" style="display: none; ">当前时间不能购买该商品</span>
                 </div>
 
             </li>
@@ -87,23 +102,30 @@
 
 
     });
+
+    function selectDinnerType(dinnerType){
+        $("#choose-dinner-type .selected").removeClass("selected");
+        $("#dt_" + dinnerType).parent().addClass("selected");
+        $("#selectedDinnerType").text(dinnerType)
+    }
     function selectSku(skuId){
         $("#selectedSku").text(skuId);
-        $(".selected").removeClass("selected");
+        $("#choose-sku .selected").removeClass("selected");
         $("#slink_" + skuId).parent().addClass("selected");
         $.ajax({
             async: true,
             url: "/sku/select/"+skuId,
             type: "GET",
             success: function(result){
-                console.log("result is:" + result)
-                $("#sku-price").text(result.price)
+                $("#sku-price").text("￥" + result.price)
+                $("#sku-list-price").text("￥" + result.listPrice)
             }
         })
     }
     function addToCart() {
         var skuId = $("#selectedSku").text();
-        if(skuId == ""){
+        var dinnerType = $("#selectedDinnerType").text();
+        if(skuId == "" || dinnerType == ""){
             $('#addToCartError').dialog({
                 title: '@Messages("error.message.title")',
                 resizable: false,
@@ -125,9 +147,13 @@
             case Some(us) => {
                 $.ajax({
                             async:true,
-                            url:"/cart/add/" + skuId + "/" + $("#buy-num").val(),
+                            url:"/cart/add/" + skuId + "/" + $("#buy-num").val() + "/" + dinnerType,
                             type:"GET",
                             success: function(result){
+                                if(result == "TIME_NOT_IN_RANGE"){
+                                    $("#cart_error").show()
+                                    return
+                                }
                                 $('#addToCartSuccess').dialog({
                                         title: "@Messages("prompt.title")",
                                         resizable: false,

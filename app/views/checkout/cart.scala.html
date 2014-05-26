@@ -11,14 +11,13 @@
             </div>
     @order match {
         case Some(ord) if(ord.itemSize > 0) =>{
-
-
                     <div class="cart-inner">
                         <div class="cart-thead clearfix">
                             <div class="column t-goods">商品</div>
                             <div class="column t-price">单价</div>
                             <div class="column t-promotion">优惠</div>
                             <div class="column t-quantity">数量</div>
+                            <div class="column t-dinnertype">点餐类型</div>
                             <div class="column t-sum">小计</div>
                             <div class="column t-action">操作</div>
                         </div>
@@ -32,7 +31,7 @@
                                     </div>
                                     <div class="cell p-price"><span class="price">@item.priceInfo.actualPrice</span></div>
                                     <div class="cell p-promotion">
-
+                                        <span class="price">@(item.priceInfo.listPrice - item.priceInfo.actualPrice)</span>
                                     </div>
                                     <div class="cell p-quantity" for-stock="for-stock-853067">
                                         <div class="quantity-form" data-bind="">
@@ -41,6 +40,7 @@
                                             <a href="javascript:void(0);"  id="inc_@item.sku.id" onclick="increaseQuantity(this)" class="increment" clstag="clickcart|keycount|xincart|add1" id="increment-853067-1-1-0">+</a>
                                         </div>
                                     </div>
+                                    <div class="cell p-dinnertype"><span class="p-dinnertype">@DinnerType.dinnerTypeMap.get(item.dinnerType)</span></div>
                                     <div class="cell p-sum"><span class="price">@(item.priceInfo.actualPrice * item.quantity)</span></div>
                                     <div class="cell p-remove"><a id="rem_@item.id" class="cart-remove" href="javascript:void(0)" onclick="deleteItem('@item.id')">删除</a>
                                         <!-- modify-pre end  -->
@@ -51,7 +51,7 @@
                         <div class="cart-toolbar clearfix">
                             <div class="total fr">
                                 <p><span id="totalSkuPrice">@ord.priceInfo.listPrice</span>总计：</p>
-                                <p><span id="totalRePrice">- ¥@(ord.priceInfo.listPrice - ord.priceInfo.actualPrice)</span>返现：</p>
+                                <p><span id="totalRePrice">- ¥@(ord.priceInfo.listPrice - ord.priceInfo.actualPrice)</span>优惠：</p>
                             </div>
                             <div class="amout fr"><span id="selectedCount">@ord.itemSize</span> 件商品</div>
                         </div>

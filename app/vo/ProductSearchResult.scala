@@ -14,22 +14,13 @@ import play.api.Logger
 
 case class SearchResult(numFound: Int, start: Int, pageQty: Int, currentPage: Int, keyword: String, areaId: Option[String], products: Seq[ProductSearchResult])
 
-case class ProductSearchResult(id: String, name: String, description: Option[String], longDescription: Option[String], categories: Seq[String], prices: Seq[BigDecimal], imageUrl: String, salesVolume: Int) {
-  lazy val priceRange: (BigDecimal, BigDecimal) = {
-    prices match {
-      case Nil => (0, 0)
-      case List(p) => (p, p)
-      case p => {
-        val list = prices.sortWith((price1, price2) => price1 < price2)
-        (list.head, list.reverse.head)
-      }
-    }
-  }
-}
+case class ProductSearchResult(id: String, name: String, description: Option[String], longDescription: Option[String], categories: Seq[String], prices: Seq[BigDecimal], listPrices: Seq[BigDecimal], imageUrl: String, salesVolume: Int) {
+  lazy val priceRange: (BigDecimal, BigDecimal) = ProductSearchResult.priceRange(prices)
+  lazy val listPriceRange = ProductSearchResult.priceRange(listPrices)
 
 //case class SkuSearchResult(id:String, name:String, description:String, listPrice:BigDecimal, salePrice:BigDecimal, saleStartDate: Date, saleEndDate: Date)
 
-
+}
 object ProductSearchResult {
   def apply(jsObject: JsObject): ProductSearchResult = {
     val id = jsObject \ ("id")
@@ -40,7 +31,17 @@ object ProductSearchResult {
     val volume = (jsObject \ ("volume")).as[Option[Int]]
     val catList = (jsObject \ ("cat.id")).as[Seq[String]]
     val priceList = (jsObject \ ("price")).as[Seq[BigDecimal]]
-    ProductSearchResult(id.as[String], name.as[String], description.as[Option[String]], longDescription.as[Option[String]], catList, priceList, imageUrl, volume.getOrElse(0))
+    val listPriceList = (jsObject \ ("sku.listprice")).as[Seq[BigDecimal]]
+    ProductSearchResult(id.as[String], name.as[String], description.as[Option[String]], longDescription.as[Option[String]], catList, priceList, listPriceList, imageUrl, volume.getOrElse(0))
+  }
+
+  def priceRange(prices: Seq[BigDecimal]):(BigDecimal, BigDecimal) = prices match {
+    case Nil => (0, 0)
+    case List(p) => (p, p)
+    case p => {
+      val list = prices.sortWith((price1, price2) => price1 < price2)
+      (list.head, list.reverse.head)
+    }
   }
 
   def displayPrice(priceRange: (BigDecimal, BigDecimal)) = {

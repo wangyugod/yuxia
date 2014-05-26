@@ -42,6 +42,17 @@ case class Product(id: String, name: String, description: String, longDescriptio
   lazy val childSkus = getChildSkus
   lazy val categories = getCategories
   lazy val priceRange = getPriceRange
+  lazy val merchant = DBHelper.database.withSession {
+    implicit session =>
+      Merchant.findById(merchantId).get
+  }
+
+  lazy val timeRange = DBHelper.database.withSession {
+    implicit session =>
+      val serviceInfo = MerchantServiceInfo.findById(merchantId).get
+      (serviceInfo.startTime, serviceInfo.endTime)
+  }
+
   lazy val listPriceRange = {
     val sortedSkus = childSkus.sortWith((sku1, sku2) => {
       sku1.listPrice < sku2.listPrice
@@ -81,6 +92,21 @@ case class Product(id: String, name: String, description: String, longDescriptio
     })
     (sortedSkus.head.price, sortedSkus.reverse.head.price)
   }
+}
+
+
+case class Inventory(id: String, stock: Int, status: Int, lastModifiedTime: Timestamp)
+
+class InventoryTable(tag: Tag) extends Table[Inventory](tag, "inventory") {
+  def id = column[String]("id", O.PrimaryKey)
+
+  def stock = column[Int]("stock")
+
+  def status = column[Int]("status")
+
+  def lastModifiedTime = column[Timestamp]("last_modified_time")
+
+  def * = (id, stock, status, lastModifiedTime) <>(Inventory.tupled, Inventory.unapply)
 }
 
 case class ProductSalesVolume(productId: String, volume: Int, lastModifiedTime: Timestamp)
@@ -279,8 +305,8 @@ object Product extends ((String, String, String, String, Option[Date], Option[Da
   def fetchTopSellerProducts()(implicit session: Session) = {
     val salesRepo = TableQuery[ProductSalesVolumeRepo]
     val topVolume = salesRepo.sortBy(_.volume.desc).take(10).list()
-    val productIds = for(vol <- topVolume) yield vol.productId
-    TableQuery[Products].where(_.id inSetBind(productIds)).list()
+    val productIds = for (vol <- topVolume) yield vol.productId
+    TableQuery[Products].where(_.id inSetBind (productIds)).list()
   }
 }
 

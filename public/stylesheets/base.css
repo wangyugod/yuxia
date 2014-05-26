@@ -822,7 +822,7 @@ a:link, a:visited {
 }
 
 /*Password Management*/
-.step {
+.pwdstep {
     overflow: hidden;
     background: #ededed;
     color: #999999;
@@ -838,7 +838,7 @@ a:link, a:visited {
     width: 280px;
     text-align: center;
 }
-.step li {
+.pwdstep li {
     float: left;
     position: relative;
     padding-left: 22px;
@@ -850,7 +850,7 @@ a:link, a:visited {
 #step1 .fore1 b, #step2 .fore2 b, #step3 .fore3 b {
     background-position: 0 -26px;
 }
-.step li b {
+.pwdstep li b {
     position: absolute;
     width: 22px;
     height: 25px;
@@ -1175,6 +1175,14 @@ list-style: none;
     padding: 3px 8px;
     height: 26px;
     zoom: 1;
+}
+
+.p-price del {
+    color: #999;
+    font-weight: 400;
+    display: block;
+    padding-top: 2px;
+    font-family: verdana;
 }
 
 #store-selector .text {
@@ -2670,8 +2678,13 @@ table th {
 .cart-tbody .p-quantity {
     line-height: 52px;
 }
-.cart-tbody .p-quantity, .cart-tbody .p-promotion, .cart-tbody .p-remove {
-    width: 220px;
+.cart-tbody .p-quantity, .cart-tbody .p-promotion, .cart-tbody .p-dinnertype{
+    width: 170px;
+    line-height: 52px;
+    text-align: center;
+}
+.cart-tbody .p-remove{
+    width: 210px;
     line-height: 52px;
     text-align: center;
 }
@@ -2727,8 +2740,8 @@ table th {
 .cart-thead .t-sum {
     width: 100px;
 }
-.cart-thead .t-promotion, .cart-thead .t-quantity {
-    width: 221px;
+.cart-thead .t-promotion, .cart-thead .t-quantity, .cart-thead .t-dinnertype{
+    width: 170px;
 }
 .cart-toolbar {
     padding: 5px 10px;

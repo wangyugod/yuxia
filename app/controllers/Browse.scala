@@ -23,13 +23,13 @@ object Browse extends Controller with Users {
   def productDetail(id: String) =
     Action {
       implicit request => {
-        Cache.get(id) match {
-          case Some(prod: Product) =>
+        Cache.getAs[Product](id) match {
+          case Some(prod) =>
             Ok(html.browse.pdp(prod))
           case _ =>
             Product.findById(id) match {
               case Some(p) =>
-                Cache.set(id, p)
+                Cache.set(id, p, Play.current.configuration.getInt("cache.ttl").getOrElse(5))
                 Ok(html.browse.pdp(p))
               case _ => Redirect(routes.Application.pageNotFound())
             }
@@ -89,7 +89,7 @@ object Browse extends Controller with Users {
               sku
           }
       }
-      Ok(JsObject(List("skuId" -> JsString(sku.id), "price" -> JsString(sku.price.toString()))))
+      Ok(JsObject(List("skuId" -> JsString(sku.id), "price" -> JsString(sku.price.toString()), "listPrice" -> JsString(sku.listPrice.toString()))))
     }
   }
 

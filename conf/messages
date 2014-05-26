@@ -58,7 +58,7 @@ addr.area.error=请选择合法的区域
 addr.delete.cfmsg=您确定删除地址{0}吗？
 myacct.orderhistory.title=我的订单
 myacct.orderdetail.title=订单详情
-order.review.message=订单已经完成，感谢您在京东商城购物，欢迎您对本次交易及所购商品进行评价。
+order.review.message=订单已经完成，感谢您在雨峡网购物，我们会尽力做到让您满意。
 pwdmgt.mail.code=密码修改验证码: {0}
 pwdmgt.mail.title=雨峡网密码修改验证
 pwdmgt.code.verify.fail=您输入的验证码不匹配,或者该验证码已经使用过，请重新输入
@@ -121,11 +121,13 @@ sku.salestartdate.label=促销开始日期
 sku.saleenddate.label=促销结束日期
 
 #pdp
-pdp.price.label=价格
-pdp.shipping.scope.label=配送范围
-pdp.rating.label=评分
-pdp.choose.sku.label=选择类型
-pdp.sale.quantity.label=总销售量
+pdp.price.label=价格：
+pdp.shipping.scope.label=配送范围：
+pdp.rating.label=评分：
+pdp.choose.sku.label=选择类型：
+pdp.sale.quantity.label=总销售量：
+pdp.listprice.label=原价：
+pdp.shiptime.label=配送时间：
 
 #SRP
 srp.search.order=排序
@@ -181,7 +183,7 @@ dist.jn=金牛区
 dist.jj=锦江区
 
 #checkout
-choose.sku.message=请选择产品类型
+choose.sku.message=请选择产品类型和点餐类型
 error.message.title=错误提示
 cart.success.message=商品已经成功加入购物车
 view.cart.message=查看购物车

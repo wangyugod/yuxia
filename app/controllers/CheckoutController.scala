@@ -3,9 +3,12 @@ package controllers
 import play.api.mvc._
 import play.api._
 import views.html
-import models.{ShippingGroup, Address, Profile, Order}
-import util.DBHelper
+import models._
+import util.{AppHelper, DBHelper}
 import play.api.i18n.Messages
+import scala.Some
+import play.api.cache.Cache
+import play.api.Play.current
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,18 +20,29 @@ import play.api.i18n.Messages
 object CheckoutController extends Controller with Users with Secured {
   val log = Logger(this.getClass)
 
-  def addItemToCart(skuId: String, quantity: Int) = isAuthenticated {
+  def addItemToCart(skuId: String, quantity: Int, dinnerType: Int) = isAuthenticated {
     implicit request => {
-      val order = Order.addItem(request.session.get(USER_ID).get, request.session.get(CURR_ORDER_ID), skuId, quantity)
-      if (log.isDebugEnabled)
-        log.debug("current order is " + request.session.get(CURR_ORDER_ID))
-      request.session.get(CURR_ORDER_ID) match {
-        case Some(orderId) => Ok("Add to Cart Successfully")
-        case None =>
-          val newSession = request.session + (CURR_ORDER_ID -> order.id)
+      DBHelper.database.withTransaction {
+        implicit session =>
+          val sku = Cache.getAs[Sku](skuId) match {
+            case Some(sku) => sku
+            case _ =>
+              val s = Product.findSkuById(skuId).get
+              Cache.set(s.id, s, Play.current.configuration.getInt("cache.ttl").getOrElse(5))
+              s
+          }
+
+          val order = Order.addItem(request.session.get(USER_ID).get, request.session.get(CURR_ORDER_ID), sku, quantity, dinnerType)
           if (log.isDebugEnabled)
-            log.debug("new session is " + newSession)
-          Ok("Successfully").withSession(newSession)
+            log.debug("current order is " + request.session.get(CURR_ORDER_ID))
+          request.session.get(CURR_ORDER_ID) match {
+            case Some(orderId) => Ok("Add to Cart Successfully")
+            case None =>
+              val newSession = request.session + (CURR_ORDER_ID -> order.id)
+              if (log.isDebugEnabled)
+                log.debug("new session is " + newSession)
+              Ok("SUCCESS").withSession(newSession)
+          }
       }
     }
   }

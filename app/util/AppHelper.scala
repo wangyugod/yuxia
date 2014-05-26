@@ -38,12 +38,33 @@ object AppHelper {
     case None => None
   }
 
+  def checkCurrentTime(startTime: Double, endTime: Double) = {
+    val format = "HH:mm"
+    val sdf = new java.text.SimpleDateFormat(format)
+    val currentTimeString = sdf.format(new java.util.Date())
+    val time = currentTimeString.split("\\:")
+    val currentTime = time(0).toDouble + time(1).toDouble / 60
+    currentTime <= endTime
+  }
+
   def productImageDir = {
     Play.application.path.getPath + "\\" + Play.current.configuration.getString("prod.image.dir").get
   }
 
   def promoImageDir = {
     Play.application.path.getPath + "\\" + Play.current.configuration.getString("promo.image.dir").get
+  }
+
+  def displayShipTime(startTime: Double, endTime: Double) = {
+    processTime(startTime.toString) + "--" + processTime(endTime.toString)
+  }
+
+  private def processTime(time: String) = {
+    val start = time.split("\\.")
+    if (start.length == 1)
+      start(0) + ":00"
+    else
+      start(0) + ":" + (if (start(1).equals("5")) "30" else "00")
   }
 
   def displayPrice(priceRange: (BigDecimal, BigDecimal)) = {
