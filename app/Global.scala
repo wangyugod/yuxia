@@ -62,14 +62,18 @@ object Global extends GlobalSettings {
       //        TableQuery[ProductSalesVolumeRepo].ddl.create
       //              TableQuery[ProfileCreditPointsRepo].ddl.create
 //        TableQuery[CreditPointsDetailRepo].ddl.create
-              TableQuery[InteractiveEventRepo].ddl.create
-              TableQuery[InteractiveEventReplyRepo].ddl.create
+//              TableQuery[InteractiveEventRepo].ddl.create
+//              TableQuery[InteractiveEventReplyRepo].ddl.create
+
+              TableQuery[InventoryRepo].ddl.drop
+              TableQuery[InventoryRepo].ddl.create
       //      CategoryCategories.ddl.create
 
       /*if (Query(Profiles).list().isEmpty){
         println("Simon is emtpty yet")
         Profiles.insert(Profile(IdGenerator.generateProfileId(), "simonwang@gmail.com", "test", "simon", Some("M"), Some(new Date(1981 + 1900, 9, 20))))
       }*/
+
 
       /*val categoryQuery = TableQuery[Categories]
       val catcatQuery = TableQuery[CategoryCategories]

@@ -316,11 +316,22 @@
     </div>
     <div class="clr"></div>
 </div>
+<div class="item">
+    <span class="label"><em>*</em>@Messages("product.inventory")</span>
+    <div class="fl">
+        <input id="inventory" name="inventory" type="text" class="text" value="@productForm.data.get("inventory")" maxlength="20">
+        <input id="updateDaily" name="updateDaily" type="checkbox" value="true" maxlength="20">每日更新
+        @if(productForm.error("inventory").isDefined){
+        <div class="prompt-error"><span id="petName_msg">@Messages(productForm.error("inventory").get.message)</span></div>
+        }
+    </div>
+    <div class="clr"></div>
+</div>
 
 <div class="item">
     <span class="label"><em>*</em>@Messages("product.longdesc")</span>
     <div class="fl">
-        <input id="longDescription" name="longDescription" type="text" class="text" value="@productForm.data.get("longDescription")" maxlength="20">
+        <input id="longDescription" name="longDescription" type="text" class="text" value="@productForm.data.get("longDescription")" value="true" maxlength="20">
         @if(productForm.error("longDescription").isDefined){
         <div class="prompt-error"><span id="petName_msg">@Messages(productForm.error("longDescription").get.message)</span></div>
         }
@@ -455,7 +466,6 @@
 
 <script type="text/javascript">
     var renumber = function() {
-
     $('.sku_mgt').each(function(i) {
     $(this).attr('id', $(this).attr('id').replace(/skuMgt_.+?/g, 'skuMgt_' + i));
     $('input', this).each(function() {
@@ -464,4 +474,10 @@
     })
     })
     }
+    $(function(){
+        var currentUpdate = @productForm.data.get("updateDaily").get
+        console.log("current update " + currentUpdate)
+        if(currentUpdate)
+            $("#updateDaily").attr("checked", true)
+    })
 </script>

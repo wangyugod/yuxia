@@ -7,6 +7,7 @@ import play.api.db.DB
 import play.api.Play.current
 import scala.slick.driver.MySQLDriver.simple._
 import java.util.Calendar
+import play.api.Logger
 
 /**
  * Created with IntelliJ IDEA.
@@ -46,6 +47,10 @@ case class Product(id: String, name: String, description: String, longDescriptio
     implicit session =>
       Merchant.findById(merchantId).get
   }
+  lazy val inventory = DBHelper.database.withSession {
+    implicit session =>
+      TableQuery[InventoryRepo].where(_.id === id).firstOption
+  }
 
   lazy val timeRange = DBHelper.database.withSession {
     implicit session =>
@@ -68,6 +73,11 @@ case class Product(id: String, name: String, description: String, longDescriptio
         case _ =>
           0
       }
+  }
+
+  def inventoryStock = DBHelper.database.withSession {
+    implicit session =>
+      Product.findProductInventory(id)
   }
 
   def getCategories: Seq[Category] = DBHelper.database.withSession {
@@ -95,18 +105,25 @@ case class Product(id: String, name: String, description: String, longDescriptio
 }
 
 
-case class Inventory(id: String, stock: Int, status: Int, lastModifiedTime: Timestamp)
+case class Inventory(id: String, stock: Int, status: Int, dailyUpdate: Boolean, lastModifiedTime: Timestamp)
 
-class InventoryTable(tag: Tag) extends Table[Inventory](tag, "inventory") {
+object InventoryStatus {
+  val IN_STOCK = 0
+  val PRE_ORDER = 1
+}
+
+class InventoryRepo(tag: Tag) extends Table[Inventory](tag, "inventory") {
   def id = column[String]("id", O.PrimaryKey)
 
   def stock = column[Int]("stock")
 
   def status = column[Int]("status")
 
+  def dailyUpdate = column[Boolean]("daily_update")
+
   def lastModifiedTime = column[Timestamp]("last_modified_time")
 
-  def * = (id, stock, status, lastModifiedTime) <>(Inventory.tupled, Inventory.unapply)
+  def * = (id, stock, status, dailyUpdate, lastModifiedTime) <>(Inventory.tupled, Inventory.unapply)
 }
 
 case class ProductSalesVolume(productId: String, volume: Int, lastModifiedTime: Timestamp)
@@ -117,7 +134,10 @@ case class CategoryCategory(parentCatId: String, childCatId: String)
 
 case class Sku(id: String, name: String, description: Option[String], skuType: Option[String], productId: String, listPrice: BigDecimal, salePrice: Option[BigDecimal], saleStartDate: Option[Date], saleEndDate: Option[Date], lastUpdatedTime: Timestamp) {
   lazy val price = getPrice
-  lazy val parentProduct = Product.findById(productId).get
+  lazy val parentProduct = DBHelper.database.withSession {
+    implicit session =>
+      Product.findById(productId).get
+  }
 
   def getPrice: BigDecimal = {
     salePrice match {
@@ -235,18 +255,29 @@ class CategoryCategories(tag: Tag) extends Table[CategoryCategory](tag, "categor
 }
 
 object Product extends ((String, String, String, String, Option[Date], Option[Date], String, String, Timestamp) => Product) {
+  private val log = Logger(this.getClass)
   private val productRepo = TableQuery[Products]
+  val DEFAULT_INVENTORY_STOCK = 10000
 
-  def create(p: Product, categoryIds: Seq[String], childSkus: Seq[Sku]) = DBHelper.database.withTransaction {
+  def create(p: Product, categoryIds: Seq[String], childSkus: Seq[Sku], dailyUpdate: Option[Boolean], stock: Option[Int]) = DBHelper.database.withTransaction {
     implicit session =>
       productRepo.insert(p)
+      //Set inventory
+      val inventoryRepo = TableQuery[InventoryRepo]
+      val inventory = stock match {
+        case Some(st) =>
+          Inventory(p.id, st, InventoryStatus.IN_STOCK, dailyUpdate.getOrElse(false), new Timestamp(new java.util.Date().getTime))
+        case _ =>
+          Inventory(p.id, -1, InventoryStatus.IN_STOCK, dailyUpdate.getOrElse(false), new Timestamp(new java.util.Date().getTime))
+      }
+      inventoryRepo.insert(inventory)
       for (catId <- categoryIds) {
         TableQuery[ProductCategories].insert(ProductCategory(p.id, catId))
       }
       childSkus.foreach(TableQuery[Skus].insert(_))
   }
 
-  def update(p: Product, categoryIds: Seq[String], childSkus: Seq[Sku]) = DBHelper.database.withTransaction {
+  def update(p: Product, categoryIds: Seq[String], childSkus: Seq[Sku], dailyUpdate: Option[Boolean], stock: Option[Int]) = DBHelper.database.withTransaction {
     implicit session =>
       val productCategoryQuery = TableQuery[ProductCategories]
       val existingCatId = for (pc <- productCategoryQuery if (pc.productId === p.id)) yield pc.categoryId
@@ -259,9 +290,22 @@ object Product extends ((String, String, String, String, Option[Date], Option[Da
         }
       }
       val existingProd = findById(p.id).get
-      //check if poperties changes, if not change don't update
+      //check if properties changes, if not change don't update
       if (p != existingProd) {
         productRepo.where(_.id === p.id).update(p)
+      }
+
+      //update inventory
+      val inventoryRepo = TableQuery[InventoryRepo]
+      inventoryRepo.where(_.id === p.id).firstOption match {
+        case Some(inv) =>
+          if (inv.dailyUpdate != dailyUpdate.getOrElse(false) || inv.stock != stock.getOrElse(-1)) {
+            if (log.isDebugEnabled)
+              log.debug("update existed inventory")
+            inventoryRepo.where(_.id === p.id).update(inv.copy(dailyUpdate = dailyUpdate.getOrElse(false), stock = stock.getOrElse(-1), lastModifiedTime = new Timestamp(new java.util.Date().getTime)))
+          }
+        case _ =>
+          inventoryRepo.insert(Inventory(p.id, stock.getOrElse(-1), InventoryStatus.IN_STOCK, dailyUpdate.getOrElse(false), new Timestamp(new java.util.Date().getTime)))
       }
 
       if (childSkus != existingProd.childSkus) {
@@ -281,9 +325,28 @@ object Product extends ((String, String, String, String, Option[Date], Option[Da
       productRepo.where(_.merchantId === merchantId).list()
   }
 
-  def findById(id: String) = DBHelper.database.withSession {
+  def findById(id: String)(implicit session: Session) = DBHelper.database.withSession {
     implicit session =>
       productRepo.where(_.id === id).firstOption
+  }
+
+  def findProductInventory(id: String)(implicit session: Session) = {
+    TableQuery[InventoryRepo].where(_.id === id).firstOption match {
+      case Some(inventory) if inventory.stock > 0 =>
+        inventory.stock
+      case _ =>
+        DEFAULT_INVENTORY_STOCK
+    }
+  }
+
+  def updateInventory(id: String, quantity: Int)(implicit session: Session) = {
+    val inventoryRepo = TableQuery[InventoryRepo]
+    inventoryRepo.where(_.id === id).firstOption match {
+      case Some(inventory) if inventory.stock > 0 =>
+        inventoryRepo.where(_.id === id).update(inventory.copy(stock = inventory.stock - quantity))
+      case _ =>
+        println("Don't update inventory $id since it's non-stock item")
+    }
   }
 
   def findSkuById(id: String)(implicit session: Session) = {
@@ -351,4 +414,8 @@ object Category extends ((String, String, String, String, Boolean) => Category) 
     implicit session =>
       TableQuery[Categories].where(_.isTopNav === true).list()
   }
+}
+
+class InventoryException(msg: String) extends Exception{
+
 }

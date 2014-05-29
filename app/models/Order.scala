@@ -24,7 +24,7 @@ case class Order(id: String, profileId: String, state: Int, priceId: Option[Stri
 
   lazy val commerceItems = DBHelper.database.withSession {
     implicit session =>
-      Order.fetchCommerceItems(this)
+      Order.fetchCommerceItems(id)
   }
   lazy val itemSize = (commerceItems.map(_.quantity) :\ 0)(_ + _)
   lazy val priceInfo = DBHelper.database.withSession {
@@ -61,7 +61,7 @@ case class Order(id: String, profileId: String, state: Int, priceId: Option[Stri
 
 }
 
-case class CommerceItem(id: String, skuId: String, orderId: String, priceId: String, dinnerType: Int,  quantity: Int, createdTime: Timestamp) {
+case class CommerceItem(id: String, skuId: String, orderId: String, priceId: String, dinnerType: Int, quantity: Int, createdTime: Timestamp) {
   lazy val sku = DBHelper.database.withSession {
     implicit session =>
       Product.findSkuById(skuId).get
@@ -169,7 +169,7 @@ object OrderState {
   def getOrderStateDesc(key: Int) = orderStateMap.get(key).get
 }
 
-object DinnerType{
+object DinnerType {
   val BREAKFAST: Int = 0
   val LUNCH: Int = 1
   val SUPPER: Int = 2
@@ -208,9 +208,9 @@ object Order extends ((String, String, Int, Option[String], Int, Timestamp, Time
     orderRepo.filter(_.id === orderId).firstOption
   }
 
-  def fetchCommerceItems(order: Order)(implicit session: Session) = {
+  def fetchCommerceItems(orderId: String)(implicit session: Session) = {
     val commerceItemQuery = TableQuery[CommerceItemRepo]
-    val cis: List[CommerceItem] = commerceItemQuery.filter(_.orderId === order.id).list()
+    val cis: List[CommerceItem] = commerceItemQuery.filter(_.orderId === orderId).list()
     if (log.isDebugEnabled)
       log.debug(s"commerceItems is $cis")
     cis
@@ -228,7 +228,7 @@ object Order extends ((String, String, Int, Option[String], Int, Timestamp, Time
    * @param order
    */
   def priceOrder(order: Order)(implicit session: Session) = {
-    val commerceItems = fetchCommerceItems(order)
+    val commerceItems = fetchCommerceItems(order.id)
     val actualPrice = (commerceItems.map(calculateCommerceItemTotaPrice(_)._2) :\ (BigDecimal(0)))(_ + _)
     val listPrice = (commerceItems.map(calculateCommerceItemTotaPrice(_)._1) :\ (BigDecimal(0)))(_ + _)
     log.debug(s"totalActualPrice: $actualPrice, totalListPrice: $listPrice")
@@ -269,7 +269,7 @@ object Order extends ((String, String, Int, Option[String], Int, Timestamp, Time
         create(profileId)
     }
     //GET SKU Price
-    val existedCi = fetchCommerceItems(order).filter(_.skuId == sku.id).filter(_.dinnerType == dinnerType).headOption
+    val existedCi = fetchCommerceItems(order.id).filter(_.skuId == sku.id).filter(_.dinnerType == dinnerType).headOption
     existedCi match {
       case Some(ci) =>
         //Merge existed commerceItem
@@ -357,7 +357,7 @@ object Order extends ((String, String, Int, Option[String], Int, Timestamp, Time
   }
 
   def countProduct(order: Order)(implicit session: Session) = {
-    val items = fetchCommerceItems(order)
+    val items = fetchCommerceItems(order.id)
     val productVolumeRepo = TableQuery[ProductSalesVolumeRepo]
     for (item <- items) {
       val sku = Product.findSkuById(item.skuId).get

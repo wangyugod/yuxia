@@ -230,11 +230,11 @@
                                                     </span>
                                                     <em class="price" id="warePriceId" v="62.90">@order.priceInfo.listPrice</em>
                                                 </div>
-                                                <div class="list"><span>返现：</span><em class="price" id="cachBackId" v="0.00"> -@(order.priceInfo.actualPrice - order.priceInfo.listPrice)</em></div>
+                                                <div class="list"><span>返现：</span><em class="price" id="cachBackId" v="0.00"> @(order.priceInfo.actualPrice - order.priceInfo.listPrice)</em></div>
                                                 <div class="list"><span>应付总额：</span><em id="sumPayPriceId" class="price"> @order.priceInfo.actualPrice</em></div>
                                                 @flash.get("result") match {
                                                     case Some("fail") => {
-                                                <strong class="checkout-error"> @Messages("order.submit.error")</strong>
+                                                <strong class="checkout-error"> @flash.get("errorMsg").get</strong>
                                                     }
                                                     case _ =>{}
                                                 }

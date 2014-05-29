@@ -9,6 +9,7 @@ import util._
 import java.io.File
 import play.api.libs.json.{JsString, JsArray, JsObject}
 import vo._
+import play.api.Logger
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,7 +18,8 @@ import vo._
  * Time: 8:00 PM
  * To change this template use File | Settings | File Templates.
  */
-object Products extends Controller with Merchants with MerchSecured {
+object Products extends Controller with Merchants with MerchSecured with CacheController {
+  private val log = Logger(this.getClass)
 
   val productForm: Form[ProductVo] = Form(
     mapping(
@@ -30,6 +32,8 @@ object Products extends Controller with Merchants with MerchSecured {
       "endDate" -> optional(text),
       "categories" -> text,
       "selectedCat" -> nonEmptyText,
+      "updateDaily" -> optional(boolean),
+      "inventory" -> optional(number),
       "childSkus" -> seq(mapping(
         "skuId" -> optional(text),
         "skuName" -> text,
@@ -46,7 +50,7 @@ object Products extends Controller with Merchants with MerchSecured {
 
   def newProduct = isAuthenticated(implicit request => Ok(html.merchandise.newproduct(productForm)))
 
-  def create = isAuthenticatedWithMultipartParser(parse.multipartFormData){
+  def create = isAuthenticatedWithMultipartParser(parse.multipartFormData) {
     implicit request => {
       productForm.bindFromRequest().fold(
         formWithErrors => BadRequest(html.merchandise.newproduct(formWithErrors)),
@@ -56,13 +60,13 @@ object Products extends Controller with Merchants with MerchSecured {
             file => file.ref.moveTo(new File(AppHelper.productImageDir + form.productId + ".jpg"), true)
           }
           val catIds = form.categories.split(",")
-          Product.create(form.product, catIds, form.childSkus)
+          Product.create(form.product, catIds, form.childSkus, form.dailyUpdate, form.inventory)
           productForm.fill(form)
           Redirect(routes.Products.newProduct())
         }
       )
     }
-   }
+  }
 
   def list = isAuthenticated {
     implicit request => {
@@ -74,15 +78,11 @@ object Products extends Controller with Merchants with MerchSecured {
 
   def get(id: String) = Action {
     implicit request => {
-      val product = Product.findById(id)
-      product match {
-        case Some(p) => {
-          Ok(html.merchandise.product(productForm.fill(ProductVo(p))))
-        }
-        case None => {
-          BadRequest(html.pageNotFound())
-        }
+      val product = DBHelper.database.withSession {
+        implicit session =>
+          getProduct(id)
       }
+      Ok(html.merchandise.product(productForm.fill(ProductVo(product))))
     }
   }
 
@@ -94,11 +94,12 @@ object Products extends Controller with Merchants with MerchSecured {
           request.body.file("image").map {
             file => {
               val dir: String = AppHelper.productImageDir
-              println("image file path " + dir + form.productId)
               file.ref.moveTo(new File(dir + form.productId + ".jpg"), true)
             }
           }
-          Product.update(form.product, form.categories.split(","), form.childSkus)
+          if (log.isDebugEnabled)
+            log.debug("form update daily is " + form.dailyUpdate)
+          Product.update(form.product, form.categories.split(","), form.childSkus, form.dailyUpdate, form.inventory)
           productForm.fill(form)
           Redirect(routes.Products.get(form.productId))
         }

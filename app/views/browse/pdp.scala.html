@@ -30,6 +30,10 @@
                 <div class="dt">@Messages("pdp.sale.quantity.label")</div>
                 <div class="dd">@product.salesVolume</div>
             </li>
+            <li id="inventory">
+                <div class="dt">@Messages("pdp.inventory.label")</div>
+                <div class="dd">@product.inventoryStock</div>
+            </li>
         </ul>
         <ul id="choose">
             <li id="choose-sku">
@@ -44,7 +48,7 @@
                 </div>
             </li>
             <li id="choose-dinner-type">
-                <div class="dt">@Messages("pdp.choose.sku.label")</div>
+                <div class="dt">@Messages("pdp.choose.dinner.label")</div>
                 <div class="dd">
                     @for(dinnerType <- DinnerType.dinnerTypeMap){
                         <div class="item">
@@ -97,6 +101,7 @@
             var skuList = $("[id^=slink_]", "#choose-sku");
             if(skuList.size() == 1){
                 selectSku(skuList[0].id.substr(6));
+                $("#choose-sku").hide()
             }
         }
 

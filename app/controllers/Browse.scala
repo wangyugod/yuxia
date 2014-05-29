@@ -17,23 +17,17 @@ import play.api.cache.{Cached, Cache}
  * Time: 2:31 PM
  * To change this template use File | Settings | File Templates.
  */
-object Browse extends Controller with Users {
+object Browse extends Controller with Users with CacheController {
   private val log = Logger(this.getClass)
 
   def productDetail(id: String) =
     Action {
       implicit request => {
-        Cache.getAs[Product](id) match {
-          case Some(prod) =>
-            Ok(html.browse.pdp(prod))
-          case _ =>
-            Product.findById(id) match {
-              case Some(p) =>
-                Cache.set(id, p, Play.current.configuration.getInt("cache.ttl").getOrElse(5))
-                Ok(html.browse.pdp(p))
-              case _ => Redirect(routes.Application.pageNotFound())
-            }
+        val product = DBHelper.database.withSession {
+          implicit session =>
+            getProduct(id)
         }
+        Ok(html.browse.pdp(product))
       }
     }
 
@@ -76,18 +70,7 @@ object Browse extends Controller with Users {
     implicit request => {
       val sku = DBHelper.database.withSession {
         implicit session =>
-          Cache.get(id) match {
-            case Some(sku: Sku) =>
-              if (log.isDebugEnabled)
-                log.debug("fetch sku " + id + " from cache")
-              sku
-            case _ =>
-              val sku = Product.findSkuById(id).get
-              if (log.isDebugEnabled)
-                log.debug("set sku " + id + " to cache")
-              Cache.set(id, sku)
-              sku
-          }
+          getSku(id)
       }
       Ok(JsObject(List("skuId" -> JsString(sku.id), "price" -> JsString(sku.price.toString()), "listPrice" -> JsString(sku.listPrice.toString()))))
     }

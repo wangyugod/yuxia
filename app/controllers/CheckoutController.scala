@@ -4,11 +4,19 @@ import play.api.mvc._
 import play.api._
 import views.html
 import models._
-import util.{AppHelper, DBHelper}
+import util.DBHelper
 import play.api.i18n.Messages
 import scala.Some
 import play.api.cache.Cache
 import play.api.Play.current
+import play.api.libs.concurrent.Akka
+import akka.actor.Props
+import actors.{GetInventory, UpdateInventory, InventoryProcessActor}
+import akka.pattern.ask
+import akka.util.Timeout
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext
+import ExecutionContext.Implicits.global
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,20 +25,15 @@ import play.api.Play.current
  * Time: 11:43 PM
  * To change this template use File | Settings | File Templates.
  */
-object CheckoutController extends Controller with Users with Secured {
+object CheckoutController extends Controller with Users with Secured with CacheController {
   val log = Logger(this.getClass)
+  val inventoryActor = Akka.system.actorOf(Props(new InventoryProcessActor()))
 
   def addItemToCart(skuId: String, quantity: Int, dinnerType: Int) = isAuthenticated {
     implicit request => {
       DBHelper.database.withTransaction {
         implicit session =>
-          val sku = Cache.getAs[Sku](skuId) match {
-            case Some(sku) => sku
-            case _ =>
-              val s = Product.findSkuById(skuId).get
-              Cache.set(s.id, s, Play.current.configuration.getInt("cache.ttl").getOrElse(5))
-              s
-          }
+          val sku = getSku(skuId)
 
           val order = Order.addItem(request.session.get(USER_ID).get, request.session.get(CURR_ORDER_ID), sku, quantity, dinnerType)
           if (log.isDebugEnabled)
@@ -150,22 +153,41 @@ object CheckoutController extends Controller with Users with Secured {
   def submitOrder = isAuthenticated {
     implicit request =>
       val orderId = request.session.get(CURR_ORDER_ID).get
-      var result = false
       DBHelper.database.withTransaction {
         implicit session =>
+          //Check Shipping Group
           val sg = Order.findOrderShippingGroup(orderId)
           if (log.isDebugEnabled)
             log.debug(s"shippingGroup is $sg")
-          if (sg.isDefined) {
-            Order.submitOrder(orderId)
-            result = true
+          if (sg.isEmpty) {
+            Redirect(routes.CheckoutController.checkout()).flashing("result" -> "fail", "errorMsg" -> Messages("order.submit.error"))
+          } else {
+            //Check and Update Inventory
+            var itemList = List.empty[(String, Int)]
+            Order.fetchCommerceItems(orderId).foreach {
+              ci =>
+                val productId = Product.findSkuById(ci.skuId).get.productId
+                itemList = (productId, ci.quantity) :: itemList
+            }
+            implicit val timeout = Timeout(5 seconds)
+            val resultFuture = inventoryActor ? UpdateInventory(itemList)
+            Async {
+              resultFuture.mapTo[(List[String], String)].map {
+                result => {
+                  if (log.isDebugEnabled)
+                    log.debug("update inventory result is " + result._1 + " " + result._2)
+                  val badItemList = result._1
+                  if (badItemList.nonEmpty) {
+                    Redirect(routes.CheckoutController.checkout()).flashing("result" -> "fail", "errorMsg" -> Messages("order.inventory.error", badItemList.mkString(",")))
+                  } else {
+                    Order.submitOrder(orderId)
+                    val newSession = request.session - CURR_ORDER_ID + (LAST_ORDER_ID -> orderId)
+                    Redirect(routes.CheckoutController.thankYou).withSession(newSession).flashing("result" -> "success")
+                  }
+                }
+              }
+            }
           }
-      }
-      if (result) {
-        val newSession = request.session - CURR_ORDER_ID + (LAST_ORDER_ID -> orderId)
-        Redirect(routes.CheckoutController.thankYou).withSession(newSession).flashing("result" -> "success")
-      } else {
-        Redirect(routes.CheckoutController.checkout()).flashing("result" -> "fail")
       }
   }
 
