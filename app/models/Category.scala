@@ -16,8 +16,8 @@ import play.api.Logger
  * Time: 4:47 PM
  * To change this template use File | Settings | File Templates.
  */
-case class Category(id: String, name: String, description: String, longDescription: String, isTopNav: Boolean) {
-  def childCategories: Seq[Category] = DBHelper.database.withSession {
+case class Category(id: String, name: String, description: Option[String], longDescription: Option[String], isTopNav: Boolean) {
+  lazy val childCategories: Seq[Category] = DBHelper.database.withSession {
     implicit session =>
       val catcat = TableQuery[CategoryCategories]
       //      val childCatQuery = for (cc <- catcat if cc.parentCatId === id) yield cc.childCatId
@@ -25,7 +25,7 @@ case class Category(id: String, name: String, description: String, longDescripti
       TableQuery[Categories].where(_.id inSetBind childCatIds).list()
   }
 
-  def parentCategory = DBHelper.database.withSession {
+  lazy val parentCategory = DBHelper.database.withSession {
     implicit session =>
       val catcat = TableQuery[CategoryCategories]
       val parentCategoryQuery = for (cc <- catcat if cc.childCatId === id) yield cc.parentCatId
@@ -34,6 +34,11 @@ case class Category(id: String, name: String, description: String, longDescripti
         case Some(catId) => TableQuery[Categories].where(_.id === catId).firstOption
         case None => None
       }
+  }
+
+  lazy val parentCategoryId = parentCategory match {
+    case Some(cat) => Some(cat.id)
+    case _ => None
   }
 
   def isRoot = parentCategory.isEmpty
@@ -201,9 +206,9 @@ class Categories(tag: Tag) extends Table[Category](tag, "category") {
 
   def name = column[String]("name")
 
-  def description = column[String]("description")
+  def description = column[Option[String]]("description")
 
-  def longDescription = column[String]("long_desc")
+  def longDescription = column[Option[String]]("long_desc")
 
   def isTopNav = column[Boolean]("top_nav_flag")
 
@@ -332,7 +337,7 @@ object Product extends ((String, String, String, String, Option[Date], Option[Da
 
   def findProductInventory(id: String)(implicit session: Session) = {
     TableQuery[InventoryRepo].where(_.id === id).firstOption match {
-      case Some(inventory) if inventory.stock > 0 =>
+      case Some(inventory) if inventory.stock >= 0 =>
         inventory.stock
       case _ =>
         DEFAULT_INVENTORY_STOCK
@@ -373,23 +378,20 @@ object Product extends ((String, String, String, String, Option[Date], Option[Da
   }
 }
 
-object Category extends ((String, String, String, String, Boolean) => Category) {
-  def create(category: Category, parentCatId: Option[String]) = DBHelper.database.withTransaction {
-    implicit session =>
-      TableQuery[Categories].insert(category)
-      if (parentCatId.isDefined) {
-        TableQuery[CategoryCategories].insert(CategoryCategory(parentCatId.get, category.id))
-      }
+object Category extends ((String, String, Option[String], Option[String], Boolean) => Category) {
+  def create(category: Category, parentCatId: Option[String])(implicit session: Session) = {
+    TableQuery[Categories].insert(category)
+    if (parentCatId.isDefined) {
+      TableQuery[CategoryCategories].insert(CategoryCategory(parentCatId.get, category.id))
+    }
   }
 
-  def allCategories(): Seq[Category] = DBHelper.database.withSession {
-    implicit session =>
-      TableQuery[Categories].list()
+  def allCategories()(implicit session: Session) = {
+    TableQuery[Categories].list()
   }
 
-  def rootCategories(): Seq[Category] = DBHelper.database.withSession {
-    implicit session =>
-      allCategories().filter(_.isRoot)
+  def rootCategories()(implicit session: Session): Seq[Category] = {
+    allCategories().filter(_.isRoot)
   }
 
   def childCategories(catId: String): Seq[Category] = DBHelper.database.withSession {
@@ -416,6 +418,6 @@ object Category extends ((String, String, String, String, Boolean) => Category) 
   }
 }
 
-class InventoryException(msg: String) extends Exception{
+class InventoryException(msg: String) extends Exception {
 
 }

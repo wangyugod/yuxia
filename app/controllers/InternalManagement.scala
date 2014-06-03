@@ -13,6 +13,7 @@ import scala.Some
 import java.util.Date
 import play.api.libs.json.{JsString, JsObject, JsArray}
 import java.io.File
+import vo.CategoryVo
 
 /**
  * Created with IntelliJ IDEA.
@@ -209,7 +210,7 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
                       file.ref.moveTo(new File(dir + pbiId + ".jpg"), true)
                     }
                   }
-                  PromotionBanner.createOrUpdatePBItem(PromotionBannerItem(pbItem._1.getOrElse(LocalIdGenerator.generatePbiId()), pbItem._3, AppHelper.promoImage(pbiId + ".jpg").url,  pbItem._5, 0, pbItem._6, None, new Timestamp(new Date().getTime)))
+                  PromotionBanner.createOrUpdatePBItem(PromotionBannerItem(pbItem._1.getOrElse(LocalIdGenerator.generatePbiId()), pbItem._3, AppHelper.promoImage(pbiId + ".jpg").url, pbItem._5, 0, pbItem._6, None, new Timestamp(new Date().getTime)))
               }
           }
           Redirect(routes.InternalManagement.promoBannerList())
@@ -246,5 +247,45 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
       Ok(JsArray(products))
   }
 
+
+  def categoryList = isAuthenticated {
+    implicit request =>
+      val categoryList = DBHelper.database.withSession {
+        implicit session =>
+          Category.allCategories()
+      }
+      Ok(html.admin.catmgt(categoryList, categoryForm))
+  }
+
+  val categoryForm = Form(
+    mapping(
+      "id" -> optional(text),
+      "name" -> nonEmptyText,
+      "description" -> optional(text),
+      "longDescription" -> optional(text),
+      "isTopNav" -> boolean,
+      "parentId" -> optional(text)
+    )(CategoryVo.apply)(CategoryVo.unapply)
+  )
+
+  def createCategory = isAuthenticated {
+    implicit request =>
+      categoryForm.bindFromRequest().fold(
+        formWithError => {
+          val categoryList = DBHelper.database.withSession {
+            implicit session =>
+              Category.allCategories()
+          }
+          BadRequest(html.admin.catmgt(categoryList, categoryForm))
+        },
+        category => {
+          DBHelper.database.withTransaction {
+            implicit session =>
+              Category.create(category.category, category.parentId)
+          }
+          Redirect(routes.InternalManagement.categoryList())
+        }
+      )
+  }
 
 }

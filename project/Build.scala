@@ -9,7 +9,6 @@ object ApplicationBuild extends Build {
 
   val appDependencies = Seq(
     // Add your project dependencies here,
-     // Add your project dependencies here,
     "com.typesafe.slick" %% "slick" % "2.0.0",
     "org.slf4j" % "slf4j-nop" % "1.6.4",
     //"com.typesafe.play" %% "play-slick" % "0.4.0",
@@ -17,8 +16,8 @@ object ApplicationBuild extends Build {
     "org.apache.httpcomponents" % "httpclient" % "4.2.5",
     "commons-codec" % "commons-codec" % "1.9",
     "com.typesafe" %% "play-plugins-mailer" % "2.1-RC2",
-
-    jdbc
+    jdbc,
+    cache
   )
 
 

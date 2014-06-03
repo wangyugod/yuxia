@@ -115,7 +115,10 @@ object Products extends Controller with Merchants with MerchSecured with CacheCo
 
   def initCategoryTree = Action {
     implicit request => {
-      val rootCategories = Category.rootCategories()
+      val rootCategories = DBHelper.database.withSession {
+        implicit session =>
+          Category.rootCategories()
+      }
       Ok(JsArray(catToJson(rootCategories)))
     }
   }

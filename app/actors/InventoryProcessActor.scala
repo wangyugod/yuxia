@@ -33,15 +33,12 @@ class InventoryProcessActor extends Actor {
                 badItemList = item._1 :: badItemList
               }
           }
-          if (badItemList.isEmpty) {
+          if (badItemList.isEmpty)
             update.items.foreach {
               item =>
                 Product.updateInventory(item._1, item._2)
-                sender !(badItemList, UPDATE_INVENTOR_SUCCESS)
             }
-          } else {
-            sender !(badItemList, STOCK_NOT_ENOUGH)
-          }
+          sender ! badItemList
       }
     case _ =>
       if (log.isDebugEnabled)

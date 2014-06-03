@@ -3,6 +3,7 @@ package controllers
 import play.api.mvc._
 import play.api.libs.Files.TemporaryFile
 import play.api.Logger
+import scala.concurrent.Future
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,6 +41,10 @@ trait Secured {
    */
   def isAuthenticated(f: Request[AnyContent] => Result) = Security.Authenticated(username, onUnauthorized) {
     user => Action(f)
+  }
+
+  def isAuthenticatedAsync(f: Request[AnyContent] => Future[SimpleResult]) = Security.Authenticated(username, onUnauthorized) {
+    user => Action.async(f)
   }
 
 

@@ -7,16 +7,15 @@ import models._
 import util.DBHelper
 import play.api.i18n.Messages
 import scala.Some
-import play.api.cache.Cache
 import play.api.Play.current
 import play.api.libs.concurrent.Akka
 import akka.actor.Props
-import actors.{GetInventory, UpdateInventory, InventoryProcessActor}
+import actors.{UpdateInventory, InventoryProcessActor}
 import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext
-import ExecutionContext.Implicits.global
+import scala.concurrent.{Future}
+import play.api.libs.concurrent.Execution.Implicits._
 
 /**
  * Created with IntelliJ IDEA.
@@ -132,7 +131,7 @@ object CheckoutController extends Controller with Users with Secured with CacheC
     implicit request =>
       val userId = request.session.get(USER_ID).get
       val orderId = request.session.get(CURR_ORDER_ID).get
-      DBHelper.database.withTransaction {
+      DBHelper.database.withSession {
         implicit session =>
           val order = Order.findOrderById(orderId).get
           val existedShippingGroup = Order.findOrderShippingGroup(orderId)
@@ -150,17 +149,19 @@ object CheckoutController extends Controller with Users with Secured with CacheC
       Redirect(routes.CheckoutController.checkout())
   }
 
-  def submitOrder = isAuthenticated {
+  def submitOrder = isAuthenticatedAsync {
     implicit request =>
       val orderId = request.session.get(CURR_ORDER_ID).get
       DBHelper.database.withTransaction {
         implicit session =>
-          //Check Shipping Group
+        //Check Shipping Group
           val sg = Order.findOrderShippingGroup(orderId)
           if (log.isDebugEnabled)
             log.debug(s"shippingGroup is $sg")
           if (sg.isEmpty) {
-            Redirect(routes.CheckoutController.checkout()).flashing("result" -> "fail", "errorMsg" -> Messages("order.submit.error"))
+            Future {
+              Redirect(routes.CheckoutController.checkout()).flashing("result" -> "fail", "errorMsg" -> Messages("order.submit.error"))
+            }
           } else {
             //Check and Update Inventory
             var itemList = List.empty[(String, Int)]
@@ -171,26 +172,31 @@ object CheckoutController extends Controller with Users with Secured with CacheC
             }
             implicit val timeout = Timeout(5 seconds)
             val resultFuture = inventoryActor ? UpdateInventory(itemList)
-            Async {
-              resultFuture.mapTo[(List[String], String)].map {
-                result => {
-                  if (log.isDebugEnabled)
-                    log.debug("update inventory result is " + result._1 + " " + result._2)
-                  val badItemList = result._1
-                  if (badItemList.nonEmpty) {
-                    Redirect(routes.CheckoutController.checkout()).flashing("result" -> "fail", "errorMsg" -> Messages("order.inventory.error", badItemList.mkString(",")))
-                  } else {
-                    Order.submitOrder(orderId)
-                    val newSession = request.session - CURR_ORDER_ID + (LAST_ORDER_ID -> orderId)
-                    Redirect(routes.CheckoutController.thankYou).withSession(newSession).flashing("result" -> "success")
+            resultFuture.mapTo[List[String]].map {
+              result => {
+                if (log.isDebugEnabled)
+                  log.debug("update inventory result is " + result)
+                val badItemList = result
+                if (badItemList.nonEmpty) {
+                  var productNameList = List.empty[String]
+                  badItemList.foreach{
+                    productId =>
+                      productNameList = getProduct(productId).name :: productNameList
                   }
+                  Redirect(routes.CheckoutController.checkout()).flashing("result" -> "fail", "errorMsg" -> Messages("order.inventory.error", productNameList.mkString(",")))
+                } else {
+                  DBHelper.database.withTransaction {
+                    implicit session =>
+                      Order.submitOrder(orderId)
+                  }
+                  val newSession = request.session - CURR_ORDER_ID + (LAST_ORDER_ID -> orderId)
+                  Redirect(routes.CheckoutController.thankYou).withSession(newSession).flashing("result" -> "success")
                 }
               }
             }
           }
       }
   }
-
 
   def thankYou = isAuthenticated {
     implicit request =>

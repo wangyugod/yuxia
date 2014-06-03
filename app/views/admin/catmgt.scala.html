@@ -1,0 +1,227 @@
+@(catList: List[Category], catForm: Form[vo.CategoryVo])(implicit user: Option[InternalUser])
+
+@import helper._
+@adminbase(Messages("admin.area.menu"), user){
+<script type="text/javascript">
+    function showAreaPopup(){
+        $("#popForm").dialog({
+            title: "@Messages("area.mgt.title")",
+                width: 760,
+                height: 400,
+                modal:true,
+                buttons:{"@Messages("ok.button")": function(){
+            $('form').submit();
+            $(this).dialog("close");
+        },
+            "@Messages("cancel.button")": function() {
+                $('#id').val("");
+                $('#parentAreaId').val("");
+                $('#name').val("");
+                $('#parentAreaName').val("");
+                $('#detail').val("");
+                $(this).dialog( "close" );
+            }}
+    })
+    }
+
+
+    $(function(){
+        // --- Initialize sample trees
+        $("#tree").dynatree({
+            title: "Lazy loading sample",
+            checkbox:true,
+            selectMode:1,
+            fx: { height: "toggle", duration: 200 },
+            autoFocus: false,
+
+            onSelect: function(select, node) {
+                // Display list of selected nodes
+                var selNodes = node.tree.getSelectedNodes();
+                // convert to title/key array
+                var selKeys = $.map(selNodes, function(node){
+                    return node.data.key;
+                });
+                var selTitle = $.map(selNodes, function(node){
+                    return node.data.title;
+                });
+                $("#parentAreaName").val(selTitle.join(","));
+                $("#parentAreaId").val(selKeys.join(";"));
+            },
+
+            initAjax: {
+                url: "@routes.Addresses.initAreaTrees",
+                data: { mode: "funnyMode" }
+            },
+
+            onActivate: function(node) {
+                $("#echoActive").text("" + node + " (" + node.getKeyPath()+ ")");
+            },
+
+            onLazyRead: function(node){
+                node.appendAjax({
+                    url: "/area/child/" + node.data.key,
+                    data: {key: node.data.key, mode: "funnyMode"}
+                });
+            }
+        });
+
+
+    });
+
+    function showAreaTree(){
+        $("#tree").dialog({
+            title: "@Messages("area.pickparent.title")",
+                width: 760,
+                height: 400,
+                modal:true,
+                buttons:{"@Messages("ok.button")": function(){
+            $(this).dialog("close");
+        },
+            "@Messages("cancel.button")": function() {
+                $(this).dialog( "close" );
+            }}
+    })
+    }
+
+    function confirmDeleteArea(element){
+        var areaId = element.attr("id").substr(7);
+        $('#divconfirm'+areaId).dialog({
+            resizable: false,
+            height:140,
+            modal: true,
+            open:function(event, ui){
+                $(".ui-dialog-titlebar-close", $(this).parent()).hide();
+            },
+            closeOnEscape: false,
+            buttons: {
+                "@Messages("ok.button")": function() {
+                    $.ajax({
+                        async:false,
+                        url:"/area/delete/" + areaId,
+                        type:"DELETE",
+                        success: function(result){
+                            document.location.href = "@routes.InternalManagement.areaList()";
+                        }
+                    });
+                    $(this).dialog( "close" );
+                },
+                "@Messages("cancel.button")": function() {
+                    $(this).dialog( "close" );
+                }
+            }
+        });
+    }
+
+    function modifyPopup(element){
+        var areaId = element.attr("id").substr(7);
+        $('#id').val(areaId);
+        $('#parentAreaId').val($('#parentId'+areaId).text());
+        $('#name').val($('#name' + areaId).text());
+        $('#parentAreaName').val($('#parent' + areaId).text());
+        $('#detail').val($('#detail' + areaId).text());
+        showAreaPopup();
+    }
+</script>
+
+<div class="o-mt">
+    <h2>@Messages("admin.category.menu")</h2>
+</div>
+<div id="popForm" class="thickbox" style="display: none">
+    <div class="thickcon" >
+        <div class="mc">
+            @form(routes.InternalManagement.createCategory){
+            <input type="hidden" name="id" id="id"/>
+            <input type="hidden" name="parentId" id="parentId"/>
+            <div class="form" id="categoryPanel">
+                <div class="item">
+                    <span class="label"><em>*</em>@Messages("cat.name.label")</span>
+                    <div class="fl">
+                        <input id="name" name="name" type="text" class="text" value="@catForm.data.get("name")" maxlength="20">
+                        @if(catForm.error("name").isDefined){
+                        <div class="prompt-error"><span id="petName_msg">@Messages(catForm.error("name").get.message)</span></div>
+                        }
+                    </div>
+                    <div class="clr"></div>
+                </div>
+                <div class="item">
+                    <span class="label">@Messages("cat.parent.label")</span>
+                    <div class="fl">
+                        <input id="parentCatName" name="parentCatName" type="text" value="" readonly class="text text1" maxlength="50">
+                        <a class="btn-12" href="#none" id="choosearea" onclick="showAreaTree()"><s></s>@Messages("cat.parent.btn")</a>
+                    </div>
+                    <div class="clr">
+                    </div>
+                </div>
+                <div class="item">
+                    <span class="label"><em>*</em>@Messages("cat.description.label")</span>
+                    <div class="fl">
+                        <input id="description" name="description" type="text" class="text" value="@catForm.data.get("description")" maxlength="20">
+                        @if(catForm.error("description").isDefined){
+                        <div class="prompt-error"><span id="petName_msg">@Messages(catForm.error("description").get.message)</span></div>
+                        }
+                    </div>
+                    <div class="clr"></div>
+                </div>
+                <div class="item">
+                    <span class="label"><em>*</em>@Messages("cat.longdescription.label")</span>
+                    <div class="fl">
+                        <textarea id="longDescription" name="longDescription" class="area" maxlength="50">@catForm.data.get("longDescription")</textarea>
+                        @if(catForm.error("longDescription").isDefined){
+                        <div class="prompt-error"><span id="petName_msg">@Messages(catForm.error("longDescription").get.message)</span></div>
+                        }
+                    </div>
+                    <div class="clr">
+                    </div>
+                </div>
+
+            </div>
+            }
+        </div>
+        <div id="tree" style="display:none;overflow: hidden">
+
+        </div>
+    </div>
+</div>
+<div class="o-m">
+    <div class="o-mb">
+        <h3> <a href="#none" class="btn-6" onclick="showAreaPopup()"><s></s>@Messages("area.new.btn")</a></h3>
+    </div>
+    @for(category <- catList){
+    <div class="o-mc">
+        <div class="m m4" id="divcat@category.id">
+            <div class="mt">
+                <h3 id="name@category.id">@category.name</h3>
+                <div class="extra">
+                    <a class="btn-12" href="#none" id="modcat@category.id" onclick="modifyPopup($(this))"><s></s>@Messages("area.update.btn")</a>
+                    <a class="btn-12 del" href="#none" id="delcat@category.id" onclick="confirmDeleteArea($(this))"><s></s>@Messages("area.delete.btn")</a>
+                    <div id="divconfirm@category.id" style="display:none">
+                        <span>@Messages("area.delete.cfmsg", category.name)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="tb-0">
+                <table cellspacing="0" cellpadding="0" border="0" width="100%">
+                    <tbody><tr>
+                        <th>@Messages("area.detail.label")</th>
+                        <td width="330" id="detail@category.id">@category.description</td>
+                        <th>&nbsp;</th>
+                        <td>&nbsp;</td>
+                    </tr>
+                    </tbody>
+                    <tbody><tr>
+                        <th>@Messages("area.parent.label")</th>
+                        <td width="330" id="parent@category.id">@(if(category.parentCategory.isDefined) category.parentCategory.get.name)</td>
+                        <th>&nbsp;</th>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <span style="display:none" id="parentId@category.id">@category.parentCategory</span>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="mc">
+        </div>
+    </div>  }
+</div>
+
+}

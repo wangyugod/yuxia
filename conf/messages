@@ -167,6 +167,13 @@ promobanner.name.label=标题：
 promobanner.description.label=描述：
 promobanner.link.label=链接：
 promobanner.image.label=图片：
+error.category.create=请确认产品目录的必须字段是否填完！
+cat.name.label=名称：
+cat.parent.label=父目录：
+cat.parent.btn=所属目录
+cat.description.label=描述：
+cat.longDescription.label=详细描述：
+
 
 
 
@@ -200,7 +207,7 @@ order.checkout.title=订单结算
 order.address.delete.confirm=您确定要删除该地址吗？
 order.thankyou.title=订单成功页面
 order.submit.error=提交订单失败，请确认是否正确选择收货地址和付款方式！
-order.inventory.error={0}商品库存不足，请重新选择其他商品或减少订购数量
+order.inventory.error={0}数量不足，请重新选择其他商品或减少订购数量
 sg.default.method=货到付款
 checkout.address.error=请填完地址信息的必需字段！
 checkout.address.name.error=请您填写收货人姓名！
