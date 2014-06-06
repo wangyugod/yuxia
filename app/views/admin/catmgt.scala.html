@@ -3,9 +3,9 @@
 @import helper._
 @adminbase(Messages("admin.area.menu"), user){
 <script type="text/javascript">
-    function showAreaPopup(){
+    function showCategoryPopup(){
         $("#popForm").dialog({
-            title: "@Messages("area.mgt.title")",
+            title: "@Messages("cat.mgt.title")",
                 width: 760,
                 height: 400,
                 modal:true,
@@ -15,10 +15,11 @@
         },
             "@Messages("cancel.button")": function() {
                 $('#id').val("");
-                $('#parentAreaId').val("");
+                $('#parentId').val("");
                 $('#name').val("");
-                $('#parentAreaName').val("");
-                $('#detail').val("");
+                $('#description').val("");
+                $('#longDescription').val("");
+                $('#parentCatName').val("");
                 $(this).dialog( "close" );
             }}
     })
@@ -28,7 +29,7 @@
     $(function(){
         // --- Initialize sample trees
         $("#tree").dynatree({
-            title: "Lazy loading sample",
+            title: "Category Tree",
             checkbox:true,
             selectMode:1,
             fx: { height: "toggle", duration: 200 },
@@ -44,12 +45,12 @@
                 var selTitle = $.map(selNodes, function(node){
                     return node.data.title;
                 });
-                $("#parentAreaName").val(selTitle.join(","));
-                $("#parentAreaId").val(selKeys.join(";"));
+                $("#parentCatName").val(selTitle.join(","));
+                $("#parentId").val(selKeys.join(";"));
             },
 
             initAjax: {
-                url: "@routes.Addresses.initAreaTrees",
+                url: "@routes.Products.initCategoryTree",
                 data: { mode: "funnyMode" }
             },
 
@@ -59,7 +60,7 @@
 
             onLazyRead: function(node){
                 node.appendAjax({
-                    url: "/area/child/" + node.data.key,
+                    url: "/merch/prod/childCat/" + node.data.key,
                     data: {key: node.data.key, mode: "funnyMode"}
                 });
             }
@@ -68,7 +69,7 @@
 
     });
 
-    function showAreaTree(){
+    function showCategoryTree(){
         $("#tree").dialog({
             title: "@Messages("area.pickparent.title")",
                 width: 760,
@@ -83,7 +84,7 @@
     })
     }
 
-    function confirmDeleteArea(element){
+    function confirmDeleteCategory(element){
         var areaId = element.attr("id").substr(7);
         $('#divconfirm'+areaId).dialog({
             resizable: false,
@@ -113,13 +114,24 @@
     }
 
     function modifyPopup(element){
-        var areaId = element.attr("id").substr(7);
-        $('#id').val(areaId);
-        $('#parentAreaId').val($('#parentId'+areaId).text());
-        $('#name').val($('#name' + areaId).text());
-        $('#parentAreaName').val($('#parent' + areaId).text());
-        $('#detail').val($('#detail' + areaId).text());
-        showAreaPopup();
+        var catId = element.attr("id").substr(6);
+        $('#id').val(catId);
+        $('#parentId').val($('#parentId'+catId).text());
+        $('#name').val($('#name' + catId).text());
+        $('#parentCatName').val($('#parent' + catId).text());
+        $('#description').val($('#detail' + catId).text());
+        $('#longDescription').val($('#longDesc' + catId).text());
+        console.log("isTopNav :" + $('#isTopNav' + catId).attr("value"))
+        if($('#isTopNav' + catId).attr("value") == "true"){
+            console.log("HERE COOL");
+            //$('#isTopNav').attr("checked", true)
+            document.getElementById("isTopNav").checked=true
+            console.log("checked is:" + document.getElementById("isTopNav").checked )
+        } else {
+            //$('#isTopNav').attr("checked", false)
+            document.getElementById("isTopNav").checked=false
+        }
+        showCategoryPopup();
     }
 </script>
 
@@ -144,10 +156,20 @@
                     <div class="clr"></div>
                 </div>
                 <div class="item">
+                    <span class="label"><em>*</em>@Messages("cat.isTopNav.label")</span>
+                    <div class="fl">
+                        <input id="isTopNav" name="isTopNav" type="checkbox" value="true" maxlength="20">
+                        @if(catForm.error("isTopNav").isDefined){
+                        <div class="prompt-error"><span id="petName_msg">@Messages(catForm.error("name").get.message)</span></div>
+                        }
+                    </div>
+                    <div class="clr"></div>
+                </div>
+                <div class="item">
                     <span class="label">@Messages("cat.parent.label")</span>
                     <div class="fl">
                         <input id="parentCatName" name="parentCatName" type="text" value="" readonly class="text text1" maxlength="50">
-                        <a class="btn-12" href="#none" id="choosearea" onclick="showAreaTree()"><s></s>@Messages("cat.parent.btn")</a>
+                        <a class="btn-12" href="#none" id="choosearea" onclick="showCategoryTree()"><s></s>@Messages("cat.parent.btn")</a>
                     </div>
                     <div class="clr">
                     </div>
@@ -163,7 +185,7 @@
                     <div class="clr"></div>
                 </div>
                 <div class="item">
-                    <span class="label"><em>*</em>@Messages("cat.longdescription.label")</span>
+                    <span class="label"><em>*</em>@Messages("cat.longDescription.label")</span>
                     <div class="fl">
                         <textarea id="longDescription" name="longDescription" class="area" maxlength="50">@catForm.data.get("longDescription")</textarea>
                         @if(catForm.error("longDescription").isDefined){
@@ -184,7 +206,7 @@
 </div>
 <div class="o-m">
     <div class="o-mb">
-        <h3> <a href="#none" class="btn-6" onclick="showAreaPopup()"><s></s>@Messages("area.new.btn")</a></h3>
+        <h3> <a href="#none" class="btn-6" onclick="showCategoryPopup()"><s></s>@Messages("cat.new.btn")</a></h3>
     </div>
     @for(category <- catList){
     <div class="o-mc">
@@ -193,28 +215,42 @@
                 <h3 id="name@category.id">@category.name</h3>
                 <div class="extra">
                     <a class="btn-12" href="#none" id="modcat@category.id" onclick="modifyPopup($(this))"><s></s>@Messages("area.update.btn")</a>
-                    <a class="btn-12 del" href="#none" id="delcat@category.id" onclick="confirmDeleteArea($(this))"><s></s>@Messages("area.delete.btn")</a>
+                    <a class="btn-12 del" href="#none" id="delcat@category.id" onclick="confirmDeleteCategory($(this))"><s></s>@Messages("area.delete.btn")</a>
                     <div id="divconfirm@category.id" style="display:none">
-                        <span>@Messages("area.delete.cfmsg", category.name)</span>
+                        <span>@Messages("cat.delete.cfmsg", category.name)</span>
                     </div>
                 </div>
             </div>
             <div class="tb-0">
                 <table cellspacing="0" cellpadding="0" border="0" width="100%">
                     <tbody><tr>
-                        <th>@Messages("area.detail.label")</th>
+                        <th>@Messages("cat.description.label")</th>
                         <td width="330" id="detail@category.id">@category.description</td>
                         <th>&nbsp;</th>
                         <td>&nbsp;</td>
                     </tr>
                     </tbody>
                     <tbody><tr>
-                        <th>@Messages("area.parent.label")</th>
+                        <th>@Messages("cat.longDescription.label")</th>
+                        <td width="330" id="longDesc@category.id">@category.longDescription</td>
+                        <th>&nbsp;</th>
+                        <td>&nbsp;</td>
+                    </tr>
+                    </tbody>
+                    <tbody><tr>
+                        <th>@Messages("cat.isTopNav.label")</th>
+                        <td width="330" id="isTopNav@category.id" value="@category.isTopNav">@(if(category.isTopNav) "是" else "否")</td>
+                        <th>&nbsp;</th>
+                        <td>&nbsp;</td>
+                    </tr>
+                    </tbody>
+                    <tbody><tr>
+                        <th>@Messages("cat.parent.label")</th>
                         <td width="330" id="parent@category.id">@(if(category.parentCategory.isDefined) category.parentCategory.get.name)</td>
                         <th>&nbsp;</th>
                         <td>&nbsp;</td>
                     </tr>
-                    <span style="display:none" id="parentId@category.id">@category.parentCategory</span>
+                    <span style="display:none" id="parentId@category.id">@(if(category.parentCategory.isDefined) category.parentCategory.get.id)</span>
                     </tbody>
                 </table>
             </div>

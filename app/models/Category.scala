@@ -27,14 +27,9 @@ case class Category(id: String, name: String, description: Option[String], longD
 
   lazy val parentCategory = DBHelper.database.withSession {
     implicit session =>
-      val catcat = TableQuery[CategoryCategories]
-      val parentCategoryQuery = for (cc <- catcat if cc.childCatId === id) yield cc.parentCatId
-      val parentCatOpt: Option[String] = parentCategoryQuery.firstOption
-      parentCatOpt match {
-        case Some(catId) => TableQuery[Categories].where(_.id === catId).firstOption
-        case None => None
-      }
+      Category.findParentCategory(id)
   }
+
 
   lazy val parentCategoryId = parentCategory match {
     case Some(cat) => Some(cat.id)
@@ -379,10 +374,45 @@ object Product extends ((String, String, String, String, Option[Date], Option[Da
 }
 
 object Category extends ((String, String, Option[String], Option[String], Boolean) => Category) {
-  def create(category: Category, parentCatId: Option[String])(implicit session: Session) = {
-    TableQuery[Categories].insert(category)
-    if (parentCatId.isDefined) {
-      TableQuery[CategoryCategories].insert(CategoryCategory(parentCatId.get, category.id))
+  def createOrUpdate(category: Category, parentCatId: Option[String])(implicit session: Session) = {
+    val categoryRepo = TableQuery[Categories]
+    findById(category.id) match {
+      case Some(existedCat) =>
+        categoryRepo.where(_.id === existedCat.id).update(category)
+        findParentCategory(category.id) match {
+          case Some(pCategory) =>
+            if(parentCatId.isDefined && parentCatId.get != pCategory.id){
+              TableQuery[CategoryCategories].where(_.childCatId === category.id).update(CategoryCategory(parentCatId.get, category.id))
+            } else {
+              TableQuery[CategoryCategories].where(_.childCatId === category.id).delete
+            }
+          case _ =>
+            if(parentCatId.isDefined){
+              TableQuery[CategoryCategories].insert(CategoryCategory(parentCatId.get, category.id))
+            }
+        }
+        if(findParentCategory(category.id) != parentCatId)
+          parentCatId match {
+            case Some(pCatId) =>
+
+              TableQuery[CategoryCategories].where(_.childCatId === category.id).update(CategoryCategory(pCatId, category.id))
+          }
+        println("here i am")
+      case _ =>
+        categoryRepo.insert(category)
+        if (parentCatId.isDefined) {
+          TableQuery[CategoryCategories].insert(CategoryCategory(parentCatId.get, category.id))
+        }
+    }
+  }
+
+  def findParentCategory(id: String)(implicit session: Session) = {
+    val catcat = TableQuery[CategoryCategories]
+    val parentCategoryQuery = for (cc <- catcat if cc.childCatId === id) yield cc.parentCatId
+    val parentCatOpt: Option[String] = parentCategoryQuery.firstOption
+    parentCatOpt match {
+      case Some(catId) => TableQuery[Categories].where(_.id === catId).firstOption
+      case None => None
     }
   }
 

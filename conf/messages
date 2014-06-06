@@ -173,7 +173,10 @@ cat.parent.label=父目录：
 cat.parent.btn=所属目录
 cat.description.label=描述：
 cat.longDescription.label=详细描述：
-
+cat.new.btn=新 增
+cat.mgt.title=设置目录信息
+cat.isTopNav.label=顶部目录：
+cat.delete.cfmsg=您确定删除目录{0}吗？
 
 
 

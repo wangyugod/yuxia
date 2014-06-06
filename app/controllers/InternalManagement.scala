@@ -281,7 +281,7 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
         category => {
           DBHelper.database.withTransaction {
             implicit session =>
-              Category.create(category.category, category.parentId)
+              Category.createOrUpdate(category.category, category.parentId)
           }
           Redirect(routes.InternalManagement.categoryList())
         }
