@@ -4,7 +4,7 @@
 @main(Messages("myacct.orderdetail.title"), user) {
 <div class="w">
     <div class="breadcrumb">
-        <strong><a href="@routes.Application.index/">我的账户</a></strong>
+        <strong><a href="@routes.ProfileController.myAccount/">我的账户</a></strong>
         <span>&nbsp;&gt;&nbsp;<a href="@routes.ProfileController.orderHistory()">订单中心</a>&nbsp;&gt;&nbsp;订单：@order.id<span></span></span>
     </div>
     <div class="m" id="orderstate">

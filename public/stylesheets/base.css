@@ -126,12 +126,12 @@ fieldset > dl .error{
 #mainSection{
 	display: box;
 	box-orient: horizontal;
-	min-height: 500px;
+	min-height: 1000px;
 }
 
 .content{
 	width: 1210px;
-	min-height: 500px;
+	min-height: 800px;
 }
 
 /* 2.1 Templete Layout

@@ -18,8 +18,9 @@
                     <th width="20%">促销图片</th>
                     <th width="30%">描述</th>
                     <th width="20%">相关产品</th>
-                    <th width="15%">时间</th>
-                    <th width="15%">操作</th>
+                    <th width="10%">序号</th>
+                    <th width="10%">时间</th>
+                    <th width="10%">操作</th>
                 </tr>
                 </tbody>
                 <tbody id="tb-">
@@ -44,6 +45,10 @@
                     <td><div class="u-name">@pbi.description</div></td>
                     <td>
                         <span class="ftx-03">@(if (pbi.product.isDefined) pbi.product.get.name)</span>
+                    </td>
+
+                    <td>
+                        <span class="ftx-03"><input type="text" value="@(pbi.sequence)" style="width: 15px" onblur="changeSeq('@pbi.id', $(this))"></span>
                     </td>
 
                     <td><span class="ftx-03">@pbi.lastModifiedTime</span></td>
@@ -241,6 +246,18 @@
                     $(this).dialog( "close" );
                 }}
         })
+        }
+
+        function changeSeq(id, ele){
+            console.log("id is " + id + " " + ele.val())
+            $.ajax({
+                async:false,
+                url:"/admin/pbitem/" + id + "/" + ele.val(),
+                type:"PUT",
+                success: function(result){
+                    document.location.href = "@routes.InternalManagement.promoBannerList()";
+                }
+            });
         }
     </script>
 }

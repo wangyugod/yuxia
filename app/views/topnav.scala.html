@@ -2,7 +2,7 @@
 <div class="w">
     <div id="nav-2013">
         <ul id="navitems-2013">
-            <li class="fore1" id="nav-home" ><a href="@routes.Application.index()">首页</a></li>
+            <li class="fore1" id="nav-home" ><a href="@routes.Application.home()">今日菜品</a></li>
             @for((cat, idx) <- Category.topNavCategories.zipWithIndex){
                 @if(user.isDefined && user.get.defaultArea.isDefined){
                     <li class="fore@(idx+2)" id="topNav@cat.id"><a href="/category/@(cat.id)?area=@user.get.defaultArea.get.id">@cat.name</a></li>

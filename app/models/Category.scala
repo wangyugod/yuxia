@@ -374,36 +374,51 @@ object Product extends ((String, String, String, String, Option[Date], Option[Da
 }
 
 object Category extends ((String, String, Option[String], Option[String], Boolean) => Category) {
+  private val log = Logger(this.getClass)
+  private val categoryRepo = TableQuery[Categories]
+  private val catRelRepo = TableQuery[CategoryCategories]
+
   def createOrUpdate(category: Category, parentCatId: Option[String])(implicit session: Session) = {
-    val categoryRepo = TableQuery[Categories]
     findById(category.id) match {
       case Some(existedCat) =>
+        if (log.isDebugEnabled)
+          log.debug("found existedCat")
         categoryRepo.where(_.id === existedCat.id).update(category)
         findParentCategory(category.id) match {
           case Some(pCategory) =>
-            if(parentCatId.isDefined && parentCatId.get != pCategory.id){
-              TableQuery[CategoryCategories].where(_.childCatId === category.id).update(CategoryCategory(parentCatId.get, category.id))
+            if (parentCatId.isDefined) {
+              if (parentCatId.get != pCategory.id) {
+                if (log.isDebugEnabled)
+                  log.debug("parentCatId : " + parentCatId.get + " doesn't equal existed parentCatId:" + pCategory.id + ", update old to new")
+                catRelRepo.where(_.childCatId === category.id).update(CategoryCategory(parentCatId.get, category.id))
+              } else {
+                if (log.isDebugEnabled)
+                  log.debug("parentCategory doesn't change, do nothing")
+              }
             } else {
-              TableQuery[CategoryCategories].where(_.childCatId === category.id).delete
+              if (log.isDebugEnabled)
+                log.debug("doens't have new parentCatId, delete old!")
+              catRelRepo.where(_.childCatId === category.id).delete
             }
           case _ =>
-            if(parentCatId.isDefined){
-              TableQuery[CategoryCategories].insert(CategoryCategory(parentCatId.get, category.id))
+            if (parentCatId.isDefined) {
+              if (log.isDebugEnabled)
+                log.debug("doens't have ld parent category, insert new")
+              catRelRepo.insert(CategoryCategory(parentCatId.get, category.id))
             }
         }
-        if(findParentCategory(category.id) != parentCatId)
-          parentCatId match {
-            case Some(pCatId) =>
-
-              TableQuery[CategoryCategories].where(_.childCatId === category.id).update(CategoryCategory(pCatId, category.id))
-          }
-        println("here i am")
       case _ =>
         categoryRepo.insert(category)
         if (parentCatId.isDefined) {
-          TableQuery[CategoryCategories].insert(CategoryCategory(parentCatId.get, category.id))
+          catRelRepo.insert(CategoryCategory(parentCatId.get, category.id))
         }
     }
+  }
+
+  def delete(categoryId: String)(implicit session: Session) = {
+    catRelRepo.where(_.parentCatId === categoryId).delete
+    catRelRepo.where(_.childCatId === categoryId).delete
+    categoryRepo.where(_.id === categoryId).delete
   }
 
   def findParentCategory(id: String)(implicit session: Session) = {
@@ -417,7 +432,7 @@ object Category extends ((String, String, Option[String], Option[String], Boolea
   }
 
   def allCategories()(implicit session: Session) = {
-    TableQuery[Categories].list()
+    categoryRepo.list()
   }
 
   def rootCategories()(implicit session: Session): Seq[Category] = {
@@ -434,17 +449,17 @@ object Category extends ((String, String, Option[String], Option[String], Boolea
 
   def findByIds(ids: Seq[String]): Seq[Category] = DBHelper.database.withSession {
     implicit session =>
-      TableQuery[Categories].where(_.id inSetBind ids).list()
+      categoryRepo.where(_.id inSetBind ids).list()
   }
 
   def findById(id: String): Option[Category] = DBHelper.database.withSession {
     implicit session =>
-      TableQuery[Categories].where(_.id === id).firstOption
+      categoryRepo.where(_.id === id).firstOption
   }
 
   lazy val topNavCategories: Seq[Category] = DBHelper.database.withSession {
     implicit session =>
-      TableQuery[Categories].where(_.isTopNav === true).list()
+      categoryRepo.where(_.isTopNav === true).list()
   }
 }
 

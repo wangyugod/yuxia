@@ -85,8 +85,8 @@
     }
 
     function confirmDeleteCategory(element){
-        var areaId = element.attr("id").substr(7);
-        $('#divconfirm'+areaId).dialog({
+        var categoryId = element.attr("id").substr(6);
+        $('#divconfirm'+categoryId).dialog({
             resizable: false,
             height:140,
             modal: true,
@@ -98,10 +98,10 @@
                 "@Messages("ok.button")": function() {
                     $.ajax({
                         async:false,
-                        url:"/area/delete/" + areaId,
+                        url:"/admin/category/" + categoryId,
                         type:"DELETE",
                         success: function(result){
-                            document.location.href = "@routes.InternalManagement.areaList()";
+                            document.location.href = "@routes.InternalManagement.categoryList()";
                         }
                     });
                     $(this).dialog( "close" );

@@ -133,9 +133,9 @@ object ProfileController extends Controller with Users with Secured {
 
               case _ =>
                 if (order.isDefined)
-                  Redirect(routes.Application.index()).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id, CURR_ORDER_ID -> order.get.id)
+                  Redirect(routes.Application.home()).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id, CURR_ORDER_ID -> order.get.id)
                 else
-                  Redirect(routes.Application.index()).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id)
+                  Redirect(routes.Application.home()).withSession(loginKey -> foundUser.get.login, USER_NAME -> foundUser.get.name, USER_ID -> foundUser.get.id)
 
             }
           } else {
@@ -159,7 +159,7 @@ object ProfileController extends Controller with Users with Secured {
       },
       profile => {
         Profile.createUser(profile)
-        Redirect(routes.Application.index()).withSession(loginKey -> profile.login, USER_NAME -> profile.name, USER_ID -> profile.id)
+        Redirect(routes.Application.home()).withSession(loginKey -> profile.login, USER_NAME -> profile.name, USER_ID -> profile.id)
       }
     )
   }

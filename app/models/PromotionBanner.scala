@@ -15,7 +15,7 @@ case class PromotionBanner(id: String, name: String) {
 
 }
 
-case class PromotionBannerItem(id: String, description: Option[String], imageUrl: String, link: Option[String],sequence: Int, promotionBannerId: String, productId: Option[String], lastModifiedTime: Timestamp) {
+case class PromotionBannerItem(id: String, description: Option[String], imageUrl: String, link: Option[String], sequence: Int, promotionBannerId: String, productId: Option[String], lastModifiedTime: Timestamp) {
   lazy val product = productId match {
     case Some(pid) =>
       DBHelper.database.withSession {
@@ -114,6 +114,11 @@ object PromotionBanner extends ((String, String) => PromotionBanner) {
   def deletePromotionBanner(pbId: String)(implicit session: Session) = {
     pbItemRepo.where(_.promoBannerId === pbId).delete
     pbRepo.where(_.id === pbId).delete
+  }
+
+  def updatePbiSequence(id: String, sequence: Int)(implicit session: Session) = {
+    val existedItem = pbItemRepo.where(_.id === id).first
+    pbItemRepo.where(_.id === id).update(existedItem.copy(sequence = sequence, lastModifiedTime = new Timestamp(new java.util.Date().getTime)))
   }
 
 

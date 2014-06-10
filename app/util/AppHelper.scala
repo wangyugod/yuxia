@@ -23,7 +23,6 @@ object AppHelper {
       val DATE_FORMAT = "yyyy-MM-dd"
       val sdf = new java.text.SimpleDateFormat(DATE_FORMAT)
       val d = sdf.parse(x)
-      println("date is " + d)
       Some(new Date(d.getTime))
     }
     case _ => None
@@ -32,7 +31,7 @@ object AppHelper {
   def convertDateToText(birthday: Option[Date]): Option[String] = birthday match {
     case Some(date) => {
       val DATE_FORMAT = "yyyy-MM-dd"
-      val sdf = new java.text.SimpleDateFormat(DATE_FORMAT);
+      val sdf = new java.text.SimpleDateFormat(DATE_FORMAT, java.util.Locale.CHINESE);
       Some(sdf.format(date))
     }
     case None => None

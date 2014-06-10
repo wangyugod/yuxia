@@ -288,4 +288,24 @@ object InternalManagement extends Controller with InternalUsers with InternalMgt
       )
   }
 
+  def deleteCategory(id: String) = isAuthenticated {
+    implicit request =>
+      DBHelper.database.withTransaction {
+        implicit session =>
+          Category.delete(id)
+      }
+      Ok("Delete successfully")
+  }
+
+
+  def updatePbiSequence(id: String, sequence: Int) = isAuthenticated{
+    implicit request =>
+      DBHelper.database.withTransaction{
+        implicit session =>
+          PromotionBanner.updatePbiSequence(id, sequence)
+      }
+      Ok("success")
+  }
+
+
 }

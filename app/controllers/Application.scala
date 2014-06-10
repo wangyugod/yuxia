@@ -40,4 +40,12 @@ object Application extends Controller with Users {
       }
     }
   }
+
+  def home = Action {
+    implicit request =>
+      val sdf = new java.text.SimpleDateFormat("E", java.util.Locale.US)
+      val currentDay = sdf.format(new java.util.Date())
+      val productId = findPromotionBannerByName(currentDay.toUpperCase() + "_DINNER").head.productId
+      Redirect(routes.Browse.productDetail(productId.get))
+  }
 }
